@@ -1,0 +1,14 @@
+{
+  "id": "{A8ACEF24-02E6-A5A6-8409-64B16A8A3DC0}",
+  "name": "Twinkly Device",
+  "type": 3,
+  "vendor": "Ledworks",
+  "aliases": [
+    "Smart LED Lichterkette"
+  ],
+  "url": "https://github.com/Wilkware/IPSymconTwinkly",
+  "parentRequirements": [],
+  "childRequirements": [],
+  "implemented": [],
+  "prefix": "TWINKLY"
+}

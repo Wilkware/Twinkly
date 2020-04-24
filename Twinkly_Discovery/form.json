@@ -1,0 +1,34 @@
+{
+  "actions": [
+    {
+      "type": "Configurator",
+      "name": "Configurator",
+      "caption": "Twinkly - Smart LED Light",
+      "delete": false,
+      "sort": {
+        "column": "host",
+        "direction": "ascending"
+      },
+      "columns": [
+        {
+          "caption": "IP Address",
+          "name": "host",
+          "width": "250px"
+        },
+        {
+          "caption": "Device name",
+          "name": "name",
+          "width": "auto"
+        },
+        {
+          "caption": "Device state",
+          "name": "state",
+          "width": "250px"
+        }
+      ],
+      "values": [
+        
+      ]
+    }
+  ]
+}

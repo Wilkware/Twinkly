@@ -1,0 +1,13 @@
+{
+  "id": "{4C36BA50-BD40-FA02-B567-354E28F45615}",
+  "name": "Twinkly Discovery",
+  "type": 5,
+  "vendor": "Ledworks",
+  "aliases": [
+  ],
+  "url": "https://github.com/Wilkware/IPSymconTwinkly",
+  "parentRequirements": [],
+  "childRequirements": [],
+  "implemented": [],
+  "prefix": "TWINKLY"
+}

@@ -1,0 +1,10 @@
+{
+  "translations": {
+    "de": {
+      "IP Address": "IP Adresse",
+      "Device name": "Geräte Name",
+      "Device state": "Gerätestatus",
+      "Instance ID": "Instanz ID"
+    }
+  }
+}
