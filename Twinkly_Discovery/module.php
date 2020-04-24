@@ -10,7 +10,7 @@ class TwinklyDiscovery extends IPSModule
     use DebugHelper;
 
     // Discovery constant
-    const DISCOVERY_IP = "255.255.255.255";
+    const DISCOVERY_IP = '255.255.255.255';
     const DISCOVERY_PORT = 5555;
     const DISCOVERY_MSG = "\x01discover";
 
@@ -43,8 +43,8 @@ class TwinklyDiscovery extends IPSModule
                             'moduleID'      => '{A8ACEF24-02E6-A5A6-8409-64B16A8A3DC0}',
                             'configuration' => [
                                 'Host' => $host, ], ],
-                        ],
-                    ];
+                    ],
+                ];
             }
         }
         $Form['actions'][0]['values'] = $values;
