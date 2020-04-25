@@ -86,12 +86,14 @@ class TwinklyDevice extends IPSModule
     public function SetMode($value)
     {
         $this->SendDebug('SetMode', 'Gewählter Modus : ' . $value, 0);
-
-        $set = ['mode' => $value];
+        // Host
+        $host = $this->ReadPropertyString('Host');
         // Token
         $token = $this->ReadAttributeString('Token');
-        // Set Mode
-        $this->doMode($ip, $token, $set);
+        // Mode
+        $set = ['mode' => $value];
+        // Request
+        $this->doMode($host, $token, $set);
     }
 
     private function CheckLogin()
@@ -102,11 +104,13 @@ class TwinklyDevice extends IPSModule
         if (true) {
             // Timestamp
             $this->WriteAttributeInteger('Validate', $now);
+            // Host
+            $host = $this->ReadPropertyString('Host');
             // Login & Validate
-            $challange = $this->doLogin($ip);
+            $challange = $this->doLogin($host);
             $token = $challange['authentication_token'];
             $response = $challange['challenge-response'];
-            $this->doVerify($ip, $token, $response);
+            $this->doVerify($host, $token, $response);
             // Token
             $this->WriteAttributeString('Token');
         }
