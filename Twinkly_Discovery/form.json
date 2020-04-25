@@ -3,7 +3,7 @@
     {
       "type": "Configurator",
       "name": "Configurator",
-      "caption": "Twinkly - Smart LED Light",
+      "caption": "Twinkly - Smart LED lights",
       "delete": false,
       "sort": {
         "column": "host",

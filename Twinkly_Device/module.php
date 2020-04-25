@@ -8,7 +8,11 @@ require_once __DIR__ . '/../libs/traits.php';  // General helper functions
 class TwinklyDevice extends IPSModule
 {
     use DebugHelper;
-    use ProfilHelper;
+    use ProfileHelper;
+    use TwinklyHelper;
+
+    // Token constant
+    const TOKEN_LIFETIME = 14400;
 
     // Profil array
     private $assoMODE = [
@@ -24,8 +28,12 @@ class TwinklyDevice extends IPSModule
         parent::Create();
         $this->RegisterPropertyString('Host', '127.0.0.1');
 
+        // Attributes for Login
+        $this->RegisterAttributeString('Token', '');
+        $this->RegisterAttributeInteger('Validate', 0);
+
         // Variablen Profile einrichten
-        $this->RegisterProfile(VARIABLETYPE_INTEGER, 'Twinkly.Mode', 'Climate', '', '', 0, 0, 0, 0, $this->assoGRB);
+        $this->RegisterProfile(VARIABLETYPE_INTEGER, 'Twinkly.Mode', 'Climate', '', '', 0, 0, 0, 0, $this->assoMODE);
 
         // Variablen erzeugen
         $varID = $this->RegisterVariableInteger('Mode', 'Modus', 'Twinkly.Mode', 0);
@@ -59,6 +67,7 @@ class TwinklyDevice extends IPSModule
         switch ($ident) {
             case 'Mode':
                 $this->SendDebug('RequestAction', 'Neuer Modus gewählt: ' . $value, 0);
+                $this->CheckLogin();
                 $this->SetMode($value);
                 break;
             default:
@@ -77,5 +86,29 @@ class TwinklyDevice extends IPSModule
     public function SetMode($value)
     {
         $this->SendDebug('SetMode', 'Gewählter Modus : ' . $value, 0);
+
+        $set = ['mode' => $value];
+        // Token
+        $token = $this->ReadAttributeString('Token');
+        // Set Mode
+        $this->doMode($ip, $token, $set);
+    }
+
+    private function CheckLogin()
+    {
+        // $last =  $this->ReadAttributeInteger('Validate');
+        $now = time();
+        //if($now - $livetime > $last) {
+        if (true) {
+            // Timestamp
+            $this->WriteAttributeInteger('Validate', $now);
+            // Login & Validate
+            $challange = $this->doLogin($ip);
+            $token = $challange['authentication_token'];
+            $response = $challange['challenge-response'];
+            $this->doVerify($ip, $token, $response);
+            // Token
+            $this->WriteAttributeString('Token');
+        }
     }
 }

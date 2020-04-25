@@ -6,6 +6,6 @@
   "status":
   [
     {"code": 102, "icon": "active",  "caption": "Smart LED Light active."},
-    {"code": 201, "icon": "error", "caption": "Wrong device IP format (e.g. 127.0.0.1 - no HTTP://)" }
+    {"code": 201, "icon": "error", "caption": "Wrong device IP format (e.g. 192.168.1.10)!" }
   ]
 }

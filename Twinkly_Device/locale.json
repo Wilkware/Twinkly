@@ -1,8 +1,8 @@
 {
   "translations": {
     "de": {
-      "Geräte IP:": "Device IP:",
-      "Wrong device IP format (e.g. 127.0.0.1 - no HTTP://)": "Geräte IP im falschen Format (Bsp: 127.0.0.1 - kein HTTP://)",
+      "Device IP:": "Geräte IP:",
+      "Wrong device IP format (e.g. 192.168.1.10)!": "Geräte IP im falschen Format (z.B.: 192.168.1.10)!",
       "Smart LED Light active.": "Smarte LED Lichterkette ist aktiv."
     }
   }
