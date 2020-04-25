@@ -94,7 +94,7 @@ trait TwinklyHelper
         $request = json_encode($login);
         $response = json_encode([]);
 
-        $err = doRequest($url, null, $request, $response);
+        $err = $this->doRequest($url, null, $request, $response);
 
         $json = json_decode($response, true);
         return $json;
@@ -121,7 +121,7 @@ trait TwinklyHelper
         $request = json_encode($verify);
         $response = json_encode([]);
 
-        $err = doRequest($url, $token, $request, $response);
+        $err = $this->doRequest($url, $token, $request, $response);
 
         $json = json_decode($response, true);
         return $json;
@@ -161,7 +161,7 @@ trait TwinklyHelper
 
         $response = json_encode([]);
 
-        $err = doRequest($url, $token, null, $response);
+        $err = $this->doRequest($url, $token, null, $response);
 
         $json = json_decode($response, true);
         return $json;
@@ -190,10 +190,10 @@ trait TwinklyHelper
 
         $response = json_encode([]);
         if ($mode == null) {
-            $err = doRequest($url, $token, null, $response);
+            $err = $this->doRequest($url, $token, null, $response);
         } else {
             $request = json_encode($mode);
-            $err = doRequest($url, $token, $request, $response);
+            $err = $this->doRequest($url, $token, $request, $response);
         }
         $json = json_decode($response, true);
         return $json;
