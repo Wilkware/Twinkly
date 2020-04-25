@@ -85,13 +85,15 @@ class TwinklyDevice extends IPSModule
      */
     public function SetMode($value)
     {
-        $this->SendDebug('SetMode', 'Gewählter Modus : ' . $value, 0);
+        // Extract assoziated mode string
+        $mode = $this->assoMODE[$value][4];
+        $this->SendDebug('SetMode', 'Gewählter Modus : ' . $mode, 0);
         // Host
         $host = $this->ReadPropertyString('Host');
         // Token
         $token = $this->ReadAttributeString('Token');
         // Mode
-        $set = ['mode' => $value];
+        $set = ['mode' => $mode];
         // Request
         $this->doMode($host, $token, $set);
     }
