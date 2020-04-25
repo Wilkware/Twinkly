@@ -96,6 +96,9 @@ class TwinklyDevice extends IPSModule
         $this->doMode($host, $token, $set);
     }
 
+    /**
+     * Validate the token and login to renew it.
+     */
     private function CheckLogin()
     {
         // $last =  $this->ReadAttributeInteger('Validate');
@@ -112,7 +115,7 @@ class TwinklyDevice extends IPSModule
             $response = $challange['challenge-response'];
             $this->doVerify($host, $token, $response);
             // Token
-            $this->WriteAttributeString('Token');
+            $this->WriteAttributeString('Token', $token);
         }
     }
 }
