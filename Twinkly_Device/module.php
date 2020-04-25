@@ -69,6 +69,7 @@ class TwinklyDevice extends IPSModule
                 $this->SendDebug('RequestAction', 'Neuer Modus gewählt: ' . $value, 0);
                 $this->CheckLogin();
                 $this->SetMode($value);
+                SetValue($this->GetIDForIdent($ident), $value);
                 break;
             default:
                 throw new Exception('Invalid Ident');
