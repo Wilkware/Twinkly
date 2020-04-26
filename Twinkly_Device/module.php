@@ -150,11 +150,10 @@ class TwinklyDevice extends IPSModule
         $this->CheckLogin();
         // Debug
         $this->SendDebug('Version', 'Obtain device information.', 0);
-        // Host & Token
+        // only Host 
         $host = $this->ReadPropertyString('Host');
-        $token = $this->ReadAttributeString('Token');
         // Request
-        $json = $this->doVersion($host, $token);
+        $json = $this->doVersion($host);
 
         return $this->Translate('Firmware: ') . $json['version'];
     }

@@ -177,13 +177,13 @@ trait TwinklyHelper
      *  version             - (string) firmware_version
      *  code                - Application return code.
      */
-    private function doVersion($ip, $token)
+    private function doVersion($ip)
     {
         $url = "http://$ip/xled/v1/fw/version";
 
         $response = json_encode([]);
 
-        $err = $this->doRequest($url, $token, null, $response);
+        $err = $this->doRequest($url, null, null, $response);
         $json = json_decode($response, true);
 
         return $json;
@@ -234,7 +234,7 @@ trait TwinklyHelper
 
         $headers = [
             'Content-Type: application/json',
-            'Content-Length: ' . strlen($request),
+            'Content-Length: ' . (($request == null) ? 0 : strlen($request)),
         ];
 
         if ($token != null) {
