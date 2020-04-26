@@ -83,7 +83,7 @@ class TwinklyDevice extends IPSModule
      *
      * @param int $value Mode value.
      */
-    public function SetMode($value)
+    public function SetMode(int $value)
     {
         $this->CheckLogin();
         // Extract assoziated mode string
