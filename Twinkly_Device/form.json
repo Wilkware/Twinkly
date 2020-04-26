@@ -3,6 +3,15 @@
   [
     {"type": "ValidationTextBox", "name": "Host", "caption": "Device IP:"}
   ],
+  "actions": [
+    {"type": "Label", "caption": "Use the buttons to obtain information about the device." },
+    {"type": "RowLayout",
+      "items": [
+        {"type": "Button", "caption": "DEVICE INFO", "onClick": "echo TWINKLY_Gestalt($id);"},
+        {"type": "Button", "caption": "FIRMWARE", "onClick": "echo TWINKLY_Version($id);"}
+      ]
+    }
+  ],
   "status":
   [
     {"code": 102, "icon": "active",  "caption": "Smart LED Light active."},

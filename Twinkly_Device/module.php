@@ -67,7 +67,6 @@ class TwinklyDevice extends IPSModule
         switch ($ident) {
             case 'Mode':
                 $this->SendDebug('RequestAction', 'Neuer Modus gewählt: ' . $value, 0);
-                $this->CheckLogin();
                 $this->SetMode($value);
                 SetValue($this->GetIDForIdent($ident), $value);
                 break;
@@ -86,6 +85,7 @@ class TwinklyDevice extends IPSModule
      */
     public function SetMode($value)
     {
+        $this->CheckLogin();
         // Extract assoziated mode string
         $mode = $this->assoMODE[$value][4];
         $this->SendDebug('SetMode', 'Gewählter Modus : ' . $mode, 0);
@@ -97,6 +97,66 @@ class TwinklyDevice extends IPSModule
         $set = ['mode' => $mode];
         // Request
         $this->doMode($host, $token, $set);
+    }
+
+    /**
+     * This function will be available automatically after the module is imported with the module control.
+     * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
+     *
+     * TWICKLY_Gestalt();
+     */
+    public function Gestalt()
+    {
+        $this->CheckLogin();
+        // Debug
+        $this->SendDebug('Gestalt', 'Obtain device information.', 0);
+        // Host & Token
+        $host = $this->ReadPropertyString('Host');
+        $token = $this->ReadAttributeString('Token');
+        // Request
+        $json = $this->doGestalt($host, $token);
+
+        return sprintf(
+            "Product name: %s\nHardware version: %S\nBytes per LED: %d\nHardware ID: %s\nFlash Size: %d\nLED type: %d\nProduct code: %s\nFirmware family: %s\nDevice name: %s\nUptime: %s\nMAC: %s\nUUID: %s\nMax supported LED: %d\nNumber of LED: %d\nLED Profile: %s\nFrame rate: %f\nMovie capacity: %d\nCopyright: %s",
+            $json['product_name'],
+            $json['hardware_version'],
+            $json['bytes_per_led'],
+            $json['hw_id'],
+            $json['flash_size'],
+            $json['led_type'],
+            $json['product_code'],
+            $json['fw_family'],
+            $json['device_name'],
+            $json['uptime'],
+            $json['mac'],
+            $json['uuid'],
+            $json['max_supported_led'],
+            $json['number_of_led'],
+            $json['led_profile'],
+            $json['frame_rate'],
+            $json['movie_capacity'],
+            $json['copyright']
+        );
+    }
+
+    /**
+     * This function will be available automatically after the module is imported with the module control.
+     * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
+     *
+     * TWICKLY_Version();
+     */
+    public function Version()
+    {
+        $this->CheckLogin();
+        // Debug
+        $this->SendDebug('Version', 'Obtain device information.', 0);
+        // Host & Token
+        $host = $this->ReadPropertyString('Host');
+        $token = $this->ReadAttributeString('Token');
+        // Request
+        $json = $this->doVersion($host, $token);
+
+        return $this->Translate('Firmware: ') . $json['version'];
     }
 
     /**

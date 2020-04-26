@@ -90,13 +90,12 @@ trait TwinklyHelper
         $base64 = utf8_decode($base64);
 
         $login = ['challenge' => $base64];
-
         $request = json_encode($login);
         $response = json_encode([]);
 
         $err = $this->doRequest($url, null, $request, $response);
-
         $json = json_decode($response, true);
+
         return $json;
     }
 
@@ -117,13 +116,12 @@ trait TwinklyHelper
         $url = "http://$ip/xled/v1/verify";
 
         $verify = ['challenge-response' => $challange];
-
         $request = json_encode($verify);
         $response = json_encode([]);
 
         $err = $this->doRequest($url, $token, $request, $response);
-
         $json = json_decode($response, true);
+
         return $json;
     }
 
@@ -162,8 +160,32 @@ trait TwinklyHelper
         $response = json_encode([]);
 
         $err = $this->doRequest($url, $token, null, $response);
-
         $json = json_decode($response, true);
+
+        return $json;
+    }
+
+    /**
+     * doVersion - Get firmware version.
+     *
+     * HTTP request
+     * GET /xled/v1/fw/version
+     *
+     * The response will be an object.
+     *
+     * The response will be an object:
+     *  version             - (string) firmware_version
+     *  code                - Application return code.
+     */
+    private function doVersion($ip, $token)
+    {
+        $url = "http://$ip/xled/v1/fw/version";
+
+        $response = json_encode([]);
+
+        $err = $this->doRequest($url, $token, null, $response);
+        $json = json_decode($response, true);
+
         return $json;
     }
 
@@ -196,6 +218,7 @@ trait TwinklyHelper
             $err = $this->doRequest($url, $token, $request, $response);
         }
         $json = json_decode($response, true);
+
         return $json;
     }
 

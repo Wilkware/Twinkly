@@ -3,7 +3,11 @@
     "de": {
       "Device IP:": "Geräte IP:",
       "Wrong device IP format (e.g. 192.168.1.10)!": "Geräte IP im falschen Format (z.B.: 192.168.1.10)!",
-      "Smart LED Light active.": "Smarte LED Lichterkette ist aktiv."
+      "Smart LED Light active.": "Smarte LED Lichterkette ist aktiv.",
+      "Use the buttons to obtain information about the device.": "Verwenden Sie die Schaltflächen, um Informationen über das Gerät zu erhalten.",
+      "DEVICE INFO": "GERÄTEINFOS",
+      "FIRMWARE": "FIRMWARE",
+      "Firmware: ": "Firmware: "
     }
   }
 }
