@@ -117,7 +117,7 @@ class TwinklyDevice extends IPSModule
         $json = $this->doGestalt($host, $token);
 
         return sprintf(
-            "Product name: %s\nHardware version: %S\nBytes per LED: %d\nHardware ID: %s\nFlash Size: %d\nLED type: %d\nProduct code: %s\nFirmware family: %s\nDevice name: %s\nUptime: %s\nMAC: %s\nUUID: %s\nMax supported LED: %d\nNumber of LED: %d\nLED Profile: %s\nFrame rate: %f\nMovie capacity: %d\nCopyright: %s",
+            "Product name: %s\nHardware Version: %s\nBytes per LED: %d\nHardware ID: %s\nFlash Size: %d\nLED Type: %d\nProduct Code: %s\nFirmware Family: %s\nDevice Name: %s\nUptime: %s\nMAC: %s\nUUID: %s\nMax supported LED: %d\nNumber of LED: %d\nLED Profile: %s\nFrame Rate: %f\nMovie Capacity: %d\nCopyright: %s",
             $json['product_name'],
             $json['hardware_version'],
             $json['bytes_per_led'],
@@ -150,7 +150,7 @@ class TwinklyDevice extends IPSModule
         $this->CheckLogin();
         // Debug
         $this->SendDebug('Version', 'Obtain device information.', 0);
-        // only Host 
+        // only Host
         $host = $this->ReadPropertyString('Host');
         // Request
         $json = $this->doVersion($host);
