@@ -104,7 +104,7 @@ __Beispiel__: `TWICKLY_Gestalt(12345);`
 > Device Name: Weihnachtsbaum  
 > Uptime: 239317051  
 > MAC: 12:34:56:ab:cd:ef  
-> UUID: 12345678-abcd-1234-abcd-1234567890ab  
+> UUID: 12345678-bacd-1234-abcd-1234567890ab  
 > Max supported LED: 1020  
 > Number of LED: 250  
 > LED Profile: RGB  
