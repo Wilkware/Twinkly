@@ -7,6 +7,7 @@ require_once __DIR__ . '/../libs/traits.php';  // General helper functions
 // CLASS TwinklyDiscovery
 class TwinklyDiscovery extends IPSModule
 {
+    // Helper Traits
     use DebugHelper;
 
     // Discovery constant
@@ -81,8 +82,8 @@ class TwinklyDiscovery extends IPSModule
         socket_set_option($sock, SOL_SOCKET, SO_RCVTIMEO, ['sec'=>5, 'usec'=>0]);
         socket_sendto($sock, self::DISCOVERY_MSG, strlen(self::DISCOVERY_MSG), 0, self::DISCOVERY_IP, self::DISCOVERY_PORT);
 
+        // Collect all devices
         $data = [];
-
         while (true) {
             $ret = @socket_recvfrom($sock, $buf, 20, 0, $ip, $port);
             if ($ret === false) {

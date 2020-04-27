@@ -7,6 +7,7 @@ require_once __DIR__ . '/../libs/traits.php';  // General helper functions
 // CLASS PresenceDetector
 class TwinklyDevice extends IPSModule
 {
+    // Helper traits
     use DebugHelper;
     use ProfileHelper;
     use TwinklyHelper;
@@ -88,7 +89,7 @@ class TwinklyDevice extends IPSModule
         $this->CheckLogin();
         // Extract assoziated mode string
         $mode = $this->assoMODE[$value][4];
-        $this->SendDebug('SetMode', 'Gewählter Modus : ' . $mode, 0);
+        $this->SendDebug('SetMode', 'Gewählter Modus: ' . $mode, 0);
         // Host
         $host = $this->ReadPropertyString('Host');
         // Token

@@ -4,7 +4,7 @@
     {"type": "ValidationTextBox", "name": "Host", "caption": "Device IP:"}
   ],
   "actions": [
-    {"type": "Label", "caption": "Use the buttons to obtain information about the device." },
+    {"type": "Label", "caption": "Use the buttons to obtain information about the device."},
     {"type": "RowLayout",
       "items": [
         {"type": "Button", "caption": "DEVICE INFO", "onClick": "echo TWINKLY_Gestalt($id);"},
@@ -15,6 +15,6 @@
   "status":
   [
     {"code": 102, "icon": "active",  "caption": "Smart LED Light active."},
-    {"code": 201, "icon": "error", "caption": "Wrong device IP format (e.g. 192.168.1.10)!" }
+    {"code": 201, "icon": "error", "caption": "Wrong device IP format (e.g. 192.168.1.10)!"}
   ]
 }

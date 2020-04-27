@@ -28,7 +28,7 @@
  *   POST /xled/v1/network/status
  *       => Sets network mode operation.
  *   GET /xled/v1/timer
- *   POST /xled/v1/timer *
+ *   POST /xled/v1/timer
  *       => Sets time when lights should be turned on and time to turn them off.
  *   POST /xled/v1/led/mode
  *       => Changes LED operation mode.
