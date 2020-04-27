@@ -84,6 +84,43 @@ Die pro Twinkly Gerät erzeugte _Modus_-Variable kann direkt ins Webfront verlin
 
 ### 7. PHP-Befehlsreferenz
 
+```php
+void TWICKLY_Gestalt(int $InstanzID);
+```
+
+Liest alle Geräteinformationen aus.  
+Die Funktion liefert als Rückgabewert einen (sprintf) formatierten String.
+
+__Beispiel__: `TWICKLY_Gestalt(12345);`
+
+> Product name: Twinkly  
+> Hardware Version: 100  
+> Bytes per LED: 3  
+> Hardware ID: ab01cd  
+> Flash Size: 64  
+> LED Type: 14  
+> Product Code: TWS250STP-B  
+> Firmware Family: F  
+> Device Name: Weihnachtsbaum  
+> Uptime: 239317051  
+> MAC: 12:34:56:ab:cd:ef  
+> UUID: 12345678-ABCD-1234-ABCD-1234567890AB  
+> Max supported LED: 1020  
+> Number of LED: 250  
+> LED Profile: RGB  
+> Frame Rate: 23,810000  
+> Movie Capacity: 992  
+> Copyright: LEDWORKS 2018  
+
+```php
+void TWICKLY_Version(int $InstanzID);
+```
+
+Liest die installierte Firmwareversion des Gerätes aus.  
+Die Funktion liefert als Rückgabewert einen String (Firmware: x.yy.zz).
+
+__Beispiel__: `TWICKLY_Version(12345);` Ausgabe "Firmware: 2.4.16".
+
 ### 8. Versionshistorie
 
 v1.0.20200501
