@@ -2,7 +2,7 @@
 
 [![Version](https://img.shields.io/badge/Symcon-PHP--Modul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Product](https://img.shields.io/badge/Symcon%20Version-5.2%20%3E-blue.svg)](https://www.symcon.de/produkt/)
-[![Version](https://img.shields.io/badge/Modul%20Version-1.0.20200501-orange.svg)](https://github.com/Wilkware/IPSymconTwinkly)
+[![Version](https://img.shields.io/badge/Modul%20Version-1.1.20200510-orange.svg)](https://github.com/Wilkware/IPSymconTwinkly)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![Actions](https://github.com/Wilkware/IPSymconTwinkly/workflows/Check%20Style/badge.svg)](https://github.com/Wilkware/IPSymconTwinkly/actions)
 
@@ -122,6 +122,10 @@ Die Funktion liefert als Rückgabewert einen String (Firmware: x.yy.zz).
 __Beispiel__: `TWICKLY_Version(12345);` Ausgabe "Firmware: 2.4.16".
 
 ### 8. Versionshistorie
+
+v1.1.20200510
+
+* _FIX_: Bugfix Discovery Modul
 
 v1.0.20200501
 
