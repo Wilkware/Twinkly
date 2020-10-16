@@ -94,9 +94,12 @@ trait TwinklyHelper
         $response = json_encode([]);
 
         $err = $this->doRequest($url, null, $request, $response);
-        $json = json_decode($response, true);
 
-        return $json;
+        if ($err) {
+            $json = json_decode($response, true);
+        }
+
+        return $err ? $json : $err;
     }
 
     /**
@@ -120,9 +123,12 @@ trait TwinklyHelper
         $response = json_encode([]);
 
         $err = $this->doRequest($url, $token, $request, $response);
-        $json = json_decode($response, true);
 
-        return $json;
+        if ($err) {
+            $json = json_decode($response, true);
+        }
+
+        return $err ? $json : $err;
     }
 
     /**
@@ -160,9 +166,12 @@ trait TwinklyHelper
         $response = json_encode([]);
 
         $err = $this->doRequest($url, $token, null, $response);
-        $json = json_decode($response, true);
 
-        return $json;
+        if ($err) {
+            $json = json_decode($response, true);
+        }
+
+        return $err ? $json : $err;
     }
 
     /**
@@ -184,9 +193,12 @@ trait TwinklyHelper
         $response = json_encode([]);
 
         $err = $this->doRequest($url, null, null, $response);
-        $json = json_decode($response, true);
 
-        return $json;
+        if ($err) {
+            $json = json_decode($response, true);
+        }
+
+        return $err ? $json : $err;
     }
 
     /**
@@ -217,9 +229,53 @@ trait TwinklyHelper
             $request = json_encode($mode);
             $err = $this->doRequest($url, $token, $request, $response);
         }
-        $json = json_decode($response, true);
 
-        return $json;
+        if ($err) {
+            $json = json_decode($response, true);
+        }
+
+        return $err ? $json : $err;
+    }
+
+    /**
+     * doBrightness - Get/Set the current brightness level.
+     *
+     * HTTP request
+     * GET /xled/v1/led/out/brightness
+     *
+     * The response will be an object:
+     *  mode    - (string) one of “enabled”, “disabled”.
+     *  value   - (integer) brighness level in range of 0..100
+     *  code    - Application return code.
+     *
+     * HTTP request
+     * POST /xled/v1/led/out/brightness
+     *
+     * Parameters as JSON object:
+     *  mode    - (string) one of “enabled”, “disabled”.
+     *  type    - (string) always “A”
+     *  value   - (integer) brighness level in range of 0..255
+     *
+     * The response will be an object:
+     *  code    - Application return code.
+     */
+    private function doBrightness($ip, $token, $body = null)
+    {
+        $url = "http://$ip/xled/v1/led/out/brightness";
+
+        $response = json_encode([]);
+        if ($body == null) {
+            $err = $this->doRequest($url, $token, null, $response);
+        } else {
+            $request = json_encode($body);
+            $err = $this->doRequest($url, $token, $request, $response);
+        }
+
+        if ($err) {
+            $json = json_decode($response, true);
+        }
+
+        return $err ? $json : $err;
     }
 
     /*
@@ -230,7 +286,7 @@ trait TwinklyHelper
      */
     private function doRequest($url, $token, $request, &$response, $method = 'GET')
     {
-        $ret = true;
+        $ret = false;
 
         $headers = [
             'Content-Type: application/json',
@@ -255,8 +311,9 @@ trait TwinklyHelper
         curl_close($curl);
 
         if ($response != null) {
+            $ret = true;
             $json = json_decode($response, true);
-            if ($json['code'] != 1000) {
+            if (isset($json['code']) && $json['code'] != 1000) {
                 $error = sprintf('Request failed: (%d) - URL: %s - Request: %s', $json['code'], $url, $request);
                 $this->SendDebug('doRequest', $error, 0);
                 $ret = false;

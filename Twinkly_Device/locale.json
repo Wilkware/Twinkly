@@ -1,13 +1,22 @@
 {
   "translations": {
     "de": {
+      "Mode": "Modus",
+      "Brightness": "Helligkeit",
+      "Switch": "Schalter",
       "Device IP:": "Geräte IP:",
       "Wrong device IP format (e.g. 192.168.1.11)!": "Geräte IP im falschen Format (z.B.: 192.168.1.11)!",
+      "Create a normal switch variable in addition to switching the mode (e.g. for WebFront)?": "Zusätzlich zur Schalten des Modus noch eine normale Schaltervariable anlegen (z.B. für Webfront)?",
+      "Additional light switch!": "Zusätzlicher Lichtschalter!",
       "Smart LED Light active.": "Smarte LED Lichterkette ist aktiv.",
       "Use the buttons to obtain information about the device.": "Verwenden Sie die Schaltflächen, um Informationen über das Gerät zu erhalten.",
+      "Use the button to synchronize the current device brightness.": "Verwenden Sie die Schaltfläche, um die aktuelle Gerätehelligkeitkeit zu synchronisieren.",
       "DEVICE INFO": "GERÄTEINFOS",
       "FIRMWARE": "FIRMWARE",
-      "Firmware: ": "Firmware: "
+      "BRIGHTNESS": "HELLIGKEIT",
+      "Firmware: ": "Firmware: ",
+      "Brightness: ": "Helligkeit: ",
+      "Login error!": "Login Fehler!"
     }
   }
 }
