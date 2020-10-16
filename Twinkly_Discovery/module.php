@@ -58,8 +58,8 @@ class TwinklyDiscovery extends IPSModule
                     ],
                 ];
             }
+            $form['actions'][0]['values'] = $values;
         }
-        $form['actions'][0]['values'] = $values;
         return json_encode($form);
     }
 
