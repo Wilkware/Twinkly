@@ -6,7 +6,7 @@
     {"type": "CheckBox", "name": "Switch", "caption": "Additional light switch!" }
   ],
   "actions": [
-    {"type": "Label", "caption": "Use the buttons to synchronize the current device brightness."},
+    {"type": "Label", "caption": "Use the button to synchronize the current device brightness."},
     {"type": "RowLayout",
       "items": [
         {"type": "Button", "caption": "BRIGHTNESS", "onClick": "echo TWINKLY_Brightness($id);"}
