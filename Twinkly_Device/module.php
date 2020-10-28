@@ -138,7 +138,7 @@ class TwinklyDevice extends IPSModule
      *
      * @param int $value Brightness value.
      */
-    public function SetBrightness($value)
+    public function SetBrightness(int $value)
     {
         if ($this->CheckLogin() === false) {
             $this->SendDebug('SetBrightness', 'Login error!', 0);
