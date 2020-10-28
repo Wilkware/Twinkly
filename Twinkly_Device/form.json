@@ -1,9 +1,17 @@
 {
   "elements":
   [
-    {"type": "ValidationTextBox", "name": "Host", "caption": "Device IP:"}
+    {"type": "ValidationTextBox", "name": "Host", "caption": "Device IP:"},
+    {"type": "Label", "caption": "Create a normal switch variable in addition to switching the mode (e.g. for WebFront)?"},
+    {"type": "CheckBox", "name": "Switch", "caption": "Additional light switch!" }
   ],
   "actions": [
+    {"type": "Label", "caption": "Use the buttons to synchronize the current device brightness."},
+    {"type": "RowLayout",
+      "items": [
+        {"type": "Button", "caption": "BRIGHTNESS", "onClick": "echo TWINKLY_Brightness($id);"}
+      ]
+    },
     {"type": "Label", "caption": "Use the buttons to obtain information about the device."},
     {"type": "RowLayout",
       "items": [

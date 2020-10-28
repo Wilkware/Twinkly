@@ -22,23 +22,32 @@ class TwinklyDevice extends IPSModule
         [2, 'Demo', '', 0xFF8000, 'demo'],
         [3, 'Echtzeit', '', 0x00FFFF, 'rt'],
     ];
+    private $assoSWITCH = [
+        [0, 'Aus', 'Light-0', -1, 'off'],
+        [1, 'An', 'Light-100', 0x00FF00, 'movie'],
+    ];
 
     public function Create()
     {
         //Never delete this line!
         parent::Create();
         $this->RegisterPropertyString('Host', '127.0.0.1');
+        $this->RegisterPropertyBoolean('Switch', false);
 
         // Attributes for Login
         $this->RegisterAttributeString('Token', '');
         $this->RegisterAttributeInteger('Validate', 0);
 
         // Variablen Profile einrichten
-        $this->RegisterProfile(VARIABLETYPE_INTEGER, 'Twinkly.Mode', 'Climate', '', '', 0, 0, 0, 0, $this->assoMODE);
+        $this->RegisterProfile(VARIABLETYPE_INTEGER, 'Twinkly.Mode', 'Remote', '', '', 0, 0, 0, 0, $this->assoMODE);
+        $this->RegisterProfile(VARIABLETYPE_INTEGER, 'Twinkly.Switch', 'Light', '', '', 0, 0, 0, 0, $this->assoSWITCH);
 
         // Variablen erzeugen
-        $varID = $this->RegisterVariableInteger('Mode', 'Modus', 'Twinkly.Mode', 0);
+        $this->RegisterVariableInteger('Mode', $this->Translate('Mode'), 'Twinkly.Mode', 0);
+        $this->RegisterVariableInteger('Brightness', $this->Translate('Brightness'), '~Intensity.100', 0);
+        // Actions
         $this->EnableAction('Mode');
+        $this->EnableAction('Brightness');
     }
 
     public function ApplyChanges()
@@ -47,10 +56,16 @@ class TwinklyDevice extends IPSModule
         parent::ApplyChanges();
         // IP Check
         $host = $this->ReadPropertyString('Host');
+        $switch = $this->ReadPropertyBoolean('Switch');
         if (filter_var($host, FILTER_VALIDATE_IP) !== false) {
             $this->SetStatus(102);
         } else {
             $this->SetStatus(201);
+        }
+        // Aditionally Switch
+        $this->MaintainVariable('Switch', $this->Translate('Switch'), VARIABLETYPE_INTEGER, 'Twinkly.Switch', 0, $switch);
+        if ($switch) {
+            $this->EnableAction('Switch');
         }
         // Debug message
         $this->SendDebug('ApplyChanges', 'IP=' . $host, 0);
@@ -64,15 +79,21 @@ class TwinklyDevice extends IPSModule
      */
     public function RequestAction($ident, $value)
     {
-        //$this->SendDebug('RequestAction', 'Ident: '.$ident.' Value: '.$value, 0);
+        $this->SendDebug('RequestAction', 'Ident: ' . $ident . ' Value: ' . $value, 0);
         switch ($ident) {
+            case 'Switch':
             case 'Mode':
                 $this->SendDebug('RequestAction', 'Neuer Modus gewählt: ' . $value, 0);
                 $this->SetMode($value);
                 SetValue($this->GetIDForIdent($ident), $value);
                 break;
+            case 'Brightness':
+                $this->SendDebug('RequestAction', 'Helligkeit geändert: ' . $value, 0);
+                $this->SetBrightness($value);
+                SetValue($this->GetIDForIdent($ident), $value);
+                break;
             default:
-                throw new Exception('Invalid Ident');
+            throw new Exception('Invalid Ident');
         }
     }
 
@@ -80,13 +101,22 @@ class TwinklyDevice extends IPSModule
      * This function will be available automatically after the module is imported with the module control.
      * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
      *
-     * TWICKLY_SetMode($value);
+     * TWICKLY_SetMode($id, $value);
      *
      * @param int $value Mode value.
      */
     public function SetMode(int $value)
     {
-        $this->CheckLogin();
+        // Safty check
+        if ($value < 0 || $value > 3) {
+            // out of range
+            $this->SendDebug('SetMode', 'Out of range' . $value, 0);
+            return;
+        }
+        if ($this->CheckLogin() === false) {
+            $this->SendDebug('SetMode', 'Login error!', 0);
+            return;
+        }
         // Extract assoziated mode string
         $mode = $this->assoMODE[$value][4];
         $this->SendDebug('SetMode', 'Gewählter Modus: ' . $mode, 0);
@@ -104,11 +134,65 @@ class TwinklyDevice extends IPSModule
      * This function will be available automatically after the module is imported with the module control.
      * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
      *
+     * TWICKLY_SetBrightness($id, $value);
+     *
+     */
+    public function SetBrightness($value)
+    {
+        if ($this->CheckLogin() === false) {
+            $this->SendDebug('SetBrightness', 'Login error!', 0);
+            return;
+        }
+        // Debug
+        $this->SendDebug('SetBrightness', 'Set brightness to: ' . $value, 0);
+        // Host
+        $host = $this->ReadPropertyString('Host');
+        // Token
+        $token = $this->ReadAttributeString('Token');
+        // Brightness
+        $body = [
+            'mode'   => 'enabled',
+            'value'  => $value,
+        ];
+        // Request
+        $this->doBrightness($host, $token, $body);
+    }
+
+    /**
+     * This function will be available automatically after the module is imported with the module control.
+     * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
+     *
+     * TWICKLY_Brightness($id);
+     */
+    public function Brightness()
+    {
+        if ($this->CheckLogin() === false) {
+            return $this->Translate('Login error!');
+        }
+        // Debug
+        $this->SendDebug('Brightness', 'Obtain device brightness.', 0);
+        // Host & Token
+        $host = $this->ReadPropertyString('Host');
+        $token = $this->ReadAttributeString('Token');
+        // Request
+        $json = $this->doBrightness($host, $token);
+        // Sync brightness
+        SetValue($this->GetIDForIdent('Brightness'), $json['value']);
+
+        return $this->Translate('Brightness: ') . $json['value'] . '%';
+    }
+
+    /**
+     * This function will be available automatically after the module is imported with the module control.
+     * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
+     *
      * TWICKLY_Gestalt();
      */
     public function Gestalt()
     {
-        $this->CheckLogin();
+        if ($this->CheckLogin() === false) {
+            return $this->Translate('Login error!');
+        }
         // Debug
         $this->SendDebug('Gestalt', 'Obtain device information.', 0);
         // Host & Token
@@ -148,9 +232,11 @@ class TwinklyDevice extends IPSModule
      */
     public function Version()
     {
-        $this->CheckLogin();
+        if ($this->CheckLogin() === false) {
+            return $this->Translate('Login error!');
+        }
         // Debug
-        $this->SendDebug('Version', 'Obtain device information.', 0);
+        $this->SendDebug('Version', 'Obtain firmware version.', 0);
         // only Host
         $host = $this->ReadPropertyString('Host');
         // Request
@@ -172,13 +258,25 @@ class TwinklyDevice extends IPSModule
             $this->WriteAttributeInteger('Validate', $now);
             // Host
             $host = $this->ReadPropertyString('Host');
-            // Login & Validate
+            // Debug
+            $this->SendDebug('CheckLogin', 'Login to host: ' . $host, 0);
+            // Login
             $challange = $this->doLogin($host);
+            // Check
+            if ($challange === false) {
+                return false;
+            }
+            // Validate
             $token = $challange['authentication_token'];
             $response = $challange['challenge-response'];
-            $this->doVerify($host, $token, $response);
+            // Check
+            if ($this->doVerify($host, $token, $response) === false) {
+                return false;
+            }
             // Token
             $this->WriteAttributeString('Token', $token);
         }
+
+        return true;
     }
 }

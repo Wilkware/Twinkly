@@ -1,8 +1,8 @@
 # Twinkly (Smarte LED Lichterketten)
 
 [![Version](https://img.shields.io/badge/Symcon-PHP--Modul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Product](https://img.shields.io/badge/Symcon%20Version-5.2%20%3E-blue.svg)](https://www.symcon.de/produkt/)
-[![Version](https://img.shields.io/badge/Modul%20Version-1.1.20200510-orange.svg)](https://github.com/Wilkware/IPSymconTwinkly)
+[![Product](https://img.shields.io/badge/Symcon%20Version-5.2-blue.svg)](https://www.symcon.de/produkt/)
+[![Version](https://img.shields.io/badge/Modul%20Version-2.0.20201016-orange.svg)](https://github.com/Wilkware/IPSymconTwinkly)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![Actions](https://github.com/Wilkware/IPSymconTwinkly/workflows/Check%20Style/badge.svg)](https://github.com/Wilkware/IPSymconTwinkly/actions)
 
@@ -23,6 +23,7 @@ Ermöglicht die Kommunikation mit den Smart LED Lichterketten *Twinkly*.
 
 * Suchen und Erstellen von Twinkly Geräten (Discovery Modul)
 * Schalten des LED-Betriebsmodus
+* Einstellen der Helligkeit
 * Auslesen aller Geräteinformationen
 * Auslesen der Firmware Version
 
@@ -52,10 +53,12 @@ _Konfigurationsseite_:
 Wird das Gerät direkt über die Gerätesuche(Discovery) erstellt, sind keine weiteren Konfigurationen notwendig. Die IP-Adresse des Gerätes wird automatisch hinterlegt.
 Werden Twinkly Geräte manuell angelegt, ist die entsprechende IP-Adresse einzutragen.
 
-Name               | Beschreibung
------------------- | ---------------------------------
-Geräte IP          | IP-Adresse der Lichterkette
+Name                       | Beschreibung
+-------------------------- | ---------------------------------
+Geräte IP                  | IP-Adresse der Lichterkette
+Zusätzlicher Lichtschalter | Zusätzlicher Schalter für einfaches An/Aus
 
+Über die Schaltflächen "HELLIGKEIT" kann die aktuelle Helligkeit syncronisiert werden (z.B. wenn von App eingestellt wurde).
 Über die Schaltflächen "FIRMWARE" kann die Version des Gerätes ausgelesen und angezeigt werden.
 Gleiches gilt für die Gerätedaten über die Schaltfläche "GERÄTEINFOS".
 
@@ -66,12 +69,15 @@ Die Statusvariablen werden automatisch angelegt. Das Löschen einzelner kann zu 
 Name              | Typ       | Beschreibung
 ------------------| --------- | ----------------
 Modus             | Integer   | LED-Betriebsmodus
+Brightness        | Integer   | Helligkeitswert
+(Switch)          | Integer   | Schalter (An/Aus)
 
 Folgendes Profil wird angelegt:
 
 Name                 | Typ       | Beschreibung
 -------------------- | --------- | ----------------
 Twinkly.Mode         | Integer   | LED-Betriebsmodus (0=Aus, 1=An, 2=Demo, 3=Echtzeit)
+Twinkly.Switch       | Integer   | LED-Betriebsmodus (0=Aus, 1=An)
 
 > Aus(off) - schaltet Licht aus  
 > An(movie) - spielt vordefinierten oder hochgeladenen Effekt ab  
@@ -80,9 +86,18 @@ Twinkly.Mode         | Integer   | LED-Betriebsmodus (0=Aus, 1=An, 2=Demo, 3=Ech
 
 ### 6. WebFront
 
-Die pro Twinkly Gerät erzeugte _Modus_-Variable kann direkt ins Webfront verlingt werden.
+Die pro Twinkly Gerät erzeugten Variablen _Modus_, _Helligkeit_ und _Schalter_ können direkt ins Webfront verlingt werden.
 
 ### 7. PHP-Befehlsreferenz
+
+```php
+void TWICKLY_Brightness(int $InstanzID);
+```
+
+Liest die aktuell am Gerät hinterlegten Helligkeitswert aus.  
+Die Funktion liefert als Rückgabewert einen String (Helligkeit: xy%).
+
+__Beispiel__: `TWICKLY_Brightness(12345);` Ausgabe "Helligkeit: 100%".
 
 ```php
 void TWICKLY_Gestalt(int $InstanzID);
@@ -122,6 +137,19 @@ Die Funktion liefert als Rückgabewert einen String (Firmware: x.yy.zz).
 __Beispiel__: `TWICKLY_Version(12345);` Ausgabe "Firmware: 2.4.16".
 
 ### 8. Versionshistorie
+
+v2.0.20201016
+
+* _NEU_: Steuerung bzw. Einstellung der Helligkeit
+* _NEU_: Vereinfachte Modusschaltung als normaler Lichtschalter
+* _NEU_: Fehlerbehandlung wenn keine Verbindung zum Gerät hergestellt werden kann
+* _FIX_: Bugfix Discovery Modul
+* _FIX_: Debugausgabe überarbeitet
+* _FIX_: API erweitert und überarbeitet
+
+v1.0.20200501
+
+* _NEU_: Initialversion
 
 v1.1.20200510
 

@@ -85,7 +85,7 @@ class TwinklyDiscovery extends IPSModule
         // Collect all devices
         $data = [];
         while (true) {
-            $ret = @socket_recvfrom($sock, $buf, 20, 0, $ip, $port);
+            $ret = @socket_recvfrom($sock, $buf, 50, 0, $ip, $port);
             if ($ret === false) {
                 break;
             }
