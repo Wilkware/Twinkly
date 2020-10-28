@@ -143,6 +143,7 @@ v2.0.20201016
 * _NEU_: Steuerung bzw. Einstellung der Helligkeit
 * _NEU_: Vereinfachte Modusschaltung als normaler Lichtschalter
 * _NEU_: Fehlerbehandlung wenn keine Verbindung zum Gerät hergestellt werden kann
+* _FIX_: Bugfix Discovery Modul
 * _FIX_: Debugausgabe überarbeitet
 * _FIX_: API erweitert und überarbeitet
 
