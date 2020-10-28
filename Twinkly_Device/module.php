@@ -136,6 +136,7 @@ class TwinklyDevice extends IPSModule
      *
      * TWICKLY_SetBrightness($id, $value);
      *
+     * @param int $value Brightness value.
      */
     public function SetBrightness($value)
     {
