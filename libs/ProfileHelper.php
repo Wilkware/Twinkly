@@ -91,7 +91,7 @@ trait ProfileHelper
 
         if (($asso !== null) && (count($asso) !== 0)) {
             foreach ($asso as $ass) {
-                IPS_SetVariableProfileAssociation($name, $ass[0], $ass[1], $ass[2], $ass[3]);
+                IPS_SetVariableProfileAssociation($name, $ass[0], $this->Translate($ass[1]), $ass[2], $ass[3]);
             }
         }
     }
@@ -125,7 +125,7 @@ trait ProfileHelper
 
         if (($asso !== null) && (count($asso) !== 0)) {
             foreach ($asso as $ass) {
-                IPS_SetVariableProfileAssociation($name, $ass[0], $ass[1], $ass[2], $ass[3]);
+                IPS_SetVariableProfileAssociation($name, $ass[0], $this->Translate($ass[1]), $ass[2], $ass[3]);
             }
         }
     }
@@ -159,7 +159,7 @@ trait ProfileHelper
 
         if (($asso !== null) && (count($asso) !== 0)) {
             foreach ($asso as $ass) {
-                IPS_SetVariableProfileAssociation($name, $ass[0], $ass[1], $ass[2], $ass[3]);
+                IPS_SetVariableProfileAssociation($name, $ass[0], $this->Translate($ass[1]), $ass[2], $ass[3]);
             }
         }
     }

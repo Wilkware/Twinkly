@@ -97,7 +97,7 @@ if (!defined('IPS_SCRIPTMESSAGE')) {
 }
 if (!defined('IPS_EVENTMESSAGE')) {
     // --- EVENT MANAGER
-    define('IPS_EVENTMESSAGE', IPS_BASE + 800);            //Event Scripter Message
+    define('IPS_EVENTMESSAGE', IPS_BASE + 800);             //Event Scripter Message
     define('EM_CREATE', IPS_EVENTMESSAGE + 1);             //On Event Create
     define('EM_DELETE', IPS_EVENTMESSAGE + 2);             //On Event Delete
     define('EM_UPDATE', IPS_EVENTMESSAGE + 3);
@@ -116,10 +116,10 @@ if (!defined('IPS_EVENTMESSAGE')) {
 if (!defined('IPS_MEDIAMESSAGE')) {
     // --- MEDIA MANAGER
     define('IPS_MEDIAMESSAGE', IPS_BASE + 900);           //Media Manager Message
-    define('MM_CREATE', IPS_MEDIAMESSAGE + 1);            //On Media Create
-    define('MM_DELETE', IPS_MEDIAMESSAGE + 2);            //On Media Delete
-    define('MM_CHANGEFILE', IPS_MEDIAMESSAGE + 3);        //On Media File changed
-    define('MM_AVAILABLE', IPS_MEDIAMESSAGE + 4);         //Media Available Status changed
+    define('MM_CREATE', IPS_MEDIAMESSAGE + 1);             //On Media Create
+    define('MM_DELETE', IPS_MEDIAMESSAGE + 2);             //On Media Delete
+    define('MM_CHANGEFILE', IPS_MEDIAMESSAGE + 3);         //On Media File changed
+    define('MM_AVAILABLE', IPS_MEDIAMESSAGE + 4);          //Media Available Status changed
     define('MM_UPDATE', IPS_MEDIAMESSAGE + 5);
 }
 if (!defined('IPS_LINKMESSAGE')) {
@@ -131,7 +131,7 @@ if (!defined('IPS_LINKMESSAGE')) {
 }
 if (!defined('IPS_FLOWMESSAGE')) {
     // --- DATA HANDLER
-    define('IPS_FLOWMESSAGE', IPS_BASE + 1100);            //Data Handler Message
+    define('IPS_FLOWMESSAGE', IPS_BASE + 1100);             //Data Handler Message
     define('FM_CONNECT', IPS_FLOWMESSAGE + 1);             //On Instance Connect
     define('FM_DISCONNECT', IPS_FLOWMESSAGE + 2);          //On Instance Disconnect
 }
@@ -164,16 +164,22 @@ if (!defined('IPS_TIMERMESSAGE')) {
     define('TM_UPDATE', IPS_TIMERMESSAGE + 4);
     define('TM_RUNNING', IPS_TIMERMESSAGE + 5);
 }
-if (!defined('IS_ACTIVE')) {
+if (!defined('IS_ACTIVE')) { //Nur wenn Konstanten noch nicht bekannt sind.
     // --- STATUS CODES
     define('IS_SBASE', 100);
-    define('IS_CREATING', IS_SBASE + 1);                    //Module is being created
-    define('IS_ACTIVE', IS_SBASE + 2);                      //Module created and running
-    define('IS_DELETING', IS_SBASE + 3);                    //Module us being deleted
-    define('IS_INACTIVE', IS_SBASE + 4);                    //Module is not beeing used
-    // --- ERROR CODES
-    define('IS_EBASE', 200);
-    define('IS_NOTCREATED', IS_EBASE + 1);                  //Instance could not be created
+    define('IS_CREATING', IS_SBASE + 1); //module is being created
+    define('IS_ACTIVE', IS_SBASE + 2); //module created and running
+    define('IS_DELETING', IS_SBASE + 3); //module us being deleted
+    define('IS_INACTIVE', IS_SBASE + 4); //module is not beeing used
+// --- ERROR CODES
+    define('IS_EBASE', 200);          //default errorcode
+    define('IS_NOTCREATED', IS_EBASE + 1); //instance could not be created
+}
+if (!defined('vtBoolean')) { //Nur wenn Konstanten noch nicht bekannt sind.
+    define('vtBoolean', 0);
+    define('vtInteger', 1);
+    define('vtFloat', 2);
+    define('vtString', 3);
 }
 
 /**

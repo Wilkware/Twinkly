@@ -1,22 +1,44 @@
 {
-  "translations": {
-    "de": {
-      "Mode": "Modus",
-      "Brightness": "Helligkeit",
-      "Switch": "Schalter",
-      "Device IP:": "Geräte IP:",
-      "Wrong device IP format (e.g. 192.168.1.11)!": "Geräte IP im falschen Format (z.B.: 192.168.1.11)!",
-      "Create a normal switch variable in addition to switching the mode (e.g. for WebFront)?": "Zusätzlich zur Schalten des Modus noch eine normale Schaltervariable anlegen (z.B. für Webfront)?",
-      "Additional light switch!": "Zusätzlicher Lichtschalter!",
-      "Smart LED Light active.": "Smarte LED Lichterkette ist aktiv.",
-      "Use the buttons to obtain information about the device.": "Verwenden Sie die Schaltflächen, um Informationen über das Gerät zu erhalten.",
-      "Use the button to synchronize the current device brightness.": "Verwenden Sie die Schaltfläche, um die aktuelle Gerätehelligkeitkeit zu synchronisieren.",
-      "DEVICE INFO": "GERÄTEINFOS",
-      "FIRMWARE": "FIRMWARE",
-      "BRIGHTNESS": "HELLIGKEIT",
-      "Firmware: ": "Firmware: ",
-      "Brightness: ": "Helligkeit: ",
-      "Login error!": "Login Fehler!"
+    "translations": {
+        "de": {
+            "\nTWINKLY – The smart LED light string\n ": "\nTWINKLY – Die intelligente LED-Lichterkette\n ",
+            "The module is used to integrate and control Twinkly devices (smart LED light chains) in IP-Symcon.": "Das Modul dient zur Einbindung und Steuerung von Twinkly Geräten (Smarte LED Lichterketten) in IP-Symcon.",
+            "Mode": "Modus",
+            "Brightness": "Helligkeit",
+            "Switch": "Schalter",
+            "Device ...": "Gerät ...",
+            "IP address:": "IP-Adresse:",
+            "Wrong device IP format (e.g. 192.168.1.11)!": "Geräte IP im falschen Format (z.B.: 192.168.1.11)!",
+            "Timing ...": "Zeitschaltung ...",
+            "NOW": "JETZT",
+            "Off/On": "Aus/Ein",
+            "Timer ON:": "Einschalten:",
+            "Timer OFF:": "Ausschalten:",
+            "Advanced settings ...": "Erweiterte Einstellungen ...",
+            "Create a normal switch variable in addition to switching the mode (e.g. for WebFront)?": "Zusätzlich zur Schalten des Modus noch eine normale Schaltervariable anlegen (z.B. für Webfront)?",
+            "Additional light switch!": "Zusätzlicher Lichtschalter!",
+            "MQTT configuration ...": "MQTT Konfiguration ...",
+            "Smart LED Light active.": "Smarte LED Lichterkette ist aktiv.",
+            "Use the buttons to obtain information about the device.": "Verwenden Sie die Schaltflächen, um Informationen über das Gerät zu erhalten.",
+            "Use the button to synchronize the current device brightness.": "Verwenden Sie die Schaltfläche, um die aktuelle Gerätehelligkeitkeit zu synchronisieren.",
+            "Use the form to assign a new name to the device (max. 32 characters).": "Verwenden Sie das Formular, um dem Gerät einen neuen Namen zu geben (max. 32 Zeichen).",
+            "Name could not be changed!": "Name konnte nicht geändert werden!",
+            "Name was changed successfully!": "Der Name wurde erfolgreich geändert!",
+            "New device name:": "Neuer Gerätename:",
+            "Device-Name": "Geräte-Name",
+            "CHANGE": "ÄNDERN",
+            "DEVICE INFO": "GERÄTEINFOS",
+            "FIRMWARE": "FIRMWARE",
+            "NETWORK STATUS": "NETZWERKSTATUS",
+            "BRIGHTNESS": "HELLIGKEIT",
+            "Firmware: ": "Firmware: ",
+            "Brightness: ": "Helligkeit: ",
+            "Login error!": "Login Fehler!",
+            "Error occurred!": "Fehler aufgetreten!",
+            "On": "An",
+            "Off": "Aus",
+            "Demo": "Demo",
+            "Realtime": "Echtzeit"
+        }
     }
-  }
 }

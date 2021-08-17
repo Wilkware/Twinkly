@@ -1,10 +1,13 @@
 {
-  "translations": {
-    "de": {
-      "Twinkly - Smart LED lights": "Twinkly - Smarte LED Lichterketten",
-      "IP Address": "IP Adresse",
-      "Device name": "Geräte Name",
-      "Device state": "Gerätestatus"
+    "translations": {
+        "de": {
+            "\nTwinkly Device Search\n ": "\nTwinkly Gerätesuche\n ",
+            "Using this configurator, you can select from the list of currently found devices and create an instance for a new device or check an existing instance.": "Mit Hilfe dieser Konfigurators kann man aus der Liste der aktuell gefundenen Geräte auswählen und eine Instanz für ein neues Gerät erstellen oder eine vorhandene Instanz prüfen.",
+            "Twinkly - Smart LED lights": "Twinkly - Smarte LED Lichterketten",
+            "Target Category:": "Zielkategorie:",
+            "IP Address": "IP Adresse",
+            "Device name": "Gerätename",
+            "Device state": "Gerätestatus"
+        }
     }
-  }
 }
