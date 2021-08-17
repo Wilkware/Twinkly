@@ -42,4 +42,15 @@ trait DebugHelper
             parent::SendDebug($msg, $data, $format);
         }
     }
+
+    /**
+     * Wrapper for default modul log messages
+     *
+     * @param string $msg  Title of the log message.
+     * @param int    $type message typ (KL_DEBUG| KL_ERROR| KL_MESSAGE| KL_NOTIFY (default)| KL_WARNING).
+     */
+    protected function LogMessage($msg, $type = KL_NOTIFY)
+    {
+        parent::LogMessage($msg, $type);
+    }
 }

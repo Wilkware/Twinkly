@@ -161,17 +161,7 @@ trait TwinklyHelper
      */
     private function doGestalt($ip, $token)
     {
-        $url = "http://$ip/xled/v1/gestalt";
-
-        $response = json_encode([]);
-
-        $err = $this->doRequest($url, $token, null, $response);
-
-        if ($err) {
-            $json = json_decode($response, true);
-        }
-
-        return $err ? $json : $err;
+        return $this->doAPI($ip, $token, 'gestalt');
     }
 
     /**
@@ -180,25 +170,66 @@ trait TwinklyHelper
      * HTTP request
      * GET /xled/v1/fw/version
      *
-     * The response will be an object.
-     *
      * The response will be an object:
      *  version             - (string) firmware_version
      *  code                - Application return code.
      */
     private function doVersion($ip)
     {
-        $url = "http://$ip/xled/v1/fw/version";
+        return $this->doAPI($ip, null, 'fw/version');
+    }
 
-        $response = json_encode([]);
+    /**
+     * doNetwork - Gets network mode operation..
+     *
+     * HTTP request
+     * GET /xled/v1/network/status
+     *
+     * The response will be an object:
+     *  mode                - (enum) 1 or 2
+     *  station             - (object)
+     *  ap                  - (object)
+     *  code                - Application return code.
+     *
+     *  Contents of object station for firmware family “G” since firmware version 2.4.21 and “F” since 2.2.1:
+     *    ssid              - (string), SSID of a WiFi network to connect to. If empty string is passed it defaults to prefix ESP_ instead of Twinkly_.
+     *    ip                - (string), IP address of the device
+     *    gw                - (string), IP address of the gateway
+     *    mask              - (string), subnet mask
+     *  Contents of object ap:
+     *    ssid              - (string), SSID of the device
+     *    channel           - (integer), channel number
+     *    ip                - (string), IP address
+     *    enc               - (enum), 0 for no encryption, 2 for WPA1, 3 for WPA2, 4 for WPA1+WPA2
+     *    ssid_hidden       - (integer), default 0. Since firmware version 2.4.25.
+     */
+    private function doNetwork($ip, $token)
+    {
+        return $this->doAPI($ip, $token, 'network/status');
+    }
 
-        $err = $this->doRequest($url, null, null, $response);
-
-        if ($err) {
-            $json = json_decode($response, true);
-        }
-
-        return $err ? $json : $err;
+    /**
+     * doName - Get/Set the device name.
+     *
+     * HTTP request
+     * GET /xled/v1/device_name
+     *
+     * The response will be an object:
+     *  name    - (string) Device name.
+     *  code    - Application return code.
+     *
+     * HTTP request
+     * POST /xled/v1/device_name
+     *
+     * Parameters as JSON object:
+     *  name    - (string) Desired device name. At most 32 characters.
+     *
+     * The response will be an object:
+     *  code    - Application return code. 1103 if too long.
+     */
+    private function doName($ip, $token, $body = null)
+    {
+        return $this->doAPI($ip, $token, 'device_name', $body);
     }
 
     /**
@@ -218,23 +249,9 @@ trait TwinklyHelper
      * The response will be an object:
      *  code    - Application return code.
      */
-    private function doMode($ip, $token, $mode = null)
+    private function doMode($ip, $token, $body = null)
     {
-        $url = "http://$ip/xled/v1/led/mode";
-
-        $response = json_encode([]);
-        if ($mode == null) {
-            $err = $this->doRequest($url, $token, null, $response);
-        } else {
-            $request = json_encode($mode);
-            $err = $this->doRequest($url, $token, $request, $response);
-        }
-
-        if ($err) {
-            $json = json_decode($response, true);
-        }
-
-        return $err ? $json : $err;
+        return $this->doAPI($ip, $token, 'led/mode', $body);
     }
 
     /**
@@ -261,8 +278,51 @@ trait TwinklyHelper
      */
     private function doBrightness($ip, $token, $body = null)
     {
-        $url = "http://$ip/xled/v1/led/out/brightness";
+        return $this->doAPI($ip, $token, 'led/out/brightness', $body);
+    }
 
+    /**
+     * doTimer - Get/Set time when lights should be turned on and time to turn them off.
+     *
+     * HTTP request
+     * GET /xled/v1/led/timer
+     *
+     * The response will be an object:
+     *  time_now - (integer) current time in seconds after midnight.
+     *  time_on  - (number) time when to turn lights on in seconds after midnight. -1 if not set.
+     *  time_off - (number) time when to turn lights off in seconds after midnight. -1 if not set.
+     *  code     - Application return code.
+     *
+     * HTTP request
+     * POST /xled/v1/led/timer
+     *
+     * Parameters as JSON object:
+     *  time_now - (integer) current time in seconds after midnight.
+     *  time_on  - (number) time when to turn lights on in seconds after midnight. -1 if not set.
+     *  time_off - (number) time when to turn lights off in seconds after midnight. -1 if not set.
+     *
+     * The response will be an object:
+     *  code    - Application return code.
+     */
+    private function doTimer($ip, $token, $body = null)
+    {
+        return $this->doAPI($ip, $token, 'timer', $body);
+    }
+
+    /**
+     * doAPI - Get/Set device data.
+     *
+     * $ip      - IP of the device
+     * $tocken  - valid authenticaed tocken
+     * $path    - API url path
+     * body     - request parameter to post
+     *
+     * returns JSON data, otherwise false.
+     */
+    private function doAPI($ip, $token, $path, $body = null)
+    {
+        $url = "http://$ip/xled/v1/" . $path;
+        $this->SendDebug(__FUNCTION__, $url, 0);
         $response = json_encode([]);
         if ($body == null) {
             $err = $this->doRequest($url, $token, null, $response);
@@ -287,16 +347,16 @@ trait TwinklyHelper
     private function doRequest($url, $token, $request, &$response, $method = 'GET')
     {
         $ret = false;
-
+        // prepeare header
         $headers = [
             'Content-Type: application/json',
             'Content-Length: ' . (($request == null) ? 0 : strlen($request)),
         ];
-
+        // prepeare token
         if ($token != null) {
             $headers[] = 'X-Auth-Token: ' . $token;
         }
-
+        // prepeare curl call
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
         if ($request != null) {
@@ -309,17 +369,23 @@ trait TwinklyHelper
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
         $response = curl_exec($curl);
         curl_close($curl);
-
+        // evaluate response
         if ($response != null) {
             $ret = true;
             $json = json_decode($response, true);
-            if (isset($json['code']) && $json['code'] != 1000) {
-                $error = sprintf('Request failed: (%d) - URL: %s - Request: %s', $json['code'], $url, $request);
-                $this->SendDebug('doRequest', $error, 0);
+            if (isset($json['code'])) {
+                if ($json['code'] != 1000) {
+                    $error = sprintf('Request failed: (%d) - URL: %s - Request: %s', $json['code'], $url, $request);
+                    $this->SendDebug(__FUNCTION__, $error, 0);
+                    $ret = false;
+                }
+            } else {
+                $error = sprintf('Request failed for URL: %s - Response: %s', $url, $response);
+                $this->SendDebug(__FUNCTION__, $error, 0);
                 $ret = false;
             }
         }
-
+        // return result
         return $ret;
     }
 }

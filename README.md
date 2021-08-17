@@ -2,7 +2,7 @@
 
 [![Version](https://img.shields.io/badge/Symcon-PHP--Modul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Product](https://img.shields.io/badge/Symcon%20Version-5.2-blue.svg)](https://www.symcon.de/produkt/)
-[![Version](https://img.shields.io/badge/Modul%20Version-2.0.20201016-orange.svg)](https://github.com/Wilkware/IPSymconTwinkly)
+[![Version](https://img.shields.io/badge/Modul%20Version-2.1.20210801-orange.svg)](https://github.com/Wilkware/IPSymconTwinkly)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![Actions](https://github.com/Wilkware/IPSymconTwinkly/workflows/Check%20Style/badge.svg)](https://github.com/Wilkware/IPSymconTwinkly/actions)
 
@@ -48,19 +48,41 @@ Die Gerätesuche ist über die Glocke oben rechts in der Konsole aufrufbar. Dort
 
 Unter "Instanz hinzufügen" ist das 'Twinkly Device'-Modul (Alias: _Smart LED Lichterkette_) unter dem Hersteller 'Ledworks' aufgeführt.
 
-_Konfigurationsseite_:
+__Konfigurationsseite__:
 
-Wird das Gerät direkt über die Gerätesuche(Discovery) erstellt, sind keine weiteren Konfigurationen notwendig. Die IP-Adresse des Gerätes wird automatisch hinterlegt.
-Werden Twinkly Geräte manuell angelegt, ist die entsprechende IP-Adresse einzutragen.
+Einstellungsbereich:
+
+> Gerät ...
 
 Name                       | Beschreibung
 -------------------------- | ---------------------------------
 Geräte IP                  | IP-Adresse der Lichterkette
+
+> Zeitschaltung ...
+
+Name                       | Beschreibung
+-------------------------- | ---------------------------------
+Aus/Ein                    | Zeitschaltung/Timer aktivieren bzw. deaktivieren.
+Einschalten                | Tägliche Einschaltzeit.
+Ausschalten                | Tägliche Ausschaltzeit.
+JETZT                      | Trägt die aktuelle Uhrzeit als Start- oder Endezeit ein
+
+> Erweiterte Einstellungen ...
+
+Name                       | Beschreibung
+-------------------------- | ---------------------------------
 Zusätzlicher Lichtschalter | Zusätzlicher Schalter für einfaches An/Aus
 
-Über die Schaltflächen "HELLIGKEIT" kann die aktuelle Helligkeit syncronisiert werden (z.B. wenn von App eingestellt wurde).
-Über die Schaltflächen "FIRMWARE" kann die Version des Gerätes ausgelesen und angezeigt werden.
-Gleiches gilt für die Gerätedaten über die Schaltfläche "GERÄTEINFOS".
+Aktionsbereich:
+
+Aktion            | Beschreibung
+----------------- | ------------------------------------------------------------
+HELLIGKEIT        | Über die Schaltflächen kann die aktuelle Helligkeit syncronisiert werden (z.B. wenn von App geändert wurde).
+GERÄTEINFOS       | Über die Schaltflächen können die verschiedensten gerätespezifischen Einstellungen abgerufen werden.
+FIRMWARE          | Über die Schaltflächen kann die Version des Gerätes ausgelesen und angezeigt werden.
+NETZWERKSTATUS    | Über die Schaltflächen können die hinterlegten Netzwerkeinstellungen angezeigt werden.
+Neuer Gerätenamen | Zeigt den aktuellen (nach dem Öffnen des Formulares) Namen an bzw. kann in einen neuen Namen geändert werden.
+ÄNDERN            | Setzt den Gerätenamen (Alias) neu.
 
 ### 5. Statusvariablen und Profile
 
@@ -136,7 +158,52 @@ Die Funktion liefert als Rückgabewert einen String (Firmware: x.yy.zz).
 
 __Beispiel__: `TWICKLY_Version(12345);` Ausgabe "Firmware: 2.4.16".
 
+```php
+void TWICKLY_Network(int $InstanzID);
+```
+
+Liest die eingestellten Netzwerkinformationen aus.
+Die Funktion liefert als Rückgabewert einen (sprintf) formatierten String.
+
+__Beispiel__: `TWICKLY_Network(12345);`
+
+> Network mode: 1 (Station)  
+> Station:  
+> SSID: ssid  
+> IP: 192.168.1.9  
+> Gateway: 192.168.1.1  
+> Mask: 255.255.255.0  
+> RSSI: -54 db  
+> Access Point:  
+> SSID: Twinkly_DE99EF  
+> IP: 192.168.4.1  
+> Channel: 1  
+> Encryption: NONE  
+> SSID Hidden: false  
+> Max connections: 4  
+
+```php
+void TWICKLY_DeviceName(int $InstanzID, string $NewName);
+```
+
+Setzt den Gerätenamen (Alias) neu.  
+Die Funktion liefert als Rückgabewert einen String (Erfolgsmeldung).
+
+__Beispiel__: `TWICKLY_DeviceName(12345, 'Lichterkette');` Ausgabe "Der Name wurde erfolgreich geändert!".
+
 ### 8. Versionshistorie
+
+v2.1.20210801
+
+* _NEU_: Konfigurationsformular überarbeitet und vereinheitlicht
+* _NEU_: Zeitschaltung (Timer) hinzugefügt
+* _NEU_: Abruf der Netzwerkinformation hinzugefügt
+* _NEU_: Änderung des Gerätenamens (Alias) hinzugefügt
+* _NEU_: Twinkly-API erweitert
+* _FIX_: Übersetzungen nachgezogen
+* _FIX_: Interne Bibliotheken überarbeitet und vereinheitlicht
+* _FIX_: Debug Meldungen überarbeitet
+* _FIX_: Dokumentation überarbeitet
 
 v2.0.20201016
 
@@ -161,13 +228,15 @@ v1.0.20200501
 
 ## Entwickler
 
-* Heiko Wilknitz ([@wilkware](https://github.com/wilkware))
+Seit nunmehr über 10 Jahren fasziniert mich das Thema Haussteuerung. In den letzten Jahren betätige ich mich auch intensiv in der IP-Symcon Community und steuere dort verschiedenste Skript und Module bei. Ihr findet mich dort unter dem Namen @pitti ;-)
+
+[![GitHub](https://img.shields.io/badge/GitHub-@wilkware-blueviolet.svg?logo=github)](https://wilkware.github.io/)
 
 ## Spenden
 
-Die Software ist für die nicht kommzerielle Nutzung kostenlos, Schenkungen als Unterstützung für den Entwickler bitte hier:  
+Die Software ist für die nicht kommzerielle Nutzung kostenlos, über eine Spende bei Gefallen des Moduls würde ich mich freuen.
 
-[![License](https://img.shields.io/badge/Einfach%20spenden%20mit-PayPal-blue.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8816166)
+[![PayPal](https://img.shields.io/badge/PayPal-spenden-blue.svg?logo=paypal)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8816166)
 
 ## Lizenz
 

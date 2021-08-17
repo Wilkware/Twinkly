@@ -2,7 +2,8 @@
 
 declare(strict_types=1);
 
-require_once __DIR__ . '/../libs/traits.php';  // General helper functions
+// Generell funktions
+require_once __DIR__ . '/../libs/_traits.php';
 
 // CLASS TwinklyDiscovery
 class TwinklyDiscovery extends IPSModule
@@ -22,6 +23,8 @@ class TwinklyDiscovery extends IPSModule
     {
         //Never delete this line!
         parent::Create();
+        // Properties
+        $this->RegisterPropertyInteger('TargetCategory', 0);
     }
 
     /**
@@ -42,19 +45,22 @@ class TwinklyDiscovery extends IPSModule
     {
         $form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
         $devices = $this->DiscoverDevices();
-
+        // Save location
+        $location = $this->GetPathOfCategory($this->ReadPropertyInteger('TargetCategory'));
+        // Build configuration list values
         if (!empty($devices)) {
             foreach ($devices as $device) {
                 $values[] = [
-                    'instanceID' => $this->GetTwinklyInstances($device['host']),
-                    'host'       => $device['host'],
-                    'name'       => $device['name'],
-                    'state'      => $device['state'],
-                    'create'     => [
+                    'instanceID'    => $this->GetTwinklyInstances($device['host']),
+                    'host'          => $device['host'],
+                    'name'          => $device['name'],
+                    'state'         => $device['state'],
+                    'create'        => [
                         [
                             'moduleID'      => '{A8ACEF24-02E6-A5A6-8409-64B16A8A3DC0}',
-                            'configuration' => [
-                                'Host' => $device['host'], ], ],
+                            'configuration' => ['Host' => $device['host']],
+                            'location'      => $location,
+                        ],
                     ],
                 ];
             }
@@ -112,5 +118,28 @@ class TwinklyDiscovery extends IPSModule
             }
         }
         return 0;
+    }
+
+    /**
+     * Returns the ascending list of category names for a given category id
+     *
+     * @param int $categoryId Category ID.
+     * @return array List of reverse catergory names.
+     */
+    private function GetPathOfCategory(int $categoryId): array
+    {
+        if ($categoryId === 0) {
+            return [];
+        }
+
+        $path[] = IPS_GetName($categoryId);
+        $parentId = IPS_GetObject($categoryId)['ParentID'];
+
+        while ($parentId > 0) {
+            $path[] = IPS_GetName($parentId);
+            $parentId = IPS_GetObject($parentId)['ParentID'];
+        }
+
+        return array_reverse($path);
     }
 }
