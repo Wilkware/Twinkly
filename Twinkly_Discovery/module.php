@@ -51,10 +51,10 @@ class TwinklyDiscovery extends IPSModule
         if (!empty($devices)) {
             foreach ($devices as $device) {
                 $values[] = [
-                    'instanceID' => $this->GetTwinklyInstances($device['host']),
-                    'host'       => $device['host'],
-                    'name'       => $device['name'],
-                    'state'      => $device['state'],
+                    'instanceID'    => $this->GetTwinklyInstances($device['host']),
+                    'host'          => $device['host'],
+                    'name'          => $device['name'],
+                    'state'         => $device['state'],
                     'create'        => [
                         [
                             'moduleID'      => '{A8ACEF24-02E6-A5A6-8409-64B16A8A3DC0}',

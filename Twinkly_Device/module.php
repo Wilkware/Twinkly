@@ -69,7 +69,7 @@ class TwinklyDevice extends IPSModule
         // Get Form
         $form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
         // Timer
-        if(!empty($timer)) {
+        if (!empty($timer)) {
             $form['elements'][3]['items'][0]['items'][2]['value'] = $timer['on'];
             $form['elements'][3]['items'][0]['items'][4]['value'] = $timer['off'];
         } else {
@@ -99,7 +99,7 @@ class TwinklyDevice extends IPSModule
         } else {
             $this->SetStatus(201);
         }
-        // Timer 
+        // Timer
         $this->SetTimer();
         // Aditionally Switch
         $this->MaintainVariable('Switch', $this->Translate('Switch'), VARIABLETYPE_INTEGER, 'Twinkly.Switch', 0, $switch);
@@ -142,62 +142,6 @@ class TwinklyDevice extends IPSModule
             default:
             throw new Exception('Invalid Ident');
         }
-    }
-
-    /**
-     * Sets the device mode.
-     * 
-     * @param int $value Mode value.
-     */
-    private function SetMode(int $value)
-    {
-        // Safty check
-        if ($value < 0 || $value > 3) {
-            // out of range
-            $this->SendDebug(__FUNCTION__, 'Out of range' . $value, 0);
-            return;
-        }
-        if ($this->CheckLogin() === false) {
-            $this->SendDebug(__FUNCTION__, 'Login error!', 0);
-            return;
-        }
-        // Extract assoziated mode string
-        $mode = $this->assoMODE[$value][4];
-        $this->SendDebug(__FUNCTION__, 'Selected mode: ' . $mode, 0);
-        // Host
-        $host = $this->ReadPropertyString('Host');
-        // Token
-        $token = $this->ReadAttributeString('Token');
-        // Mode
-        $set = ['mode' => $mode];
-        // Request
-        $this->doMode($host, $token, $set);
-    }
-
-    /**
-     * Sets the brightness level.
-     *
-     * @param int $value Brightness value.
-     */
-    private function SetBrightness(int $value)
-    {
-        if ($this->CheckLogin() === false) {
-            $this->SendDebug(__FUNCTION__, 'Login error!', 0);
-            return;
-        }
-        // Debug
-        $this->SendDebug(__FUNCTION__, 'Set brightness to: ' . $value, 0);
-        // Host
-        $host = $this->ReadPropertyString('Host');
-        // Token
-        $token = $this->ReadAttributeString('Token');
-        // Brightness
-        $body = [
-            'mode'   => 'enabled',
-            'value'  => $value,
-        ];
-        // Request
-        $this->doBrightness($host, $token, $body);
     }
 
     /**
@@ -312,11 +256,11 @@ class TwinklyDevice extends IPSModule
         $json = $this->doNetwork($host, $token);
         $this->SendDebug(__FUNCTION__, $json);
 
-        $enc = [0 => "NONE", 2 => 'WPA1', 3 => 'WPA2', 4 => 'WPA1+WPA2'];
+        $enc = [0 => 'NONE', 2 => 'WPA1', 3 => 'WPA2', 4 => 'WPA1+WPA2'];
 
         return sprintf(
             "Network mode: %s\nStation:\n\tSSID: %s\n\tIP: %s\n\tGateway: %s\n\tMask: %s\n\tRSSI: %d db\nAccess Point:\n\tSSID: %s\n\tIP: %s\n\tChannel: %s\n\tEncryption: %s\n\tSSID Hidden: %s\n\tMax connections: %d",
-            $json['mode'] == 1?"1 (Station)":"2 (Access Point)",
+            $json['mode'] == 1 ? '1 (Station)' : '2 (Access Point)',
             $json['station']['ssid'],
             $json['station']['ip'],
             $json['station']['gw'],
@@ -326,7 +270,7 @@ class TwinklyDevice extends IPSModule
             $json['ap']['ip'],
             $json['ap']['channel'],
             $enc[$json['ap']['enc']],
-            $json['ap']['ssid_hidden']?"true":"false",
+            $json['ap']['ssid_hidden'] ? 'true' : 'false',
             $json['ap']['max_connections']
         );
     }
@@ -354,17 +298,72 @@ class TwinklyDevice extends IPSModule
         ];
         // Request
         $json = $this->doName($host, $token, $body);
-        if($json === false) {
-            return $this->Translate("Name could not be changed!");
-        }
-        else {
-            return $this->Translate("Name was changed successfully!");
+        if ($json === false) {
+            return $this->Translate('Name could not be changed!');
+        } else {
+            return $this->Translate('Name was changed successfully!');
         }
     }
 
     /**
+     * Sets the device mode.
+     *
+     * @param int $value Mode value.
+     */
+    private function SetMode(int $value)
+    {
+        // Safty check
+        if ($value < 0 || $value > 3) {
+            // out of range
+            $this->SendDebug(__FUNCTION__, 'Out of range' . $value, 0);
+            return;
+        }
+        if ($this->CheckLogin() === false) {
+            $this->SendDebug(__FUNCTION__, 'Login error!', 0);
+            return;
+        }
+        // Extract assoziated mode string
+        $mode = $this->assoMODE[$value][4];
+        $this->SendDebug(__FUNCTION__, 'Selected mode: ' . $mode, 0);
+        // Host
+        $host = $this->ReadPropertyString('Host');
+        // Token
+        $token = $this->ReadAttributeString('Token');
+        // Mode
+        $set = ['mode' => $mode];
+        // Request
+        $this->doMode($host, $token, $set);
+    }
+
+    /**
+     * Sets the brightness level.
+     *
+     * @param int $value Brightness value.
+     */
+    private function SetBrightness(int $value)
+    {
+        if ($this->CheckLogin() === false) {
+            $this->SendDebug(__FUNCTION__, 'Login error!', 0);
+            return;
+        }
+        // Debug
+        $this->SendDebug(__FUNCTION__, 'Set brightness to: ' . $value, 0);
+        // Host
+        $host = $this->ReadPropertyString('Host');
+        // Token
+        $token = $this->ReadAttributeString('Token');
+        // Brightness
+        $body = [
+            'mode'   => 'enabled',
+            'value'  => $value,
+        ];
+        // Request
+        $this->doBrightness($host, $token, $body);
+    }
+
+    /**
      * Validate the token and login to renew it.
-     * 
+     *
      * @return bool true if successful, otherwise false.
      */
     private function CheckLogin()
@@ -417,7 +416,7 @@ class TwinklyDevice extends IPSModule
         $token = $this->ReadAttributeString('Token');
         // Request
         $json = $this->doName($host, $token);
-        if($json === false) {
+        if ($json === false) {
             return '';
         }
         return $json['name'];
@@ -447,12 +446,12 @@ class TwinklyDevice extends IPSModule
             return [];
         }
         $hours = floor($json['time_on'] / 3600);
-        $mins  = floor($json['time_on'] / 60 % 60);
-        $secs  = floor($json['time_on'] % 60);
+        $mins = floor($json['time_on'] / 60 % 60);
+        $secs = floor($json['time_on'] % 60);
         $on = sprintf('{"hour": %d,"minute": %d,"second": %d}', $hours, $mins, $secs);
         $hours = floor($json['time_off'] / 3600);
-        $mins  = floor($json['time_off'] / 60 % 60);
-        $secs  = floor($json['time_off'] % 60);
+        $mins = floor($json['time_off'] / 60 % 60);
+        $secs = floor($json['time_off'] % 60);
         $off = sprintf('{"hour": %d,"minute": %d,"second": %d}', $hours, $mins, $secs);
         return ['on' => $on, 'off' => $off];
     }
@@ -472,7 +471,7 @@ class TwinklyDevice extends IPSModule
         $timer = $this->ReadPropertyBoolean('TimerCheck');
         $on = -1;
         $off = -1;
-        if($timer) {
+        if ($timer) {
             $time = $this->ReadPropertyString('TimerOn');
             $json = json_decode($time, true);
             $on = ($json['hour'] * 3600) + ($json['minute'] * 60) + ($json['second']);
@@ -488,15 +487,15 @@ class TwinklyDevice extends IPSModule
         $token = $this->ReadAttributeString('Token');
         // Timer
         $body = [
-            'time_now'  => time() - strtotime("today"),
-            'time_on'  => $on,
+            'time_now'  => time() - strtotime('today'),
+            'time_on'   => $on,
             'time_off'  => $off,
         ];
-       // Request
+        // Request
         $json = $this->doTimer($host, $token, $body);
     }
 
-     /**
+    /**
      * User has switch timing check box.
      *
      * @param bool $value check value.
@@ -508,9 +507,9 @@ class TwinklyDevice extends IPSModule
         $this->UpdateFormField('TimerOff', 'enabled', $value);
         $this->UpdateFormField('TimerNowOn', 'enabled', $value);
         $this->UpdateFormField('TimerNowOff', 'enabled', $value);
-    }   
+    }
 
-     /**
+    /**
      * User has click on NOW button.
      *
      * @param string $value ON or OFF.
@@ -522,8 +521,8 @@ class TwinklyDevice extends IPSModule
         $h = intval(date('H', $ts));
         $m = intval(date('i', $ts));
         $s = intval(date('s', $ts));
-       $this->UpdateFormField('Timer' . $value, 'value', '{"hour":' . $h . ',"minute":' .$m .',"second":' . $s . '}');
-    }   
+        $this->UpdateFormField('Timer' . $value, 'value', '{"hour":' . $h . ',"minute":' . $m . ',"second":' . $s . '}');
+    }
 
     /**
      * Update a boolean value.
