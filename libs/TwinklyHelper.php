@@ -190,7 +190,7 @@ trait TwinklyHelper
      *  station             - (object)
      *  ap                  - (object)
      *  code                - Application return code.
-     * 
+     *
      *  Contents of object station for firmware family “G” since firmware version 2.4.21 and “F” since 2.2.1:
      *    ssid              - (string), SSID of a WiFi network to connect to. If empty string is passed it defaults to prefix ESP_ instead of Twinkly_.
      *    ip                - (string), IP address of the device
@@ -300,10 +300,10 @@ trait TwinklyHelper
      *  time_now - (integer) current time in seconds after midnight.
      *  time_on  - (number) time when to turn lights on in seconds after midnight. -1 if not set.
      *  time_off - (number) time when to turn lights off in seconds after midnight. -1 if not set.
-
-    * The response will be an object:
-    *  code    - Application return code.
-    */
+     *
+     * The response will be an object:
+     *  code    - Application return code.
+     */
     private function doTimer($ip, $token, $body = null)
     {
         return $this->doAPI($ip, $token, 'timer', $body);
@@ -319,7 +319,7 @@ trait TwinklyHelper
      *
      * returns JSON data, otherwise false.
      */
-    private function doAPI($ip, $token, $path, $body=null) 
+    private function doAPI($ip, $token, $path, $body = null)
     {
         $url = "http://$ip/xled/v1/" . $path;
         $this->SendDebug(__FUNCTION__, $url, 0);
@@ -374,7 +374,7 @@ trait TwinklyHelper
             $ret = true;
             $json = json_decode($response, true);
             if (isset($json['code'])) {
-                if($json['code'] != 1000) {
+                if ($json['code'] != 1000) {
                     $error = sprintf('Request failed: (%d) - URL: %s - Request: %s', $json['code'], $url, $request);
                     $this->SendDebug(__FUNCTION__, $error, 0);
                     $ret = false;
