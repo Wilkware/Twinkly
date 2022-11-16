@@ -213,8 +213,7 @@ trait EventHelper
         }
 
         if ($checkonly == false) {
-
-        //Startpunkt wurde zwar gefunden aber die ActionID ist 0 --> vorigen Schaltpunkt suchen
+            //Startpunkt wurde zwar gefunden aber die ActionID ist 0 --> vorigen Schaltpunkt suchen
             if (($startPointFound == true) && ($data['ActionID'] == 0)) {
                 do {
                     $prevEvent = $this->GetWeeklyScheduleInfo($id, $data['StartSysTime'] - 1, true);

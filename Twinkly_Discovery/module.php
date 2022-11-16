@@ -12,9 +12,10 @@ class TwinklyDiscovery extends IPSModule
     use DebugHelper;
 
     // Discovery constant
-    const DISCOVERY_IP = '255.255.255.255';
-    const DISCOVERY_PORT = 5555;
-    const DISCOVERY_MSG = "\x01discover";
+    public const DISCOVERY_IP = '255.255.255.255';
+    public const DISCOVERY_PORT = 5555;
+    public const DISCOVERY_MSG = "\x01discover";
+    public const DISCOVERY_TIMEOUT = 1;
 
     /**
      * Overrides the internal IPS_Create($id) function
@@ -85,7 +86,7 @@ class TwinklyDiscovery extends IPSModule
         // Create UDP Broadcast Socket
         $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
         socket_set_option($sock, SOL_SOCKET, SO_BROADCAST, 1);
-        socket_set_option($sock, SOL_SOCKET, SO_RCVTIMEO, ['sec'=>5, 'usec'=>0]);
+        socket_set_option($sock, SOL_SOCKET, SO_RCVTIMEO, ['sec'=>self::DISCOVERY_TIMEOUT, 'usec'=>0]);
         socket_sendto($sock, self::DISCOVERY_MSG, strlen(self::DISCOVERY_MSG), 0, self::DISCOVERY_IP, self::DISCOVERY_PORT);
 
         // Collect all devices

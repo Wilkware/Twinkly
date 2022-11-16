@@ -14,7 +14,7 @@ class TwinklyDevice extends IPSModule
     use TwinklyHelper;
 
     // Token constant
-    const TOKEN_LIFETIME = 14400;
+    public const TOKEN_LIFETIME = 14400;
 
     // Profil array
     private $assoMODE = [
@@ -140,7 +140,7 @@ class TwinklyDevice extends IPSModule
                 $this->SetValueInteger($ident, $value);
                 break;
             default:
-            throw new Exception('Invalid Ident');
+                throw new Exception('Invalid Ident');
         }
     }
 
