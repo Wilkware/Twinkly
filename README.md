@@ -1,8 +1,8 @@
 # Twinkly
 
 [![Version](https://img.shields.io/badge/Symcon-PHP--Modul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Product](https://img.shields.io/badge/Symcon%20Version-5.2-blue.svg)](https://www.symcon.de/produkt/)
-[![Version](https://img.shields.io/badge/Modul%20Version-2.1.20210801-orange.svg)](https://github.com/Wilkware/IPSymconTwinkly)
+[![Product](https://img.shields.io/badge/Symcon%20Version-6.0-blue.svg)](https://www.symcon.de/produkt/)
+[![Version](https://img.shields.io/badge/Modul%20Version-3.0.20221201-orange.svg)](https://github.com/Wilkware/IPSymconTwinkly)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![Actions](https://github.com/Wilkware/IPSymconTwinkly/workflows/Check%20Style/badge.svg)](https://github.com/Wilkware/IPSymconTwinkly/actions)
 
@@ -22,14 +22,15 @@ Ermöglicht die Kommunikation mit den Smart LED Lichterketten _Twinkly_.
 ### 1. Funktionsumfang
 
 * Suchen und Erstellen von Twinkly Geräten (Discovery Modul)
-* Schalten des LED-Betriebsmodus
-* Einstellen der Helligkeit
-* Auslesen aller Geräteinformationen
+* Schalten des LED-Betriebsmodus (+ extended mode)
+* Einstellen der Farbe, Helligkeit, Sättigung und Effekt
+* Auslesen aller Geräte- und Netwerkinformationen
 * Auslesen der Firmware Version
+* Änderung des Gerätenamens
 
 ### 2. Voraussetzungen
 
-* IP-Symcon ab Version 5.2
+* IP-Symcon ab Version 6.0
 
 ### 3. Installation
 
@@ -56,7 +57,7 @@ Einstellungsbereich:
 
 Name                       | Beschreibung
 -------------------------- | ---------------------------------
-Geräte IP                  | IP-Adresse der Lichterkette
+IP-Adresse                 | Netzwerkadresse der Lichterkette
 
 > Zeitschaltung ...
 
@@ -71,13 +72,16 @@ JETZT                      | Trägt die aktuelle Uhrzeit als Start- oder Endezei
 
 Name                       | Beschreibung
 -------------------------- | ---------------------------------
-Zusätzlicher Lichtschalter | Zusätzlicher Schalter für einfaches An/Aus
+AKtivieren des erweiterten Modus | Drüber können zusätzliche (_ungetestete_) LED Betriebsmodi freigeschalten werden (Musicreactive, Playlist & Realtime)!
 
 Aktionsbereich:
 
 Aktion            | Beschreibung
 ----------------- | ------------------------------------------------------------
 HELLIGKEIT        | Über die Schaltflächen kann die aktuelle Helligkeit syncronisiert werden (z.B. wenn von App geändert wurde).
+SÄTTIGUNG         | Über die Schaltflächen kann die aktuelle Sättigung  syncronisiert werden (z.B. wenn von App geändert wurde).
+FARBE             | Über die Schaltflächen kann die aktuelle Frabe syncronisiert werden (z.B. wenn von App geändert wurde).
+EFFEKT            | Über die Schaltflächen kann der aktuelle Effekt syncronisiert werden.
 GERÄTEINFOS       | Über die Schaltflächen können die verschiedensten gerätespezifischen Einstellungen abgerufen werden.
 FIRMWARE          | Über die Schaltflächen kann die Version des Gerätes ausgelesen und angezeigt werden.
 NETZWERKSTATUS    | Über die Schaltflächen können die hinterlegten Netzwerkeinstellungen angezeigt werden.
@@ -90,36 +94,63 @@ Die Statusvariablen werden automatisch angelegt. Das Löschen einzelner kann zu 
 
 Name              | Typ       | Beschreibung
 ------------------| --------- | ----------------
+Schalter          | Integer   | Schalter (An/Aus)
 Modus             | Integer   | LED-Betriebsmodus
-Brightness        | Integer   | Helligkeitswert
-(Switch)          | Integer   | Schalter (An/Aus)
+Farbe             | Integer   | Farbwert
+Effekt            | Integer   | Effektauswahl (1..5)
+Brightness        | Integer   | Helligkeitswert (0..100%)
+Sättigung         | Integer   | Sättigungswert (0..100%)
 
 Folgendes Profil wird angelegt:
 
 Name                 | Typ       | Beschreibung
 -------------------- | --------- | ----------------
-Twinkly.Mode         | Integer   | LED-Betriebsmodus (0=Aus, 1=An, 2=Demo, 3=Echtzeit)
 Twinkly.Switch       | Integer   | LED-Betriebsmodus (0=Aus, 1=An)
-
-> Aus(off) - schaltet Licht aus  
-> An(movie) - spielt vordefinierten oder hochgeladenen Effekt ab  
-> Demo(demo) - startet eine vordefinierte Sequenz von Effekten, die nach wenigen Sekunden geändert werden  
-> Echtzeit(rt) - Effekt in Echtzeit erhalten  
+Twinkly.Mode         | Integer   | LED-Betriebsmodus (0=Color, 1=Effekt, 2=Film, 3=Demo)
+Twinkly.ModeEx       | Integer   | Extended LED-Betriebsmodus (0=Color, 1=Effekt, 2=Film, 3=Demo, 4=Music Reactive, 5=Playlist, 6=Echtzeit)
+Twinkly.Effect       | Integer   | Vordefinierte Effekte (1..5)
 
 ### 6. WebFront
 
-Die pro Twinkly Gerät erzeugten Variablen _Modus_, _Helligkeit_ und _Schalter_ können direkt ins Webfront verlingt werden.
+Die pro Twinkly Gerät erzeugten Variablen können direkt ins Webfront verlingt werden.
 
 ### 7. PHP-Befehlsreferenz
+
+```php
+void TWICKLY_Color(int $InstanzID);
+```
+
+Liest den aktuell am Gerät eingestelten Farbwert aus und synchronisert ihn mit der dazugehörigen Statusvariable.  
+Die Funktion liefert als Rückgabewert einen String (Farbe: 0xRRGGBB (\<Integer-wert\>)).
+
+__Beispiel__: `TWICKLY_Color(12345);` Ausgabe "Helligkeit: 100%".
+
+```php
+void TWICKLY_Effect(int $InstanzID);
+```
+
+Liest den aktuell am Gerät hinterlegten Effekt aus und synchronisert ihn mit der dazugehörigen Statusvariable.  
+Die Funktion liefert als Rückgabewert einen String (Effekt: x (\<uuid\>)).
+
+__Beispiel__: `TWICKLY_Brightness(12345);` Ausgabe "Helligkeit: 100%".
 
 ```php
 void TWICKLY_Brightness(int $InstanzID);
 ```
 
-Liest die aktuell am Gerät hinterlegten Helligkeitswert aus.  
+Liest den aktuell am Gerät hinterlegten Helligkeitswert aus und synchronisert ihn mit der dazugehörigen Statusvariable.  
 Die Funktion liefert als Rückgabewert einen String (Helligkeit: xy%).
 
 __Beispiel__: `TWICKLY_Brightness(12345);` Ausgabe "Helligkeit: 100%".
+
+```php
+void TWICKLY_Saturation(int $InstanzID);
+```
+
+Liest de aktuell am Gerät hinterlegten Sättigungswert aus und synchronisert ihn mit der dazugehörigen Statusvariable.  
+Die Funktion liefert als Rückgabewert einen String (Sättigung: xy%).
+
+__Beispiel__: `TWICKLY_Saturation(12345);` Ausgabe "Helligkeit: 100%".
 
 ```php
 void TWICKLY_Gestalt(int $InstanzID);
@@ -192,6 +223,19 @@ Die Funktion liefert als Rückgabewert einen String (Erfolgsmeldung).
 __Beispiel__: `TWICKLY_DeviceName(12345, 'Lichterkette');` Ausgabe "Der Name wurde erfolgreich geändert!".
 
 ### 8. Versionshistorie
+
+v3.0.20221201
+
+* _NEU_: Trennung von Ein/Aus-Schaltung und Änderung des Betriebsmodus
+* _NEU_: Betriebsmodus "Farbe" und "Effekt" konfiguriebar hinzugefügt
+* _NEU_: Steuerung der Sättigung hinzugfefügt
+* _NEU_: Synchronisation der Statusvariablen erweitert (z.B. wenn von App geändert wurde)
+* _NEU_: Konfigurationsformular überarbeitet und vereinheitlicht
+* _NEU_: Twinkly-API erweitert
+* _NEU_: Nutzung erweiterte Betriebsmodi (experimentell) ermöglicht
+* _FIX_: Interne Bibliotheken überarbeitet und vereinheitlicht
+* _FIX_: Doppelte gefundene Geräte gefixt
+* _FIX_: Dokumentation überarbeitet
 
 v2.1.20210801
 

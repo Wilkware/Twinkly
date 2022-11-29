@@ -9,23 +9,60 @@ require_once __DIR__ . '/../libs/_traits.php';
 class TwinklyDevice extends IPSModule
 {
     // Helper traits
+    use ColorHelper;
     use DebugHelper;
+    use FormatHelper;
     use ProfileHelper;
     use TwinklyHelper;
+    use VariableHelper;
 
     // Token constant
-    public const TOKEN_LIFETIME = 14400;
+    private const TOKEN_LIFETIME = 14400;
+
+    // Echo maps
+    private const TWINKLY_MAP_GESTALT = [
+        ['product_name', 'Product name', 3],
+        ['hardware_version', 'Hardware Version', 3],
+        ['bytes_per_led', 'Bytes per LED', 2],
+        ['hw_id', 'Hardware ID', 3],
+        ['flash_size', 'Flash Size', 2],
+        ['led_type', 'LED Type', 2],
+        ['product_code', 'Product Code', 3],
+        ['fw_family', 'Firmware Family', 3],
+        ['device_name', 'Device Name', 3],
+        ['uptime', 'Uptime', 2, ' ms'],
+        ['mac', 'MAC:', 3],
+        ['uuid', 'UUID', 3],
+        ['max_supported_led', 'Max supported LED', 2],
+        ['number_of_led', 'Number of LED', 2],
+        ['led_profile', 'LED Profile', 3],
+        ['measured_frame_rate', 'Frame Rate', 2],
+        ['frame_rate', 'Measured Frame Rate', 2],
+        ['movie_capacity', 'Movie Capacity', 2],
+        ['copyright', 'Copyright', 3],
+    ];
 
     // Profil array
     private $assoMODE = [
-        [0, 'Aus', '', 0xFF0000, 'off'],
-        [1, 'An', '', 0x00FF00, 'movie'],
-        [2, 'Demo', '', 0xFF8000, 'demo'],
-        [3, 'Echtzeit', '', 0x00FFFF, 'rt'],
+        [0, 'Color', '', 0xFFFF00, 'color'],
+        [1, 'Effect', '', 0x00FF00, 'effect'],
+        [2, 'Movie', '', 0xFF0000, 'movie'],
+        [3, 'Demo', '', 0x00FFFF, 'demo'],
     ];
+
+    private $assoMODEEX = [
+        [0, 'Color', '', 0xFFFF00, 'color'],
+        [1, 'Effect', '', 0x00FF00, 'effect'],
+        [2, 'Movie', '', 0xFF0000, 'movie'],
+        [3, 'Demo', '', 0x00FFFF, 'demo'],
+        [4, 'Musicreactive', '', 0xFF00FF, 'musicreactive'],
+        [5, 'Playlist', '', 0x0000FF, 'playlist'],
+        [6, 'RealTime', '', 0xFF7D00, 'rt'],
+    ];
+
     private $assoSWITCH = [
-        [0, 'Aus', 'Light-0', -1, 'off'],
-        [1, 'An', 'Light-100', 0x00FF00, 'movie'],
+        [0, 'Off', 'Light-0', -1],
+        [1, 'On', 'Light-100', 0x00FF00],
     ];
 
     public function Create()
@@ -33,7 +70,7 @@ class TwinklyDevice extends IPSModule
         //Never delete this line!
         parent::Create();
         $this->RegisterPropertyString('Host', '127.0.0.1');
-        $this->RegisterPropertyBoolean('Switch', false);
+        $this->RegisterPropertyBoolean('AdvancedMode', false);
         $this->RegisterPropertyBoolean('TimerCheck', false);
         $this->RegisterPropertyString('TimerOn', '{"hour": 15,"minute": 0,"second": 0}');
         $this->RegisterPropertyString('TimerOff', '{"hour": 23,"minute": 0,"second": 0}');
@@ -43,15 +80,28 @@ class TwinklyDevice extends IPSModule
         $this->RegisterAttributeInteger('Validate', 0);
 
         // Variablen Profile einrichten
-        $this->RegisterProfile(VARIABLETYPE_INTEGER, 'Twinkly.Mode', 'Remote', '', '', 0, 0, 0, 0, $this->assoMODE);
+        if (IPS_VariableProfileExists('Twinkly.Mode')) {
+            IPS_DeleteVariableProfile('Twinkly.Mode'); // v2 => v3 migration check
+        }
         $this->RegisterProfile(VARIABLETYPE_INTEGER, 'Twinkly.Switch', 'Light', '', '', 0, 0, 0, 0, $this->assoSWITCH);
+        $this->RegisterProfile(VARIABLETYPE_INTEGER, 'Twinkly.Effect', 'Stars', '', '', 1, 5, 1, 0);
+        $this->RegisterProfile(VARIABLETYPE_INTEGER, 'Twinkly.Mode', 'Remote', '', '', 0, 0, 0, 0, $this->assoMODE);
+        $this->RegisterProfile(VARIABLETYPE_INTEGER, 'Twinkly.ModeEx', 'Remote', '', '', 0, 0, 0, 0, $this->assoMODEEX);
 
         // Variablen erzeugen
-        $this->RegisterVariableInteger('Mode', $this->Translate('Mode'), 'Twinkly.Mode', 0);
-        $this->RegisterVariableInteger('Brightness', $this->Translate('Brightness'), '~Intensity.100', 0);
+        $this->RegisterVariableInteger('Switch', $this->Translate('Switch'), 'Twinkly.Switch', 0);
+        $this->RegisterVariableInteger('Mode', $this->Translate('Mode'), 'Twinkly.Mode', 1);
+        $this->RegisterVariableInteger('Color', $this->Translate('Color'), '~HexColor', 2);
+        $this->RegisterVariableInteger('Effect', $this->Translate('Effect'), 'Twinkly.Effect', 3);
+        $this->RegisterVariableInteger('Brightness', $this->Translate('Brightness'), '~Intensity.100', 4);
+        $this->RegisterVariableInteger('Saturation', $this->Translate('Saturation'), '~Intensity.100', 5);
         // Actions
+        $this->EnableAction('Switch');
         $this->EnableAction('Mode');
+        $this->EnableAction('Color');
+        $this->EnableAction('Effect');
         $this->EnableAction('Brightness');
+        $this->EnableAction('Saturation');
     }
 
     /**
@@ -92,7 +142,6 @@ class TwinklyDevice extends IPSModule
         parent::ApplyChanges();
         // IP Check
         $host = $this->ReadPropertyString('Host');
-        $switch = $this->ReadPropertyBoolean('Switch');
         // IP Check
         if (filter_var($host, FILTER_VALIDATE_IP) !== false) {
             $this->SetStatus(102);
@@ -102,9 +151,11 @@ class TwinklyDevice extends IPSModule
         // Timer
         $this->SetTimer();
         // Aditionally Switch
-        $this->MaintainVariable('Switch', $this->Translate('Switch'), VARIABLETYPE_INTEGER, 'Twinkly.Switch', 0, $switch);
-        if ($switch) {
-            $this->EnableAction('Switch');
+        $advanced = $this->ReadPropertyBoolean('AdvancedMode');
+        if ($advanced) {
+            $this->RegisterVariableInteger('Mode', $this->Translate('Mode'), 'Twinkly.ModeEx', 1);
+        } else {
+            $this->RegisterVariableInteger('Mode', $this->Translate('Mode'), 'Twinkly.Mode', 1);
         }
         // Debug message
         $this->SendDebug(__FUNCTION__, 'IP=' . $host, 0);
@@ -121,22 +172,33 @@ class TwinklyDevice extends IPSModule
         $this->SendDebug(__FUNCTION__, 'Ident: ' . $ident . ' Value: ' . $value, 0);
         switch ($ident) {
             case 'TimingCheck':
-                $this->SendDebug(__FUNCTION__, 'New mode selected: ' . $value, 0);
                 $this->OnTimingCheck($value);
                 break;
             case 'TimingNow':
-                $this->SendDebug(__FUNCTION__, 'New mode selected: ' . $value, 0);
                 $this->OnTimingNow($value);
                 break;
             case 'Switch':
+                $this->SetSwitch($value);
+                $this->SetValueInteger($ident, $value);
+                break;
             case 'Mode':
-                $this->SendDebug(__FUNCTION__, 'New mode selected: ' . $value, 0);
                 $this->SetMode($value);
                 $this->SetValueInteger($ident, $value);
                 break;
+            case 'Color':
+                $this->SetColor($value);
+                $this->SetValueInteger($ident, $value);
+                break;
+            case 'Effect':
+                $this->SetEffect($value);
+                $this->SetValueInteger($ident, $value);
+                break;
             case 'Brightness':
-                $this->SendDebug(__FUNCTION__, 'Brightness changed: ' . $value, 0);
                 $this->SetBrightness($value);
+                $this->SetValueInteger($ident, $value);
+                break;
+            case 'Saturation':
+                $this->SetSaturation($value);
                 $this->SetValueInteger($ident, $value);
                 break;
             default:
@@ -164,9 +226,95 @@ class TwinklyDevice extends IPSModule
         $json = $this->doBrightness($host, $token);
         // Sync brightness
         if ($json !== false) {
-            SetValue($this->GetIDForIdent('Brightness'), $json['value']);
+            $this->SetValueInteger('Brightness', $json['value']);
             // Display value
             return $this->Translate('Brightness: ') . $json['value'] . '%';
+        }
+        return $this->Translate('Error occurred!');
+    }
+
+    /**
+     * This function will be available automatically after the module is imported with the module control.
+     * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
+     *
+     * TWICKLY_Saturation($id);
+     */
+    public function Saturation()
+    {
+        if ($this->CheckLogin() === false) {
+            return $this->Translate('Login error!');
+        }
+        // Debug
+        $this->SendDebug(__FUNCTION__, 'Obtain device saturation.', 0);
+        // Host & Token
+        $host = $this->ReadPropertyString('Host');
+        $token = $this->ReadAttributeString('Token');
+        // Request
+        $json = $this->doSaturation($host, $token);
+        $this->SendDebug(__FUNCTION__, $json);
+        // Sync brightness
+        if ($json !== false) {
+            $this->SetValueInteger('Saturation', $json['value']);
+            // Display value
+            return $this->Translate('Saturation: ') . $json['value'] . '%';
+        }
+        return $this->Translate('Error occurred!');
+    }
+
+    /**
+     * This function will be available automatically after the module is imported with the module control.
+     * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
+     *
+     * TWICKLY_Color($id);
+     */
+    public function Color()
+    {
+        if ($this->CheckLogin() === false) {
+            return $this->Translate('Login error!');
+        }
+        // Debug
+        $this->SendDebug(__FUNCTION__, 'Obtain color information.', 0);
+        // Host & Token
+        $host = $this->ReadPropertyString('Host');
+        $token = $this->ReadAttributeString('Token');
+        // Request
+        $json = $this->doColor($host, $token);
+        $this->SendDebug(__FUNCTION__, $json);
+        // Sync brightness
+        if ($json !== false) {
+            $rgb = [$json['red'], $json['green'], $json['blue']];
+            $value = $this->RGB2Int($rgb);
+            $this->SetValueInteger('Color', $value);
+            // Display value
+            return $this->Translate('Color: ') . sprintf('0x%02x%02x%02x', $rgb[0], $rgb[1], $rgb[2]) . ' (' . $value . ')';
+        }
+        return $this->Translate('Error occurred!');
+    }
+
+    /**
+     * This function will be available automatically after the module is imported with the module control.
+     * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
+     *
+     * TWICKLY_Effect($id);
+     */
+    public function Effect()
+    {
+        if ($this->CheckLogin() === false) {
+            return $this->Translate('Login error!');
+        }
+        // Debug
+        $this->SendDebug(__FUNCTION__, 'Obtain effect id.', 0);
+        // Host & Token
+        $host = $this->ReadPropertyString('Host');
+        $token = $this->ReadAttributeString('Token');
+        // Request
+        $json = $this->doEffect($host, $token);
+        $this->SendDebug(__FUNCTION__, $json);
+        // Sync brightness
+        if ($json !== false) {
+            $this->SetValueInteger('Effect', $json['preset_id']);
+            // Display value
+            return $this->Translate('Effect: ') . $json['preset_id'] . ' (' . $json['unique_id'] . ')';
         }
         return $this->Translate('Error occurred!');
     }
@@ -191,28 +339,7 @@ class TwinklyDevice extends IPSModule
         $json = $this->doGestalt($host, $token);
         $this->SendDebug(__FUNCTION__, $json);
 
-        return sprintf(
-            "Product name: %s\nHardware Version: %s\nBytes per LED: %d\nHardware ID: %s\nFlash Size: %d\nLED Type: %d\nProduct Code: %s\nFirmware Family: %s\nDevice Name: %s\nUptime: %s ms\nMAC: %s\nUUID: %s\nMax supported LED: %d\nNumber of LED: %d\nLED Profile: %s\nFrame Rate: %.2f\nMeasured Frame Rate: %.2f\nMovie Capacity: %d\nCopyright: %s",
-            $json['product_name'],
-            $json['hardware_version'],
-            $json['bytes_per_led'],
-            $json['hw_id'],
-            $json['flash_size'],
-            $json['led_type'],
-            $json['product_code'],
-            $json['fw_family'],
-            $json['device_name'],
-            $json['uptime'],
-            $json['mac'],
-            $json['uuid'],
-            $json['max_supported_led'],
-            $json['number_of_led'],
-            $json['led_profile'],
-            $json['measured_frame_rate'],
-            $json['frame_rate'],
-            $json['movie_capacity'],
-            $json['copyright']
-        );
+        return $this->PrettyPrint(self::TWINKLY_MAP_GESTALT, $json);
     }
 
     /**
@@ -257,7 +384,6 @@ class TwinklyDevice extends IPSModule
         $this->SendDebug(__FUNCTION__, $json);
 
         $enc = [0 => 'NONE', 2 => 'WPA1', 3 => 'WPA2', 4 => 'WPA1+WPA2'];
-
         return sprintf(
             "Network mode: %s\nStation:\n\tSSID: %s\n\tIP: %s\n\tGateway: %s\n\tMask: %s\n\tRSSI: %d db\nAccess Point:\n\tSSID: %s\n\tIP: %s\n\tChannel: %s\n\tEncryption: %s\n\tSSID Hidden: %s\n\tMax connections: %d",
             $json['mode'] == 1 ? '1 (Station)' : '2 (Access Point)',
@@ -306,33 +432,110 @@ class TwinklyDevice extends IPSModule
     }
 
     /**
+     * Switch the Stripe on/off.
+     *
+     * @param bool $value State value.
+     */
+    private function SetSwitch(int $value)
+    {
+        if ($this->CheckLogin() === false) {
+            $this->SendDebug(__FUNCTION__, 'Login error!');
+            return;
+        }
+        // Host
+        $host = $this->ReadPropertyString('Host');
+        // Token
+        $token = $this->ReadAttributeString('Token');
+        // Mode
+        $mode = 'off'; // Default
+        if ($value == 1) {  // 1 == 'On'
+            $mode = $this->assoMODEEX[$this->GetValue('Mode')][4];
+        }
+        $this->SendDebug(__FUNCTION__, 'Switch mode: ' . $mode, 0);
+        // Body
+        $body = ['mode' => $mode];
+        // Request
+        $this->doMode($host, $token, $body);
+    }
+
+    /**
      * Sets the device mode.
      *
      * @param int $value Mode value.
      */
     private function SetMode(int $value)
     {
-        // Safty check
-        if ($value < 0 || $value > 3) {
-            // out of range
-            $this->SendDebug(__FUNCTION__, 'Out of range' . $value, 0);
+        if ($this->GetValue('Switch') == 0) { // 0 == 'Off'
             return;
         }
         if ($this->CheckLogin() === false) {
             $this->SendDebug(__FUNCTION__, 'Login error!', 0);
             return;
         }
-        // Extract assoziated mode string
-        $mode = $this->assoMODE[$value][4];
-        $this->SendDebug(__FUNCTION__, 'Selected mode: ' . $mode, 0);
         // Host
         $host = $this->ReadPropertyString('Host');
         // Token
         $token = $this->ReadAttributeString('Token');
         // Mode
-        $set = ['mode' => $mode];
+        $mode = $this->assoMODEEX[$value][4];
+        $this->SendDebug(__FUNCTION__, 'Selected mode: ' . $mode, 0);
+        // Body
+        $body = ['mode' => $mode];
         // Request
-        $this->doMode($host, $token, $set);
+        $this->doMode($host, $token, $body);
+    }
+
+    /**
+     * Sets the color value.
+     *
+     * @param int $value Color value.
+     */
+    private function SetColor(int $value)
+    {
+        if ($this->CheckLogin() === false) {
+            $this->SendDebug(__FUNCTION__, 'Login error!');
+            return;
+        }
+        // Debug
+        $this->SendDebug(__FUNCTION__, 'Set color to: ' . $value);
+        // Host
+        $host = $this->ReadPropertyString('Host');
+        // Token
+        $token = $this->ReadAttributeString('Token');
+        // RGB
+        $rgb = $this->Int2RGB($value);
+        $body = [
+            'red'    => $rgb[0],
+            'green'  => $rgb[1],
+            'blue'   => $rgb[2],
+        ];
+        // Request
+        $this->doColor($host, $token, $body);
+    }
+
+    /**
+     * Sets the effect id.
+     *
+     * @param int $value Effect id.
+     */
+    private function SetEffect(int $value)
+    {
+        if ($this->CheckLogin() === false) {
+            $this->SendDebug(__FUNCTION__, 'Login error!');
+            return;
+        }
+        // Debug
+        $this->SendDebug(__FUNCTION__, 'Set effectId to: ' . $value);
+        // Host
+        $host = $this->ReadPropertyString('Host');
+        // Token
+        $token = $this->ReadAttributeString('Token');
+        // Effect ID
+        $body = [
+            'effect_id'  => $value,
+        ];
+        // Request
+        $this->doEffect($host, $token, $body);
     }
 
     /**
@@ -359,6 +562,32 @@ class TwinklyDevice extends IPSModule
         ];
         // Request
         $this->doBrightness($host, $token, $body);
+    }
+
+    /**
+     * Sets the saturation level.
+     *
+     * @param int $value Saturation value.
+     */
+    private function SetSaturation(int $value)
+    {
+        if ($this->CheckLogin() === false) {
+            $this->SendDebug(__FUNCTION__, 'Login error!', 0);
+            return;
+        }
+        // Debug
+        $this->SendDebug(__FUNCTION__, 'Set saturation to: ' . $value, 0);
+        // Host
+        $host = $this->ReadPropertyString('Host');
+        // Token
+        $token = $this->ReadAttributeString('Token');
+        // Saturation
+        $body = [
+            'mode'   => 'enabled',
+            'value'  => $value,
+        ];
+        // Request
+        $this->doSaturation($host, $token, $body);
     }
 
     /**
@@ -522,41 +751,5 @@ class TwinklyDevice extends IPSModule
         $m = intval(date('i', $ts));
         $s = intval(date('s', $ts));
         $this->UpdateFormField('Timer' . $value, 'value', '{"hour":' . $h . ',"minute":' . $m . ',"second":' . $s . '}');
-    }
-
-    /**
-     * Update a boolean value.
-     *
-     * @param string $ident Ident of the boolean variable
-     * @param bool   $value Value of the boolean variable
-     */
-    private function SetValueBoolean(string $ident, bool $value)
-    {
-        $id = $this->GetIDForIdent($ident);
-        SetValueBoolean($id, $value);
-    }
-
-    /**
-     * Update a string value.
-     *
-     * @param string $ident Ident of the string variable
-     * @param string $value Value of the string variable
-     */
-    private function SetValueString(string $ident, string $value)
-    {
-        $id = $this->GetIDForIdent($ident);
-        SetValueString($id, $value);
-    }
-
-    /**
-     * Update a integer value.
-     *
-     * @param string $ident Ident of the integer variable
-     * @param int    $value Value of the integer variable
-     */
-    private function SetValueInteger(string $ident, int $value)
-    {
-        $id = $this->GetIDForIdent($ident);
-        SetValueInteger($id, $value);
     }
 }

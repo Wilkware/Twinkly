@@ -100,7 +100,9 @@ class TwinklyDiscovery extends IPSModule
             $data[] = ['name' => $array['Name'], 'state' => $array['State'], 'host' => $array['IP4'] . '.' . $array['IP3'] . '.' . $array['IP2'] . '.' . $array['IP1']];
         }
         socket_close($sock);
-
+        $this->SendDebug(__FUNCTION__, $data);
+        // remove dublicates
+        $data = array_unique($data, SORT_REGULAR);
         return $data;
     }
 

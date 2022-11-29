@@ -1,12 +1,12 @@
 {
-  "id": "{A00985FC-B2ED-5E9E-9BC6-A7A256C5F574}",
-  "author": "Wilkware (@Pitti)",
-  "name": "Twinkly",
-  "url": "https://github.com/Wilkware",
-  "compatibility": {
-    "version": "5.2"
-  },
-  "version": "2.1",
-  "build": 20210801,
-  "date": 	1627812000
+    "id": "{A00985FC-B2ED-5E9E-9BC6-A7A256C5F574}",
+    "name": "Twinkly",
+    "author": "Wilkware (@Pitti)",
+    "url": "https://wilkware.de",
+    "compatibility": {
+        "version": "6.0"
+    },
+    "version": "3.0",
+    "build": 20221201,
+    "date": 1669892400
 }

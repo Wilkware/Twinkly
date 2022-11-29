@@ -7,7 +7,9 @@
             "Target Category:": "Zielkategorie:",
             "IP Address": "IP Adresse",
             "Device name": "Gerätename",
-            "Device state": "Gerätestatus"
+            "Device state": "Gerätestatus",
+            "Source code, donation and licence ...": "Quellcode, Spende und Lizenz ...",
+            "The software is free of charge for non-commercial use, I would appreciate a donation if you like the module.": "Die Software ist für die nicht kommzerielle Nutzung kostenlos, über eine Spende bei Gefallen des Moduls würde ich mich sehr freuen."
         }
     }
 }

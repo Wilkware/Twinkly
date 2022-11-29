@@ -3,19 +3,34 @@
         {
             "type": "RowLayout",
             "items": [
-                {"type": "Image", "link": false, "onClick": "echo 'v2.1.20210711';", "image": "data:image/png;base64,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"},
-                {"type": "Label", "label": "\nTWINKLY – The smart LED light string\n "}
+                {
+                    "type": "Image",
+                    "image": "data:image/png;base64,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",
+                    "link": true,
+                    "onClick": "echo 'https://wilkware.de';"
+                },
+                {
+                    "type": "Label",
+                    "label": "\nTWINKLY – The smart LED light string\n ",
+                    "link": false,
+                    "bold": true
+                }
             ]
         },
         {
-            "type": "Label", 
+            "type": "Label",
             "label": "The module is used to integrate and control Twinkly devices (smart LED light chains) in IP-Symcon."
         },
         {
             "type": "ExpansionPanel",
             "caption": "Device ...",
             "items": [
-                {"type": "ValidationTextBox", "name": "Host", "caption": "IP address:"}
+                {
+                    "type": "ValidationTextBox",
+                    "name": "Host",
+                    "caption": "IP address:",
+                    "width": "200px"
+                }
             ]
         },
         {
@@ -25,11 +40,40 @@
                 {
                     "type": "RowLayout",
                     "items": [
-                        {"type": "CheckBox", "name": "TimerCheck", "caption": "Off/On", "value": true, "width": "110px", "onChange": "IPS_RequestAction($id,'TimingCheck', $TimerCheck);"},
-                        {"type": "Button", "name": "TimerNowOn", "caption": "NOW", "width": "67px", "onClick": "IPS_RequestAction($id,'TimingNow','On');"},
-                        {"type": "SelectTime", "name": "TimerOn", "caption": "Timer ON:",  "width": "150px"},
-                        {"type": "Button", "name": "TimerNowOff", "caption": "NOW", "width": "67px", "onClick": "IPS_RequestAction($id,'TimingNow','Off');"},
-                        {"type": "SelectTime", "name": "TimerOff", "caption": "Timer OFF:",  "width": "150px"}
+                        {
+                            "type": "CheckBox",
+                            "name": "TimerCheck",
+                            "caption": "Off/On",
+                            "value": true,
+                            "width": "110px",
+                            "onChange": "IPS_RequestAction($id,'TimingCheck', $TimerCheck);"
+                        },
+                        {
+                            "type": "Button",
+                            "name": "TimerNowOn",
+                            "caption": "NOW",
+                            "width": "67px",
+                            "onClick": "IPS_RequestAction($id,'TimingNow','On');"
+                        },
+                        {
+                            "type": "SelectTime",
+                            "name": "TimerOn",
+                            "caption": "Timer ON:",
+                            "width": "150px"
+                        },
+                        {
+                            "type": "Button",
+                            "name": "TimerNowOff",
+                            "caption": "NOW",
+                            "width": "67px",
+                            "onClick": "IPS_RequestAction($id,'TimingNow','Off');"
+                        },
+                        {
+                            "type": "SelectTime",
+                            "name": "TimerOff",
+                            "caption": "Timer OFF:",
+                            "width": "150px"
+                        }
                     ]
                 }
             ]
@@ -38,15 +82,18 @@
             "type": "ExpansionPanel",
             "caption": "Advanced settings ...",
             "items": [
-                {"type": "Label", "caption": "Create a normal switch variable in addition to switching the mode (e.g. for WebFront)?"},
-                {"type": "CheckBox", "name": "Switch", "caption": "Additional light switch!"}
+                {
+                    "type": "CheckBox",
+                    "name": "AdvancedMode",
+                    "caption": "Activating the extended mode (experimental)"
+                }
             ]
         }
     ],
     "actions": [
         {
             "type": "Label",
-            "caption": "Use the button to synchronize the current device brightness."
+            "caption": "Use the buttons to fetch and synchronise the current unit values."
         },
         {
             "type": "RowLayout",
@@ -56,6 +103,24 @@
                     "caption": "BRIGHTNESS",
                     "width": "150px",
                     "onClick": "echo TWINKLY_Brightness($id);"
+                },
+                {
+                    "type": "Button",
+                    "caption": "SATURATION",
+                    "width": "150px",
+                    "onClick": "echo TWINKLY_Saturation($id);"
+                },
+                {
+                    "type": "Button",
+                    "caption": "COLOR",
+                    "width": "150px",
+                    "onClick": "echo TWINKLY_Color($id);"
+                },
+                {
+                    "type": "Button",
+                    "caption": "EFFECT",
+                    "width": "150px",
+                    "onClick": "echo TWINKLY_Effect($id);"
                 }
             ]
         },
@@ -90,7 +155,7 @@
             "type": "Label",
             "caption": "Use the form to assign a new name to the device (max. 32 characters)."
         },
-        { 
+        {
             "type": "RowLayout",
             "items": [
                 {
@@ -100,11 +165,47 @@
                     "width": "308px",
                     "validate": "^[0-9a-zA-ZäöüÄÖÜ_-]{1,32}$",
                     "value": "Device-Name"
-                },{
+                },
+                {
                     "type": "Button",
                     "caption": "CHANGE",
                     "width": "150px",
                     "onClick": "echo TWINKLY_DeviceName($id, $DeviceName);"
+                }
+            ]
+        },
+        {
+            "type": "Label",
+            "caption": ""
+        },
+        {
+            "type": "ExpansionPanel",
+            "caption": "Source code, donation and licence ...",
+            "items": [
+                {
+                    "type": "Label",
+                    "caption": "The software is free of charge for non-commercial use, I would appreciate a donation if you like the module.",
+                    "bold": true
+                },
+                {
+                    "type": "RowLayout",
+                    "items": [
+                        {
+                            "type": "Image",
+                            "image": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTk2Ljc1IiBoZWlnaHQ9IjI4IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IkdJVEhVQjogQFdJTEtXQVJFIj48dGl0bGU+R0lUSFVCOiBAV0lMS1dBUkU8L3RpdGxlPjxnIHNoYXBlLXJlbmRlcmluZz0iY3Jpc3BFZGdlcyI+PHJlY3Qgd2lkdGg9Ijg3LjUiIGhlaWdodD0iMjgiIGZpbGw9IiM1NTUiLz48cmVjdCB4PSI4Ny41IiB3aWR0aD0iMTA5LjI1IiBoZWlnaHQ9IjI4IiBmaWxsPSIjMTgxNzE3Ii8+PC9nPjxnIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJWZXJkYW5hLEdlbmV2YSxEZWphVnUgU2FucyxzYW5zLXNlcmlmIiB0ZXh0LXJlbmRlcmluZz0iZ2VvbWV0cmljUHJlY2lzaW9uIiBmb250LXNpemU9IjEwMCI+PGltYWdlIHg9IjkiIHk9IjciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgeGxpbms6aHJlZj0iZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCbWFXeHNQU0ozYUdsMFpYTnRiMnRsSWlCeWIyeGxQU0pwYldjaUlIWnBaWGRDYjNnOUlqQWdNQ0F5TkNBeU5DSWdlRzFzYm5NOUltaDBkSEE2THk5M2QzY3Vkek11YjNKbkx6SXdNREF2YzNabklqNDhkR2wwYkdVK1IybDBTSFZpUEM5MGFYUnNaVDQ4Y0dGMGFDQmtQU0pOTVRJZ0xqSTVOMk10Tmk0Mk15QXdMVEV5SURVdU16Y3pMVEV5SURFeUlEQWdOUzR6TURNZ015NDBNemdnT1M0NElEZ3VNakExSURFeExqTTROUzQyTGpFeE15NDRNaTB1TWpVNExqZ3lMUzQxTnpjZ01DMHVNamcxTFM0d01TMHhMakEwTFM0d01UVXRNaTR3TkMwekxqTXpPQzQzTWpRdE5DNHdOREl0TVM0Mk1TMDBMakEwTWkweExqWXhRelF1TkRJeUlERTRMakEzSURNdU5qTXpJREUzTGpjZ015NDJNek1nTVRjdU4yTXRNUzR3T0RjdExqYzBOQzR3T0RRdExqY3lPUzR3T0RRdExqY3lPU0F4TGpJd05TNHdPRFFnTVM0NE16Z2dNUzR5TXpZZ01TNDRNemdnTVM0eU16WWdNUzR3TnlBeExqZ3pOU0F5TGpnd09TQXhMak13TlNBekxqUTVOUzQ1T1RndU1UQTRMUzQzTnpZdU5ERTNMVEV1TXpBMUxqYzJMVEV1TmpBMUxUSXVOalkxTFM0ekxUVXVORFkyTFRFdU16TXlMVFV1TkRZMkxUVXVPVE1nTUMweExqTXhMalEyTlMweUxqTTRJREV1TWpNMUxUTXVNakl0TGpFek5TMHVNekF6TFM0MU5DMHhMalV5TXk0eE1EVXRNeTR4TnpZZ01DQXdJREV1TURBMUxTNHpNaklnTXk0eklERXVNak11T1RZdExqSTJOeUF4TGprNExTNHpPVGtnTXkwdU5EQTFJREV1TURJdU1EQTJJREl1TURRdU1UTTRJRE1nTGpRd05TQXlMakk0TFRFdU5UVXlJRE11TWpnMUxURXVNak1nTXk0eU9EVXRNUzR5TXk0Mk5EVWdNUzQyTlRNdU1qUWdNaTQ0TnpNdU1USWdNeTR4TnpZdU56WTFMamcwSURFdU1qTWdNUzQ1TVNBeExqSXpJRE11TWpJZ01DQTBMall4TFRJdU9EQTFJRFV1TmpJMUxUVXVORGMxSURVdU9USXVOREl1TXpZdU9ERWdNUzR3T1RZdU9ERWdNaTR5TWlBd0lERXVOakEyTFM0d01UVWdNaTQ0T1RZdExqQXhOU0F6TGpJNE5pQXdJQzR6TVRVdU1qRXVOamt1T0RJMUxqVTNRekl3TGpVMk5TQXlNaTR3T1RJZ01qUWdNVGN1TlRreUlESTBJREV5TGpJNU4yTXdMVFl1TmpJM0xUVXVNemN6TFRFeUxURXlMVEV5SWk4K1BDOXpkbWMrIi8+PHRleHQgdHJhbnNmb3JtPSJzY2FsZSguMSkiIHg9IjUyMi41IiB5PSIxNzUiIHRleHRMZW5ndGg9IjQ2NSIgZmlsbD0iI2ZmZiI+R0lUSFVCPC90ZXh0Pjx0ZXh0IHRyYW5zZm9ybT0ic2NhbGUoLjEpIiB4PSIxNDIxLjI1IiB5PSIxNzUiIHRleHRMZW5ndGg9Ijg1Mi41IiBmaWxsPSIjZmZmIiBmb250LXdlaWdodD0iYm9sZCI+QFdJTEtXQVJFPC90ZXh0PjwvZz48L3N2Zz4=",
+                            "onClick": "echo 'https://wilkware.github.io/';"
+                        },
+                        {
+                            "type": "Image",
+                            "image": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMTcxLjI1IiBoZWlnaHQ9IjI4IiByb2xlPSJpbWciIGFyaWEtbGFiZWw9IlBBWVBBTDogU1BFTkRFTiI+PHRpdGxlPlBBWVBBTDogU1BFTkRFTjwvdGl0bGU+PGcgc2hhcGUtcmVuZGVyaW5nPSJjcmlzcEVkZ2VzIj48cmVjdCB3aWR0aD0iODUuNSIgaGVpZ2h0PSIyOCIgZmlsbD0iIzU1NSIvPjxyZWN0IHg9Ijg1LjUiIHdpZHRoPSI4NS43NSIgaGVpZ2h0PSIyOCIgZmlsbD0iIzAwNDU3YyIvPjwvZz48ZyBmaWxsPSIjZmZmIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0iVmVyZGFuYSxHZW5ldmEsRGVqYVZ1IFNhbnMsc2Fucy1zZXJpZiIgdGV4dC1yZW5kZXJpbmc9Imdlb21ldHJpY1ByZWNpc2lvbiIgZm9udC1zaXplPSIxMDAiPjxpbWFnZSB4PSI5IiB5PSI3IiB3aWR0aD0iMTQiIGhlaWdodD0iMTQiIHhsaW5rOmhyZWY9ImRhdGE6aW1hZ2Uvc3ZnK3htbDtiYXNlNjQsUEhOMlp5QjJhV1YzUW05NFBTSXdJREFnTWpRZ01qUWlJSGh0Ykc1elBTSm9kSFJ3T2k4dmQzZDNMbmN6TG05eVp5OHlNREF3TDNOMlp5SStQSEJoZEdnZ1pEMGlUVEU1TGpjeE5TQTJMakV6TTJNdU1qUTVMVEV1T0RZMklEQXRNeTR4TVMwdU9UazVMVFF1TWpZMlF6RTNMall6TkM0Mk1qSWdNVFV1TnpJeElEQWdNVE11TXpBM0lEQklOaTR5TXpWakxTNDBNVGdnTUMwdU9URTJMalEwTkMweElDNDRPRGxNTWk0ek1qTWdNakF1TmpJeVl6QWdMak0xTmk0eU5TNDRMalkyTlM0NGFEUXVNekk0YkMwdU1qVWdNUzQ1TlRaakxTNHdPRFF1TXpVMUxqRTJOaTQyTWpJdU5EazRMall5TW1nekxqWTJNMk11TkRFM0lEQWdMamd6TWkwdU1qWTNMamt4TlMwdU56RXhkaTB1TWpZM2JDNDNORGt0TkM0Mk1qSjJMUzR4TnpoakxqQTRNeTB1TkRRMExqVXRMamd1T1RFMUxTNDRhQzQxWXpNdU5UYzRJREFnTmk0ek1qVXRNUzQxTVNBM0xqRTFOaTAxTGprMU5TNDBNVGd0TVM0NE5qY3VNalV5TFRNdU16YzRMUzQzTkRjdE5DNDBORFV0TGpJMUxTNHpOVFV0TGpZMk5pMHVOakl5TFRFdExqZzRPU0lnWm1sc2JEMGlJekF3T1dOa1pTSXZQanh3WVhSb0lHUTlJazB4T1M0M01UVWdOaTR4TXpOakxqSTBPUzB4TGpnMk5pQXdMVE11TVRFdExqazVPUzAwTGpJMk5rTXhOeTQyTXpRdU5qSXlJREUxTGpjeU1TQXdJREV6TGpNd055QXdTRFl1TWpNMVl5MHVOREU0SURBdExqa3hOaTQwTkRRdE1TQXVPRGc1VERJdU16SXpJREl3TGpZeU1tTXdJQzR6TlRZdU1qVXVPQzQyTmpVdU9HZzBMak15T0d3eExqRTJOQzAzTGpNM09DMHVNRGd6TGpJMk4yTXVNRGcwTFM0MU16TXVOUzB1T0RnNUxqazVPQzB1T0RnNWFESXVNRGhqTkM0d056a2dNQ0EzTGpJME1TMHhMamMzT0NBNExqSTBMVFl1TnpVMUxTNHdPRE10TGpJMk55QXdMUzR6TlRZZ01DMHVOVE0wSWlCbWFXeHNQU0lqTURFeU1UWTVJaTgrUEhCaGRHZ2daRDBpVFRrdU5UWXpJRFl1TVRNell5NHdPREl0TGpJMk5pNHlOUzB1TlRNekxqUTVPQzB1TnpFdU1UWTJJREFnTGpJMUxTNHdPUzQwTVRZdExqQTVhRFV1TkRrMFl5NDJOallnTUNBeExqTXpMakE1SURFdU9ETXVNVGM0TGpFMk5pQXdJQzR6TXpNZ01DQXVORGs0TGpBNE9TNHhOamd1TURnNUxqTXpOQzR3T0RrdU5ERTRMakUzT0dndU1qVmpMakkwT0M0d09Ea3VORGszTGpJMk5pNDNORGd1TXpVMUxqSTBPQzB4TGpnMk5pQXdMVE11TVRFdExqazVPUzAwTGpNMU5VTXhOeTQzTVRjdU5UTXpJREUxTGpnd05DQXdJREV6TGpNNUlEQklOaTR5TXpWakxTNDBNVGdnTUMwdU9URTJMak0xTmkweElDNDRPRGxNTWk0ek1qTWdNakF1TmpJeVl6QWdMak0xTmk0eU5TNDRMalkyTlM0NGFEUXVNekk0YkRFdU1UWTBMVGN1TXpjNElERXVNRGcwTFRjdU9URjZJaUJtYVd4c1BTSWpNREF6TURnM0lpOCtQQzl6ZG1jKyIvPjx0ZXh0IHRyYW5zZm9ybT0ic2NhbGUoLjEpIiB4PSI1MTIuNSIgeT0iMTc1IiB0ZXh0TGVuZ3RoPSI0NDUiIGZpbGw9IiNmZmYiPlBBWVBBTDwvdGV4dD48dGV4dCB0cmFuc2Zvcm09InNjYWxlKC4xKSIgeD0iMTI4My43NSIgeT0iMTc1IiB0ZXh0TGVuZ3RoPSI2MTcuNSIgZmlsbD0iI2ZmZiIgZm9udC13ZWlnaHQ9ImJvbGQiPlNQRU5ERU48L3RleHQ+PC9nPjwvc3ZnPg==",
+                            "onClick": "echo 'https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=8816166';"
+                        },
+                        {
+                            "type": "Image",
+                            "image": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHhtbG5zOnhsaW5rPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5L3hsaW5rIiB3aWR0aD0iMjI5LjUiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iTElDRU5TRTogQ0MgQlktTkMtU0EgNC4wIj48dGl0bGU+TElDRU5TRTogQ0MgQlktTkMtU0EgNC4wPC90aXRsZT48ZyBzaGFwZS1yZW5kZXJpbmc9ImNyaXNwRWRnZXMiPjxyZWN0IHdpZHRoPSI5Mi43NSIgaGVpZ2h0PSIyOCIgZmlsbD0iIzU1NSIvPjxyZWN0IHg9IjkyLjc1IiB3aWR0aD0iMTM2Ljc1IiBoZWlnaHQ9IjI4IiBmaWxsPSIjZWY5NDIxIi8+PC9nPjxnIGZpbGw9IiNmZmYiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSJWZXJkYW5hLEdlbmV2YSxEZWphVnUgU2FucyxzYW5zLXNlcmlmIiB0ZXh0LXJlbmRlcmluZz0iZ2VvbWV0cmljUHJlY2lzaW9uIiBmb250LXNpemU9IjEwMCI+PGltYWdlIHg9IjkiIHk9IjciIHdpZHRoPSIxNCIgaGVpZ2h0PSIxNCIgeGxpbms6aHJlZj0iZGF0YTppbWFnZS9zdmcreG1sO2Jhc2U2NCxQSE4yWnlCbWFXeHNQU0lqUlVZNU5ESXhJaUJ5YjJ4bFBTSnBiV2NpSUhacFpYZENiM2c5SWpBZ01DQXlOQ0F5TkNJZ2VHMXNibk05SW1oMGRIQTZMeTkzZDNjdWR6TXViM0puTHpJd01EQXZjM1puSWo0OGRHbDBiR1UrUTNKbFlYUnBkbVVnUTI5dGJXOXVjend2ZEdsMGJHVStQSEJoZEdnZ1pEMGlUVEV4TGprNE15QXdZeTB6TGpJNU1pQXdMVFl1TVRrZ01TNHlNVGN0T0M0ME1qZ2dNeTQwT0RWRE1TNHlOU0ExTGpneE9TQXdJRGd1T0RRMElEQWdNVEpqTUNBekxqRTRPU0F4TGpJeE55QTJMakUwT0NBekxqVXlNaUE0TGpRMVF6VXVPREkzSURJeUxqYzFJRGd1T0RJeUlESTBJREV4TGprNE15QXlOR016TGpFMklEQWdOaTR5TWpJdE1TNHlOU0E0TGpVNU15MHpMalU0TTBNeU1pNDRNVFVnTVRndU1qRTBJREkwSURFMUxqSTROeUF5TkNBeE1tTXdMVE11TWpVMUxURXVNVGcyTFRZdU1qRTBMVE11TkRVNExUZ3VORGd6UXpFNExqSXpPQ0F4TGpJeE55QXhOUzR5TnpVZ01DQXhNUzQ1T0RNZ01IcHRMakF6TXlBeUxqRTNZekl1TnlBd0lEVXVNVEF6SURFdU1ESWdOaTQ1T0NBeUxqZzVNeUF4TGpnME15QXhMamcwTVNBeUxqZ3pJRFF1TWpjMElESXVPRE1nTmk0NU16Y2dNQ0F5TGpZNU5pMHVPVFUwSURVdU1EWXpMVEl1TnprNElEWXVPRGN5TFRFdU9UUXpJREV1T1RBMkxUUXVORFEwSURJdU9USTJMVGN1TURFeUlESXVPVEkyTFRJdU5qQXhJREF0TlM0d016Z3RNUzR3TVRrdE5pNDVNVFF0TWk0NE9UTXRNUzQ0TnpjdE1TNDROelV0TWk0NU15MDBMak0wTFRJdU9UTXROaTQ1TURVZ01DMHlMalU1TnlBeExqQTFNeTAxTGpBMk15QXlMamt6TFRZdU9UY2dNUzQ0TkRRdE1TNDROelFnTkM0eU1UUXRNaTQ0TmlBMkxqa3hOQzB5TGpnMmVrMDRMalk0SURndU1qYzRRell1TnpJeklEZ3VNamM0SURVdU1UWTFJRGt1TmpZZ05TNHhOalVnTVRKak1DQXlMak00SURFdU5EWTFJRE11TnpJeUlETXVOVGd4SURNdU56SXlJREV1TXpVNElEQWdNaTQxTVRZdExqYzBOQ0F6TGpFMU5TMHhMamczTkd3dE1TNDBPVEV0TGpjMU9HTXRMak16TXk0M09UZ3RMamd6T1NBeExqQXpOeTB4TGpRM09DQXhMakF6TnkweExqRXdOU0F3TFRFdU5qRXRMamt4TnkweExqWXhMVEl1TVRJMklEQXRNUzR5TVM0ME1qWXRNaTR4TWpjZ01TNDJNUzB5TGpFeU55NHpNaUF3SUM0NU5pNHhOek1nTVM0ek16SXVPVGRzTVM0MU9UY3RMamd6T0dNdExqWTRMVEV1TWpNMkxURXVPRE0zTFRFdU56STRMVE11TVRneExURXVOekk0ZW0wMkxqa3pNaUF3WXkweExqazFOeUF3TFRNdU5URTBJREV1TXpneUxUTXVOVEUwSURNdU56SXlJREFnTWk0ek9DQXhMalEyTkNBekxqY3lNaUF6TGpVNElETXVOekl5SURFdU16VTVJREFnTWk0MU1UWXRMamMwTkNBekxqRTFOUzB4TGpnM05Hd3RNUzQwT1MwdU56VTRZeTB1TXpNekxqYzVPQzB1T0RRZ01TNHdNemN0TVM0ME56Z2dNUzR3TXpjdE1TNHhNRFVnTUMweExqWXhNUzB1T1RFM0xURXVOakV4TFRJdU1USTJJREF0TVM0eU1TNDBNall0TWk0eE1qY2dNUzQyTVMweUxqRXlOeTR6TWlBd0lDNDVOaTR4TnpNZ01TNHpNekl1T1Rkc01TNDFPVGN0TGpnek9HTXRMalk0TFRFdU1qTTJMVEV1T0RNM0xURXVOekk0TFRNdU1UZ3hMVEV1TnpJNGVpSXZQand2YzNablBnPT0iLz48dGV4dCB0cmFuc2Zvcm09InNjYWxlKC4xKSIgeD0iNTQ4Ljc1IiB5PSIxNzUiIHRleHRMZW5ndGg9IjUxNy41IiBmaWxsPSIjZmZmIj5MSUNFTlNFPC90ZXh0Pjx0ZXh0IHRyYW5zZm9ybT0ic2NhbGUoLjEpIiB4PSIxNjExLjI1IiB5PSIxNzUiIHRleHRMZW5ndGg9IjExMjcuNSIgZmlsbD0iI2ZmZiIgZm9udC13ZWlnaHQ9ImJvbGQiPkNDIEJZLU5DLVNBIDQuMDwvdGV4dD48L2c+PC9zdmc+",
+                            "onClick": "echo 'https://creativecommons.org/licenses/by-nc-sa/4.0/';"
+                        }
+                    ]
                 }
             ]
         }

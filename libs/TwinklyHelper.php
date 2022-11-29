@@ -66,6 +66,46 @@ declare(strict_types=1);
 trait TwinklyHelper
 {
     /**
+     * doEffect - Get/Set current LED effect
+     *
+     * HTTP request
+     * GET /xled/v1/led/effects/current
+     *
+     * The response will be an object:
+     * code         - (integer), application return code.
+     * unique_id    - (string), UUID. Since firmware version 2.5.6.
+     * effect_id    - (integer), e.g. 0
+     *
+     * HTTP request
+     * POST /xled/v1/led/effects/current
+     *
+     * Parameters as JSON object:
+     *  effect_id   - (int), id of effect, e.g. 0.
+     *
+     * The response will be an object:
+     *  code        - Application return code.
+     */
+    private function doEffect($ip, $token, $body = null)
+    {
+        return $this->doAPI($ip, $token, 'led/effects/current', $body);
+    }
+
+    /**
+     * doEffects - Get number of LED effects
+     *
+     * HTTP request
+     * GET /xled/v1/led/effects
+     *
+     * The response will be an object:
+     *  effects_number  - (integer), e.g. 5
+     *  unique_ids      - (array) of guid's. e.g. 00000000-0000-0000-0000-000000000001
+     *  code            - Application return code.
+     */
+    private function doEffects($ip, $token)
+    {
+        return $this->doAPI($ip, $token, 'led/effects', null);
+    }
+    /**
      * doLogin - Request access token.
      *
      * HTTP request
@@ -233,7 +273,15 @@ trait TwinklyHelper
     }
 
     /**
-     * doMode - Changes LED operation mode.
+     * doMode - Get/Set LED operation mode.
+     *
+     * HTTP request
+     * GET /xled/v1/led/mode
+     *
+     * The response will be an object:
+     *   code        - (integer), application return code.
+     *   mode        - (string) mode of operation.
+     *   shop_mode   - (integer), by default 0. Since firmware version 2.4.21.
      *
      * HTTP request
      * POST /xled/v1/led/mode
@@ -242,8 +290,11 @@ trait TwinklyHelper
      *  mode    - (string) mode of operation.
      *            Mode can be one of:
      *              off - turns off lights
+     *              color - lights show a static color
      *              demo - starts predefined sequence of effects that are changed after few seconds
+     *              effect - plays a predefined effect
      *              movie - plays predefined or uploaded effect
+     *              playlist - cycles through playlist of uploaded movies
      *              rt - receive effect in real time
      *
      * The response will be an object:
@@ -252,6 +303,45 @@ trait TwinklyHelper
     private function doMode($ip, $token, $body = null)
     {
         return $this->doAPI($ip, $token, 'led/mode', $body);
+    }
+
+    /**
+     * doColor - Get/Set the color shown when in color mode.
+     *
+     * HTTP request
+     * GET /xled/v1/led/color
+     *
+     * The response will be an object.
+     *  hue         - (integer), hue component of HSV, in range 0..359
+     *  saturation  - (integer), saturation component of HSV, in range 0..255
+     *  value       - (integer), value component of HSV, in range 0..255
+     *  red         - (integer), red component of RGB, in range 0..255
+     *  green       - (integer), green component of RGB, in range 0..255
+     *  blue        - (integer), blue component of RGB, in range 0..255
+     *  code        - (integer), application return code.
+     *
+     * HTTP request
+     * POST /xled/v1/led/color
+     *
+     * Parameters as JSON object:
+     *
+     * Either the three HSV components:
+     *  hue         - (integer), hue component of HSV, in range 0..359
+     *  saturation  - (integer), saturation component of HSV, in range 0..255
+     *  value       - (integer), value component of HSV, in range 0..255
+     *
+     * Or the three RGB components:
+     *
+     *  red         - (integer), red component of RGB, in range 0..255
+     *  green       - (integer), green component of RGB, in range 0..255
+     *  blue        - (integer), blue component of RGB, in range 0..255
+     *
+     * The response will be an object:
+     *  code    - Application return code.
+     */
+    private function doColor($ip, $token, $body = null)
+    {
+        return $this->doAPI($ip, $token, 'led/color', $body);
     }
 
     /**
@@ -279,6 +369,38 @@ trait TwinklyHelper
     private function doBrightness($ip, $token, $body = null)
     {
         return $this->doAPI($ip, $token, 'led/out/brightness', $body);
+    }
+
+    /**
+     * doSaturation - Get/Set tthe current saturation level.
+     *
+     * HTTP request
+     * GET /xled/v1/led/out/saturation
+     *
+     * The response will be an object:
+     *  mode    - (string) one of “enabled”, “disabled”.
+     *  value   - (integer) saturation level in range of 0..100
+     *  code    - Application return code.
+     *
+     * HTTP request
+     * POST /xled/v1/led/out/saturation
+     *
+     * Parameters as JSON object:
+     *  mode    - (string) one of “enabled”, “disabled”.
+     *  type    - (string) either “A” for Absolute value or “R” for Relative value
+     *  value   - (signed integer) saturation level in range of 0..100 if type is “A”, or change of level in range -100..100 if type is “R”
+     *
+     * When mode is “disabled” no desaturation is applied and the led works at full color. It is not necessary to submit all the parameters,
+     * basically it would work if only value or mode is supplied. type parameter can be omitted (“A” is the default).
+     * The saturation level value is in percent so 0 is completely black-and-white and maximum meaningful value is 100.
+     * Greater values are possible but don’t seem to have any effect.
+     *
+     * The response will be an object:
+     *  code    - Application return code.
+     */
+    private function doSaturation($ip, $token, $body = null)
+    {
+        return $this->doAPI($ip, $token, 'led/out/saturation', $body);
     }
 
     /**
