@@ -312,9 +312,9 @@ class TwinklyDevice extends IPSModule
         $this->SendDebug(__FUNCTION__, $json);
         // Sync brightness
         if ($json !== false) {
-            $this->SetValueInteger('Effect', $json['preset_id']);
+            $this->SetValueInteger('Effect', $json['preset_id'] + 1);
             // Display value
-            return $this->Translate('Effect: ') . $json['preset_id'] . ' (' . $json['unique_id'] . ')';
+            return $this->Translate('Effect: ') . ($json['preset_id'] + 1) . ' (' . $json['unique_id'] . ')';
         }
         return $this->Translate('Error occurred!');
     }
@@ -531,6 +531,10 @@ class TwinklyDevice extends IPSModule
         // Token
         $token = $this->ReadAttributeString('Token');
         // Effect ID
+        $value = $value - 1; // zero based
+        if ($value < 0) {
+            $value = 0;
+        }
         $body = [
             'effect_id'  => $value,
         ];
