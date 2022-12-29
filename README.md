@@ -227,8 +227,8 @@ __Beispiel__: `TWICKLY_DeviceName(12345, 'Lichterkette');` Ausgabe "Der Name wur
 v3.0.20221201
 
 * _NEU_: Trennung von Ein/Aus-Schaltung und Änderung des Betriebsmodus
-* _NEU_: Betriebsmodus "Farbe" und "Effekt" konfiguriebar hinzugefügt
-* _NEU_: Steuerung der Sättigung hinzugfefügt
+* _NEU_: Betriebsmodus "Farbe" und "Effekt" konfigurierbar hinzugefügt
+* _NEU_: Steuerung der Sättigung hinzugefügt
 * _NEU_: Synchronisation der Statusvariablen erweitert (z.B. wenn von App geändert wurde)
 * _NEU_: Konfigurationsformular überarbeitet und vereinheitlicht
 * _NEU_: Twinkly-API erweitert
