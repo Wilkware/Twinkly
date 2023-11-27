@@ -121,6 +121,12 @@
                     "caption": "EFFECT",
                     "width": "150px",
                     "onClick": "echo TWINKLY_Effect($id);"
+                },
+                {
+                    "type": "Button",
+                    "caption": "MOVIE(S)",
+                    "width": "150px",
+                    "onClick": "echo TWINKLY_Movie($id);"
                 }
             ]
         },

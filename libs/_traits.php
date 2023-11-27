@@ -171,7 +171,7 @@ if (!defined('IS_ACTIVE')) { //Nur wenn Konstanten noch nicht bekannt sind.
     define('IS_ACTIVE', IS_SBASE + 2); //module created and running
     define('IS_DELETING', IS_SBASE + 3); //module us being deleted
     define('IS_INACTIVE', IS_SBASE + 4); //module is not beeing used
-// --- ERROR CODES
+    // --- ERROR CODES
     define('IS_EBASE', 200);          //default errorcode
     define('IS_NOTCREATED', IS_EBASE + 1); //instance could not be created
 }

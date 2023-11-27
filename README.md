@@ -1,8 +1,8 @@
 # Twinkly
 
 [![Version](https://img.shields.io/badge/Symcon-PHP--Modul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Product](https://img.shields.io/badge/Symcon%20Version-6.0-blue.svg)](https://www.symcon.de/produkt/)
-[![Version](https://img.shields.io/badge/Modul%20Version-3.0.20221201-orange.svg)](https://github.com/Wilkware/IPSymconTwinkly)
+[![Product](https://img.shields.io/badge/Symcon%20Version-6.4-blue.svg)](https://www.symcon.de/produkt/)
+[![Version](https://img.shields.io/badge/Modul%20Version-3.1.20231127-orange.svg)](https://github.com/Wilkware/IPSymconTwinkly)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![Actions](https://github.com/Wilkware/IPSymconTwinkly/workflows/Check%20Style/badge.svg)](https://github.com/Wilkware/IPSymconTwinkly/actions)
 
@@ -23,14 +23,14 @@ Ermöglicht die Kommunikation mit den Smart LED Lichterketten _Twinkly_.
 
 * Suchen und Erstellen von Twinkly Geräten (Discovery Modul)
 * Schalten des LED-Betriebsmodus (+ extended mode)
-* Einstellen der Farbe, Helligkeit, Sättigung und Effekt
+* Einstellen der Farbe, Helligkeit, Sättigung, Effekt und Film
 * Auslesen aller Geräte- und Netwerkinformationen
 * Auslesen der Firmware Version
 * Änderung des Gerätenamens
 
 ### 2. Voraussetzungen
 
-* IP-Symcon ab Version 6.0
+* IP-Symcon ab Version 6.4
 
 ### 3. Installation
 
@@ -82,6 +82,7 @@ HELLIGKEIT        | Über die Schaltflächen kann die aktuelle Helligkeit syncro
 SÄTTIGUNG         | Über die Schaltflächen kann die aktuelle Sättigung  syncronisiert werden (z.B. wenn von App geändert wurde).
 FARBE             | Über die Schaltflächen kann die aktuelle Frabe syncronisiert werden (z.B. wenn von App geändert wurde).
 EFFEKT            | Über die Schaltflächen kann der aktuelle Effekt syncronisiert werden.
+FILM(E)           | Über die Schaltflächen kann der aktuelle Film und alle hinterlegten Filme syncronisiert werden.
 GERÄTEINFOS       | Über die Schaltflächen können die verschiedensten gerätespezifischen Einstellungen abgerufen werden.
 FIRMWARE          | Über die Schaltflächen kann die Version des Gerätes ausgelesen und angezeigt werden.
 NETZWERKSTATUS    | Über die Schaltflächen können die hinterlegten Netzwerkeinstellungen angezeigt werden.
@@ -98,6 +99,7 @@ Schalter          | Integer   | Schalter (An/Aus)
 Modus             | Integer   | LED-Betriebsmodus
 Farbe             | Integer   | Farbwert
 Effekt            | Integer   | Effektauswahl (1..5)
+Film              | Integer   | Filmauswahl (abhänig von in der APP hinterlegten Filmen/Effekten)
 Brightness        | Integer   | Helligkeitswert (0..100%)
 Sättigung         | Integer   | Sättigungswert (0..100%)
 
@@ -109,6 +111,7 @@ Twinkly.Switch       | Integer   | LED-Betriebsmodus (0=Aus, 1=An)
 Twinkly.Mode         | Integer   | LED-Betriebsmodus (0=Color, 1=Effekt, 2=Film, 3=Demo)
 Twinkly.ModeEx       | Integer   | Extended LED-Betriebsmodus (0=Color, 1=Effekt, 2=Film, 3=Demo, 4=Music Reactive, 5=Playlist, 6=Echtzeit)
 Twinkly.Effect       | Integer   | Vordefinierte Effekte (1..5)
+Twinkly.Movie        | Integer   | Hinterlegte Filme (-1 für keine; >0 für hinterlegte Filme)
 
 ### 6. WebFront
 
@@ -132,7 +135,16 @@ void TWICKLY_Effect(int $InstanzID);
 Liest den aktuell am Gerät hinterlegten Effekt aus und synchronisert ihn mit der dazugehörigen Statusvariable.  
 Die Funktion liefert als Rückgabewert einen String (Effekt: x (\<uuid\>)).
 
-__Beispiel__: `TWICKLY_Brightness(12345);` Ausgabe "Helligkeit: 100%".
+__Beispiel__: `TWICKLY_Effect(12345);` Ausgabe "Effekt: 1 (00000000-0000-0000-0000-000000000001)".
+
+```php
+void TWICKLY_Movie(int $InstanzID);
+```
+
+Liest den aktuell am Gerät hinterlegten Film und und alle hinterlegten Filme aus und synchronisert ihn mit der dazugehörigen Statusvariable.  
+Die Funktion liefert als Rückgabewert einen String (Film: x (\<name\>)).
+
+__Beispiel__: `TWICKLY_Movie(12345);` Ausgabe "Film: 1 (Rainbow)".
 
 ```php
 void TWICKLY_Brightness(int $InstanzID);
@@ -223,6 +235,16 @@ Die Funktion liefert als Rückgabewert einen String (Erfolgsmeldung).
 __Beispiel__: `TWICKLY_DeviceName(12345, 'Lichterkette');` Ausgabe "Der Name wurde erfolgreich geändert!".
 
 ### 8. Versionshistorie
+
+v3.1.20231127
+
+* _NEU_: Steuerung der Film(effekte) hinzugefügt
+* _NEU_: Synchronisation der Statusvariablen erweitert (dynamisches Film-Profil)
+* _NEU_: Twinkly-API erweitert
+* _NEU_: Kompatibilität auf IPS 6.4 hoch gesetzt
+* _FIX_: Interne Bibliotheken überarbeitet
+* _FIX_: PHP Syle Check korrigiert
+* _FIX_: Dokumentation überarbeitet
 
 v3.0.20221201
 

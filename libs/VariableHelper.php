@@ -60,4 +60,18 @@ trait VariableHelper
             SetValueInteger($id, $value);
         }
     }
+
+    /**
+     * Sets the variable inactive.
+     *
+     * @param string $ident Ident of the integer variable
+     * @param bool   $value Enable or disable value the variable
+     */
+    private function SetVariableDisabled(string $ident, bool $value)
+    {
+        $id = @$this->GetIDForIdent($ident);
+        if ($id !== false) {
+            IPS_SetDisabled($id, $value);
+        }
+    }
 }

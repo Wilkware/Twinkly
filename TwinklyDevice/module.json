@@ -4,7 +4,8 @@
     "type": 3,
     "vendor": "Ledworks",
     "aliases": [
-        "Smart LED Lichterkette"
+        "Smart LED Lichterkette",
+        "Twinkly Lichterkette"
     ],
     "url": "https://wilkware.de/ip-symcon-module/twinkly",
     "parentRequirements": [],

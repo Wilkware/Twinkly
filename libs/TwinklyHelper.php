@@ -66,46 +66,6 @@ declare(strict_types=1);
 trait TwinklyHelper
 {
     /**
-     * doEffect - Get/Set current LED effect
-     *
-     * HTTP request
-     * GET /xled/v1/led/effects/current
-     *
-     * The response will be an object:
-     * code         - (integer), application return code.
-     * unique_id    - (string), UUID. Since firmware version 2.5.6.
-     * effect_id    - (integer), e.g. 0
-     *
-     * HTTP request
-     * POST /xled/v1/led/effects/current
-     *
-     * Parameters as JSON object:
-     *  effect_id   - (int), id of effect, e.g. 0.
-     *
-     * The response will be an object:
-     *  code        - Application return code.
-     */
-    private function doEffect($ip, $token, $body = null)
-    {
-        return $this->doAPI($ip, $token, 'led/effects/current', $body);
-    }
-
-    /**
-     * doEffects - Get number of LED effects
-     *
-     * HTTP request
-     * GET /xled/v1/led/effects
-     *
-     * The response will be an object:
-     *  effects_number  - (integer), e.g. 5
-     *  unique_ids      - (array) of guid's. e.g. 00000000-0000-0000-0000-000000000001
-     *  code            - Application return code.
-     */
-    private function doEffects($ip, $token)
-    {
-        return $this->doAPI($ip, $token, 'led/effects', null);
-    }
-    /**
      * doLogin - Request access token.
      *
      * HTTP request
@@ -270,6 +230,100 @@ trait TwinklyHelper
     private function doName($ip, $token, $body = null)
     {
         return $this->doAPI($ip, $token, 'device_name', $body);
+    }
+
+    /**
+     * doEffect - Get/Set current LED effect
+     *
+     * HTTP request
+     * GET /xled/v1/led/effects/current
+     *
+     * The response will be an object:
+     * code         - (integer), application return code.
+     * unique_id    - (string), UUID. Since firmware version 2.5.6.
+     * effect_id    - (integer), e.g. 0
+     *
+     * HTTP request
+     * POST /xled/v1/led/effects/current
+     *
+     * Parameters as JSON object:
+     *  effect_id   - (int), id of effect, e.g. 0.
+     *
+     * The response will be an object:
+     *  code        - Application return code.
+     */
+    private function doEffect($ip, $token, $body = null)
+    {
+        return $this->doAPI($ip, $token, 'led/effects/current', $body);
+    }
+
+    /**
+     * doEffects - Get number of LED effects
+     *
+     * HTTP request
+     * GET /xled/v1/led/effects
+     *
+     * The response will be an object:
+     *  effects_number  - (integer), e.g. 5
+     *  unique_ids      - (array) of guid's. e.g. 00000000-0000-0000-0000-000000000001
+     *  code            - Application return code.
+     */
+    private function doEffects($ip, $token)
+    {
+        return $this->doAPI($ip, $token, 'led/effects', null);
+    }
+
+    /**
+     * doMovie - Gets/Sets the id of the movie shown when in movie mode.
+     *
+     * HTTP request
+     * GET /xled/v1/led/movies/current
+     *
+     * The response will be an object.
+     *  code            - (integer), application return code.
+     *  id              - (integer), numeric id of movie, in range 0 .. 15
+     *  unique_id       - (string), UUID of movie.
+     *  name            - (string), name of movie.
+     *
+     * HTTP request
+     * POST /xled/v1/led/movies/current
+     *
+     * Parameters as JSON object.
+     *  id              - (int), id of movie, in range 0 .. 15.
+     *
+     * The response will be an object.
+     *  code            - (integer), application return code.
+     *
+     */
+    private function doMovie($ip, $token, $body = null)
+    {
+        return $this->doAPI($ip, $token, 'movies/current', $body);
+    }
+
+    /**
+     * doMovies - Get list of movies
+     *
+     * HTTP request
+     * GET /xled/v1/movies
+     *
+     * The response will be an object.
+     *  code            - Application return code.
+     *  movies          - Array of objects
+     *  available_frames- (integer), e.g. 992
+     *  max_capacity    - (integer), e.g. 992
+     *
+     * Where each item of movies is an object.
+     *  id              - (integer), e.g. 0
+     *  name            - (string)
+     *  unique_id       - (string) UUID
+     *  descriptor_type - (string), e.g “rgbw_raw” for firmware family “G” or “rgb_raw” for firmware family “F”
+     *  leds_per_frame  - (integer), e.g. 210
+     *  frames_number   - (integer), e.g. 4
+     *  fps             - (integer), e.g. 0
+     */
+    private function doMovies($ip, $token)
+    {
+        return $this->doAPI($ip, $token, 'movies', null);
     }
 
     /**

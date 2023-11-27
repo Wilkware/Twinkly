@@ -65,6 +65,10 @@ class TwinklyDevice extends IPSModule
         [1, 'On', 'Light-100', 0x00FF00],
     ];
 
+    private $assoMOVIE = [
+        [-1, 'No movies available!', '', 0xFF0000],
+    ];
+
     public function Create()
     {
         //Never delete this line!
@@ -83,23 +87,39 @@ class TwinklyDevice extends IPSModule
         if (IPS_VariableProfileExists('Twinkly.Mode')) {
             IPS_DeleteVariableProfile('Twinkly.Mode'); // v2 => v3 migration check
         }
-        $this->RegisterProfile(VARIABLETYPE_INTEGER, 'Twinkly.Switch', 'Light', '', '', 0, 0, 0, 0, $this->assoSWITCH);
-        $this->RegisterProfile(VARIABLETYPE_INTEGER, 'Twinkly.Effect', 'Stars', '', '', 1, 5, 1, 0);
-        $this->RegisterProfile(VARIABLETYPE_INTEGER, 'Twinkly.Mode', 'Remote', '', '', 0, 0, 0, 0, $this->assoMODE);
-        $this->RegisterProfile(VARIABLETYPE_INTEGER, 'Twinkly.ModeEx', 'Remote', '', '', 0, 0, 0, 0, $this->assoMODEEX);
+
+        // Statusvariablen (Movie)
+        $exists = @$this->GetIDForIdent('Movie');
+
+        // Profile anlegen
+        $this->RegisterProfileInteger('Twinkly.Switch', 'Light', '', '', 0, 0, 0, $this->assoSWITCH);
+        $this->RegisterProfileInteger('Twinkly.Effect', 'Stars', '', '', 1, 5, 1);
+        $this->RegisterProfileInteger('Twinkly.Mode', 'Remote', '', '', 0, 0, 0, $this->assoMODE);
+        $this->RegisterProfileInteger('Twinkly.ModeEx', 'Remote', '', '', 0, 0, 0, $this->assoMODEEX);
+        if (!IPS_VariableProfileExists('Twinkly.Movie')) {
+            $this->RegisterProfileInteger('Twinkly.Movie', 'Favorite', '', '', 0, 0, 0, $this->assoMOVIE);
+        }
 
         // Variablen erzeugen
         $this->RegisterVariableInteger('Switch', $this->Translate('Switch'), 'Twinkly.Switch', 0);
         $this->RegisterVariableInteger('Mode', $this->Translate('Mode'), 'Twinkly.Mode', 1);
         $this->RegisterVariableInteger('Color', $this->Translate('Color'), '~HexColor', 2);
         $this->RegisterVariableInteger('Effect', $this->Translate('Effect'), 'Twinkly.Effect', 3);
-        $this->RegisterVariableInteger('Brightness', $this->Translate('Brightness'), '~Intensity.100', 4);
-        $this->RegisterVariableInteger('Saturation', $this->Translate('Saturation'), '~Intensity.100', 5);
+        $this->RegisterVariableInteger('Movie', $this->Translate('Movie'), 'Twinkly.Movie', 4);
+        $this->RegisterVariableInteger('Brightness', $this->Translate('Brightness'), '~Intensity.100', 5);
+        $this->RegisterVariableInteger('Saturation', $this->Translate('Saturation'), '~Intensity.100', 6);
+
+        // Initialwert setzen
+        if ($exists === false) {
+            $this->SetValueInteger('Movie', -1);
+        }
+
         // Actions
         $this->EnableAction('Switch');
         $this->EnableAction('Mode');
         $this->EnableAction('Color');
         $this->EnableAction('Effect');
+        $this->EnableAction('Movie');
         $this->EnableAction('Brightness');
         $this->EnableAction('Saturation');
     }
@@ -191,6 +211,10 @@ class TwinklyDevice extends IPSModule
                 break;
             case 'Effect':
                 $this->SetEffect($value);
+                $this->SetValueInteger($ident, $value);
+                break;
+            case 'Movie':
+                $this->SetMovie($value);
                 $this->SetValueInteger($ident, $value);
                 break;
             case 'Brightness':
@@ -317,6 +341,62 @@ class TwinklyDevice extends IPSModule
             return $this->Translate('Effect: ') . ($json['preset_id'] + 1) . ' (' . $json['unique_id'] . ')';
         }
         return $this->Translate('Error occurred!');
+    }
+
+    /**
+     * This function will be available automatically after the module is imported with the module control.
+     * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
+     *
+     * TWICKLY_Movie($id);
+     */
+    public function Movie()
+    {
+        if ($this->CheckLogin() === false) {
+            return $this->Translate('Login error!');
+        }
+        // Debug
+        $this->SendDebug(__FUNCTION__, 'Obtain movie id.', 0);
+        // Host & Token
+        $host = $this->ReadPropertyString('Host');
+        $token = $this->ReadAttributeString('Token');
+        // Movie list
+        $json = $this->doMovies($host, $token);
+        if ($json !== false) {
+            $movies = [];
+            if (count($json['movies']) > 0) {
+                foreach ($json['movies'] as $movie) {
+                    $movies[] = [$movie['id'], $movie['name'], '', 0xFF0000];
+                }
+            } else {
+                $movies = $this->assoMOVIE;
+            }
+            // Delete VariableProfileAssociation
+            $old = IPS_GetVariableProfile('Twinkly.Movie')['Associations'];
+            $values = array_column($old, 'Value');
+            foreach ($movies as $movie) {
+                IPS_SetVariableProfileAssociation('Twinkly.Movie', $movie[0], $this->Translate($movie[1]), $movie[2], $movie[3]);
+                $key = array_search($movie[0], $values);
+                if (!($key === false)) {
+                    unset($values[$key]);
+                }
+            }
+            foreach ($values as $key => $value) {
+                IPS_SetVariableProfileAssociation('Twinkly.Movie', $value, '', '', 0);
+            }
+        } else {
+            return $this->Translate('Error occurred!');
+        }
+        // Request
+        $json = $this->doMovie($host, $token);
+        $this->SendDebug(__FUNCTION__, $json);
+        // Sync brightness
+        if ($json !== false) {
+            $this->SetValueInteger('Movie', $json['id']);
+            // Display value
+            return $this->Translate('Movie: ') . ($json['id']) . ' (' . $json['name'] . ')';
+        }
+        $this->SetValueInteger('Movie', -1);
+        return $this->Translate('No films uploaded!');
     }
 
     /**
@@ -540,6 +620,36 @@ class TwinklyDevice extends IPSModule
         ];
         // Request
         $this->doEffect($host, $token, $body);
+    }
+
+    /**
+     * Sets the movie id.
+     *
+     * @param int $value Movie id.
+     */
+    private function SetMovie(int $value)
+    {
+        if ($value < 0) {
+            $this->SendDebug(__FUNCTION__, 'No movie to set!');
+            return;
+        }
+
+        if ($this->CheckLogin() === false) {
+            $this->SendDebug(__FUNCTION__, 'Login error!');
+            return;
+        }
+        // Debug
+        $this->SendDebug(__FUNCTION__, 'Set movieId to: ' . $value);
+        // Host
+        $host = $this->ReadPropertyString('Host');
+        // Token
+        $token = $this->ReadAttributeString('Token');
+        // Movie ID
+        $body = [
+            'id'  => $value,
+        ];
+        // Request
+        $this->doMovie($host, $token, $body);
     }
 
     /**
