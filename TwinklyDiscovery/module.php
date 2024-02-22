@@ -46,8 +46,14 @@ class TwinklyDiscovery extends IPSModule
     {
         $form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
         $devices = $this->DiscoverDevices();
+        // Version check
+        $version = (float) IPS_GetKernelVersion();
         // Save location
         $location = $this->GetPathOfCategory($this->ReadPropertyInteger('TargetCategory'));
+        // Enable or disable "TargetCategory" for 6.x
+        if ($version < 7) {
+            $form['elements'][2]['visible'] = true;
+        }
         // Build configuration list values
         if (!empty($devices)) {
             foreach ($devices as $device) {
@@ -60,7 +66,7 @@ class TwinklyDiscovery extends IPSModule
                         [
                             'moduleID'      => '{A8ACEF24-02E6-A5A6-8409-64B16A8A3DC0}',
                             'configuration' => ['Host' => $device['host']],
-                            'location'      => $location,
+                            'location'      => ($version < 7) ? $location : [],
                         ],
                     ],
                 ];

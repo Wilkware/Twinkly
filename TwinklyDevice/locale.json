@@ -1,6 +1,9 @@
 {
     "translations": {
         "de": {
+            "Twinkly Device": "Twinkly Gerät",
+            "Twinkly fairy lights": "Twinkly Lichterkette",
+            "Smart LED fairy lights": "Smart LED Lichterkette",
             "\nTWINKLY – The smart LED light string\n ": "\nTWINKLY – Die intelligente LED-Lichterkette\n ",
             "The module is used to integrate and control Twinkly devices (smart LED light chains) in IP-Symcon.": "Das Modul dient zur Einbindung und Steuerung von Twinkly Geräten (Smarte LED Lichterketten) in IP-Symcon.",
             "Mode": "Modus",

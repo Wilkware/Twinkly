@@ -24,7 +24,8 @@
         {
             "type": "SelectCategory",
             "name": "TargetCategory",
-            "caption": "Target Category:"
+            "caption": "Target Category:",
+            "visible": false
         }
     ],
     "actions": [

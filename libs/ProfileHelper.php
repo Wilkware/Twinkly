@@ -106,13 +106,8 @@ trait ProfileHelper
 
         IPS_SetVariableProfileIcon($name, $icon);
         IPS_SetVariableProfileText($name, $prefix, $suffix);
-        IPS_SetVariableProfileDigits($name, $digits);
-
-        if (($asso !== null) && (count($asso) !== 0)) {
-            $minvalue = 0;
-            $maxvalue = 0;
-        }
         IPS_SetVariableProfileValues($name, $minvalue, $maxvalue, $stepsize);
+        IPS_SetVariableProfileDigits($name, $digits);
 
         if (($asso !== null) && (count($asso) !== 0)) {
             foreach ($asso as $ass) {
@@ -130,16 +125,32 @@ trait ProfileHelper
      * @param string $suffix Variable suffix.
      * @param array  $asso     Associations of the values.
      */
-    protected function RegisterProfileString($name, $icon, $prefix, $suffix, $asso = null)
+    protected function RegisterProfileString($name, $icon, $prefix, $suffix, $asso)
     {
         $this->RegisterProfileType($name, VARIABLETYPE_STRING);
 
-        IPS_SetVariableProfileText($name, $prefix, $suffix);
         IPS_SetVariableProfileIcon($name, $icon);
+        IPS_SetVariableProfileText($name, $prefix, $suffix);
+
         if (($asso !== null) && (count($asso) !== 0)) {
             foreach ($asso as $ass) {
                 IPS_SetVariableProfileAssociation($name, $ass[0], $this->Translate($ass[1]), $ass[2], $ass[3]);
             }
         }
+    }
+
+    /**
+     * Returns the used profile name of a variable
+     *
+     * @param int $id Variable ID
+     * @return string Empty, or name of the profile
+     */
+    protected function GetVariableProfile($id)
+    {
+        $variableProfileName = IPS_GetVariable($id)['VariableCustomProfile'];
+        if ($variableProfileName == '') {
+            $variableProfileName = IPS_GetVariable($id)['VariableProfile'];
+        }
+        return $variableProfileName;
     }
 }

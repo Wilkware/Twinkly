@@ -92,7 +92,7 @@ class TwinklyDevice extends IPSModule
         $exists = @$this->GetIDForIdent('Movie');
 
         // Profile anlegen
-        $this->RegisterProfileInteger('Twinkly.Switch', 'Light', '', '', 0, 0, 0, $this->assoSWITCH);
+        //$this->RegisterProfileInteger('Twinkly.Switch', 'Light', '', '', 0, 0, 0, $this->assoSWITCH);
         $this->RegisterProfileInteger('Twinkly.Effect', 'Stars', '', '', 1, 5, 1);
         $this->RegisterProfileInteger('Twinkly.Mode', 'Remote', '', '', 0, 0, 0, $this->assoMODE);
         $this->RegisterProfileInteger('Twinkly.ModeEx', 'Remote', '', '', 0, 0, 0, $this->assoMODEEX);
@@ -101,7 +101,7 @@ class TwinklyDevice extends IPSModule
         }
 
         // Variablen erzeugen
-        $this->RegisterVariableInteger('Switch', $this->Translate('Switch'), 'Twinkly.Switch', 0);
+        $this->RegisterVariableBoolean('Switch', $this->Translate('Switch'), '~Switch', 0);
         $this->RegisterVariableInteger('Mode', $this->Translate('Mode'), 'Twinkly.Mode', 1);
         $this->RegisterVariableInteger('Color', $this->Translate('Color'), '~HexColor', 2);
         $this->RegisterVariableInteger('Effect', $this->Translate('Effect'), 'Twinkly.Effect', 3);
@@ -199,7 +199,7 @@ class TwinklyDevice extends IPSModule
                 break;
             case 'Switch':
                 $this->SetSwitch($value);
-                $this->SetValueInteger($ident, $value);
+                $this->SetValueBoolean($ident, $value);
                 break;
             case 'Mode':
                 $this->SetMode($value);
@@ -516,7 +516,7 @@ class TwinklyDevice extends IPSModule
      *
      * @param bool $value State value.
      */
-    private function SetSwitch(int $value)
+    private function SetSwitch(bool $value)
     {
         if ($this->CheckLogin() === false) {
             $this->SendDebug(__FUNCTION__, 'Login error!');
@@ -528,7 +528,7 @@ class TwinklyDevice extends IPSModule
         $token = $this->ReadAttributeString('Token');
         // Mode
         $mode = 'off'; // Default
-        if ($value == 1) {  // 1 == 'On'
+        if ($value) {  // 1 == 'On' (true)
             $mode = $this->assoMODEEX[$this->GetValue('Mode')][4];
         }
         $this->SendDebug(__FUNCTION__, 'Switch mode: ' . $mode, 0);
@@ -545,7 +545,7 @@ class TwinklyDevice extends IPSModule
      */
     private function SetMode(int $value)
     {
-        if ($this->GetValue('Switch') == 0) { // 0 == 'Off'
+        if ($this->GetValue('Switch') == false) { // 0 == 'Off' (false)
             return;
         }
         if ($this->CheckLogin() === false) {

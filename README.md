@@ -2,7 +2,7 @@
 
 [![Version](https://img.shields.io/badge/Symcon-PHP--Modul-red.svg)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Product](https://img.shields.io/badge/Symcon%20Version-6.4-blue.svg)](https://www.symcon.de/produkt/)
-[![Version](https://img.shields.io/badge/Modul%20Version-3.1.20231127-orange.svg)](https://github.com/Wilkware/IPSymconTwinkly)
+[![Version](https://img.shields.io/badge/Modul%20Version-3.2.20240222-orange.svg)](https://github.com/Wilkware/IPSymconTwinkly)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
 [![Actions](https://github.com/Wilkware/IPSymconTwinkly/workflows/Check%20Style/badge.svg)](https://github.com/Wilkware/IPSymconTwinkly/actions)
 
@@ -235,6 +235,13 @@ Die Funktion liefert als Rückgabewert einen String (Erfolgsmeldung).
 __Beispiel__: `TWICKLY_DeviceName(12345, 'Lichterkette');` Ausgabe "Der Name wurde erfolgreich geändert!".
 
 ### 8. Versionshistorie
+
+v3.2.20240222
+
+* _NEU_: Anpassungen für IPS 7.x (Konfigurator & TileVisu)
+* _NEU_: Schaltervariable migriert auf Boolean
+* _FIX_: Übersetzungen nachgezogen
+* _FIX_: Interne Bibliotheken überarbeitet
 
 v3.1.20231127
 
