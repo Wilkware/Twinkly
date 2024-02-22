@@ -1,12 +1,12 @@
 {
     "id": "{A00985FC-B2ED-5E9E-9BC6-A7A256C5F574}",
+    "name": "Twinkly",
     "author": "Wilkware (@Pitti)",
     "url": "https://wilkware.de",
     "compatibility": {
         "version": "6.4"
     },
-    "name": "Twinkly",
-    "version": "3.1",
-    "build": 20231127,
-    "date": 1701082800
+    "version": "3.2",
+    "build": 20230222,
+    "date": 1708599600
 }
