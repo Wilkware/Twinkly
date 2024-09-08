@@ -15,7 +15,7 @@
 declare(strict_types=1);
 
 /**
- * Helper class for access satus variables.
+ * Helper class for formating and output json data.
  */
 trait FormatHelper
 {

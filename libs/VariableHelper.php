@@ -81,11 +81,54 @@ trait VariableHelper
      * @param string $ident Ident of the integer variable
      * @param bool   $value Enable or disable value the variable
      */
-    private function SetVariableDisabled(string $ident, bool $value)
+    protected function SetVariableDisabled(string $ident, bool $value)
     {
         $id = @$this->GetIDForIdent($ident);
         if ($id !== false) {
             IPS_SetDisabled($id, $value);
         }
+    }
+
+    /**
+     * Check if the identifier is a valid variable identifier
+     *
+     * @param string $ident Variable identifier
+     * @param bool $exist may exist variable
+     * @return string (correct) variable identifier
+     */
+    protected function GetVariableIdent(string $ident, bool $exist = false)
+    {
+        // Replace not allowed chars
+        $fixchar = ['/ä/', '/ö/', '/ü/', '/Ä/', '/Ö/', '/Ü/', '/ß/'];
+        $replace = ['ae', 'oe', 'ue', 'AE', 'OE', 'UE', 'ss'];
+        $ident = preg_replace($fixchar, $replace, $ident);
+
+        // Replace spaces with underscores
+        $ident = str_replace(' ', '_', $ident);
+
+        // If the passed identifier is empty, simply set it to underscore
+        if (empty($ident)) {
+            $ident = '_';
+        }
+
+        // Allow only allowed characters
+        $ident = preg_replace('/[^a-z0-9_]+/i', '', $ident);
+
+        // If the identifier starts with a number, prepend an underscore
+        //if (preg_match('/^[0-9]/', $ident)) {
+        //    $ident = '_' . $ident;
+        //}
+
+        // If the identifier is already in use, append a number to make it unique
+        if ($exist) {
+            $counter = 1;
+            $originalIdent = $ident;
+            while (@$this->GetIDForIdent($ident) !== false) {
+                $ident = $originalIdent . '_' . $counter;
+                $counter++;
+            }
+        }
+
+        return $ident;
     }
 }

@@ -16,7 +16,7 @@ Ermöglicht die Kommunikation mit den Smart LED-Leuchten _Twinkly_.
 3. [Installation](#user-content-3-installation)
 4. [Einrichten der Instanzen in IP-Symcon](#user-content-4-einrichten-der-instanzen-in-ip-symcon)
 5. [Statusvariablen und Profile](#user-content-5-statusvariablen-und-profile)
-6. [WebFront](#user-content-6-webfront)
+6. [Visualisierung](#user-content-6-visualisierung)
 7. [PHP-Befehlsreferenz](#user-content-7-php-befehlsreferenz)
 8. [Versionshistorie](#user-content-8-versionshistorie)
 
@@ -106,7 +106,7 @@ Twinkly.ModeEx       | Integer   | Extended LED-Betriebsmodus (0=Color, 1=Effekt
 Twinkly.Effect       | Integer   | Vordefinierte Effekte (1..5)
 Twinkly.Movie        | Integer   | Hinterlegte Filme (-1 für keine; >0 für hinterlegte Filme)
 
-### 6. WebFront
+### 6. Visualisierung
 
 Die pro Twinkly Gerät erzeugten Variablen können direkt ins Webfront verlingt werden.
 

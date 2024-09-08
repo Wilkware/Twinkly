@@ -87,7 +87,7 @@ trait TwinklyHelper
 
         $rand = random_bytes(32);
         $base64 = base64_encode($rand);
-        $base64 = utf8_decode($base64);
+        #FIXME: $base64 = utf8_decode($base64); // not necessary
 
         $login = ['challenge' => $base64];
         $request = json_encode($login);

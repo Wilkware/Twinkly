@@ -44,6 +44,52 @@ trait DebugHelper
     }
 
     /**
+     * DebugPrint
+     *
+     * @param mixed $arr    Array to print.
+     * @return string Pretty formated array data.
+     */
+    protected function DebugPrint($arr)
+    {
+        $retStr = '';
+        if (is_array($arr)) {
+            foreach ($arr as $key=>$val) {
+                if (is_array($val)) {
+                    $retStr .= '[' . $key . '] => ' . $this->PrettyPrint($val);
+                }else {
+                    $retStr .= '[' . $key . '] => ' . $val . ', ';
+                }
+            }
+        }
+        return $retStr;
+    }
+
+    /**
+     * Safe Print
+     *
+     * @param mixed $var Variable to log
+     */
+    protected function SafePrint($var)
+    {
+        if (is_array($var)) {
+            // Arrays als JSON-String ausgeben
+            return json_encode($var);
+        } elseif (is_object($var)) {
+            // Objekte als JSON-String ausgeben
+            return json_encode($var);
+        } elseif (is_bool($var)) {
+            // Boolesche Werte als 'true' oder 'false' ausgeben
+            return $var ? 'true' : 'false';
+        } elseif (is_null($var)) {
+            // Null-Werte als 'null' ausgeben
+            return 'null';
+        } else {
+            // Andere Typen direkt ausgeben
+            return $var;
+        }
+    }
+
+    /**
      * Wrapper for default modul log messages
      *
      * @param string $msg  Title of the log message.
