@@ -60,8 +60,12 @@
 
 declare(strict_types=1);
 
+/** @symcon-namespace */
+
+namespace Wilkware\Twinkly;
+
 /**
- * Helper class for the debug output.
+ * Helper class for the device management.
  */
 trait TwinklyHelper
 {
@@ -80,8 +84,12 @@ trait TwinklyHelper
      *  challenge-response              - 41 byte string ([0-9a-h])
      *  code                            - Application return code.
      *  authentication_token_expires_in - integer. All the time 14400
+     *
+     * @param string $ip IP address of the device.
+     *
+     * @return array<string,mixed>|false Decoded JSON response on success, false on failure.
      */
-    private function doLogin($ip)
+    private function doLogin(string $ip): array|false
     {
         $url = "http://$ip/xled/v1/login";
 
@@ -95,6 +103,7 @@ trait TwinklyHelper
 
         $err = $this->doRequest($url, null, $request, $response);
 
+        $json = false;
         if ($err) {
             $json = json_decode($response, true);
         }
@@ -113,8 +122,14 @@ trait TwinklyHelper
      *
      * The response will be an object:
      *  code                            -  Application return code.
+     *
+     * @param string $ip        IP address of the device.
+     * @param string $token     Valid authentication token.
+     * @param string $challange Challenge response returned by doLogin().
+     *
+     * @return array<string,mixed>|false Decoded JSON response on success, false on failure.
      */
-    private function doVerify($ip, $token, $challange)
+    private function doVerify(string $ip, string $token, string $challange): array|false
     {
         $url = "http://$ip/xled/v1/verify";
 
@@ -124,6 +139,7 @@ trait TwinklyHelper
 
         $err = $this->doRequest($url, $token, $request, $response);
 
+        $json = false;
         if ($err) {
             $json = json_decode($response, true);
         }
@@ -158,8 +174,13 @@ trait TwinklyHelper
      *  movie_capacity      - (number), e.g. 719
      *  copyright           - (string) “LEDWORKS 2017”
      *  code                - Application return code.
+     *
+     * @param string $ip    IP address of the device.
+     * @param string $token Valid authentication token.
+     *
+     * @return array<string,mixed>|false Decoded JSON response on success, false on failure.
      */
-    private function doGestalt($ip, $token)
+    private function doGestalt(string $ip, string $token): array|false
     {
         return $this->doAPI($ip, $token, 'gestalt');
     }
@@ -173,8 +194,12 @@ trait TwinklyHelper
      * The response will be an object:
      *  version             - (string) firmware_version
      *  code                - Application return code.
+     *
+     * @param string $ip IP address of the device.
+     *
+     * @return array<string,mixed>|false Decoded JSON response on success, false on failure.
      */
-    private function doVersion($ip)
+    private function doVersion(string $ip): array|false
     {
         return $this->doAPI($ip, null, 'fw/version');
     }
@@ -202,8 +227,13 @@ trait TwinklyHelper
      *    ip                - (string), IP address
      *    enc               - (enum), 0 for no encryption, 2 for WPA1, 3 for WPA2, 4 for WPA1+WPA2
      *    ssid_hidden       - (integer), default 0. Since firmware version 2.4.25.
+     *
+     * @param string $ip    IP address of the device.
+     * @param string $token Valid authentication token.
+     *
+     * @return array<string,mixed>|false Decoded JSON response on success, false on failure.
      */
-    private function doNetwork($ip, $token)
+    private function doNetwork(string $ip, string $token): array|false
     {
         return $this->doAPI($ip, $token, 'network/status');
     }
@@ -226,8 +256,14 @@ trait TwinklyHelper
      *
      * The response will be an object:
      *  code    - Application return code. 1103 if too long.
+     *
+     * @param string                    $ip    IP address of the device.
+     * @param string                    $token Valid authentication token.
+     * @param array<string,mixed>|null  $body  Request body, null for a GET request.
+     *
+     * @return array<string,mixed>|false Decoded JSON response on success, false on failure.
      */
-    private function doName($ip, $token, $body = null)
+    private function doName(string $ip, string $token, ?array $body = null): array|false
     {
         return $this->doAPI($ip, $token, 'device_name', $body);
     }
@@ -251,8 +287,14 @@ trait TwinklyHelper
      *
      * The response will be an object:
      *  code        - Application return code.
+     *
+     * @param string                    $ip    IP address of the device.
+     * @param string                    $token Valid authentication token.
+     * @param array<string,mixed>|null  $body  Request body, null for a GET request.
+     *
+     * @return array<string, mixed>|false Decoded JSON response on success, false on failure.
      */
-    private function doEffect($ip, $token, $body = null)
+    private function doEffect(string $ip, string $token, ?array $body = null): array|false
     {
         return $this->doAPI($ip, $token, 'led/effects/current', $body);
     }
@@ -267,8 +309,13 @@ trait TwinklyHelper
      *  effects_number  - (integer), e.g. 5
      *  unique_ids      - (array) of guid's. e.g. 00000000-0000-0000-0000-000000000001
      *  code            - Application return code.
+     *
+     * @param string $ip    IP address of the device.
+     * @param string $token Valid authentication token.
+     *
+     * @return array<string,mixed>|false Decoded JSON response on success, false on failure.
      */
-    private function doEffects($ip, $token)
+    private function doEffects(string $ip, string $token): array|false
     {
         return $this->doAPI($ip, $token, 'led/effects', null);
     }
@@ -294,8 +341,13 @@ trait TwinklyHelper
      * The response will be an object.
      *  code            - (integer), application return code.
      *
+     * @param string                    $ip    IP address of the device.
+     * @param string                    $token Valid authentication token.
+     * @param array<string,mixed>|null  $body  Request body, null for a GET request.
+     *
+     * @return array<string,mixed>|false Decoded JSON response on success, false on failure.
      */
-    private function doMovie($ip, $token, $body = null)
+    private function doMovie(string $ip, string $token, ?array $body = null): array|false
     {
         return $this->doAPI($ip, $token, 'movies/current', $body);
     }
@@ -320,8 +372,13 @@ trait TwinklyHelper
      *  leds_per_frame  - (integer), e.g. 210
      *  frames_number   - (integer), e.g. 4
      *  fps             - (integer), e.g. 0
+     *
+     * @param string $ip    IP address of the device.
+     * @param string $token Valid authentication token.
+     *
+     * @return array<string,mixed>|false Decoded JSON response on success, false on failure.
      */
-    private function doMovies($ip, $token)
+    private function doMovies(string $ip, string $token): array|false
     {
         return $this->doAPI($ip, $token, 'movies', null);
     }
@@ -353,8 +410,14 @@ trait TwinklyHelper
      *
      * The response will be an object:
      *  code    - Application return code.
+     *
+     * @param string                    $ip    IP address of the device.
+     * @param string                    $token Valid authentication token.
+     * @param array<string,mixed>|null  $body  Request body, null for a GET request.
+     *
+     * @return array<string,mixed>|false Decoded JSON response on success, false on failure.
      */
-    private function doMode($ip, $token, $body = null)
+    private function doMode(string $ip, string $token, ?array $body = null): array|false
     {
         return $this->doAPI($ip, $token, 'led/mode', $body);
     }
@@ -392,8 +455,14 @@ trait TwinklyHelper
      *
      * The response will be an object:
      *  code    - Application return code.
+     *
+     * @param string                    $ip    IP address of the device.
+     * @param string                    $token Valid authentication token.
+     * @param array<string,mixed>|null  $body  Request body, null for a GET request.
+     *
+     * @return array<string, mixed>|false Decoded JSON response on success, false on failure.
      */
-    private function doColor($ip, $token, $body = null)
+    private function doColor(string $ip, string $token, ?array $body = null): array|false
     {
         return $this->doAPI($ip, $token, 'led/color', $body);
     }
@@ -419,8 +488,14 @@ trait TwinklyHelper
      *
      * The response will be an object:
      *  code    - Application return code.
+     *
+     * @param string                    $ip    IP address of the device.
+     * @param string                    $token Valid authentication token.
+     * @param array<string,mixed>|null  $body  Request body, null for a GET request.
+     *
+     * @return array<string, mixed>|false Decoded JSON response on success, false on failure.
      */
-    private function doBrightness($ip, $token, $body = null)
+    private function doBrightness(string $ip, string $token, ?array $body = null): array|false
     {
         return $this->doAPI($ip, $token, 'led/out/brightness', $body);
     }
@@ -451,8 +526,14 @@ trait TwinklyHelper
      *
      * The response will be an object:
      *  code    - Application return code.
+     *
+     * @param string                    $ip    IP address of the device.
+     * @param string                    $token Valid authentication token.
+     * @param array<string,mixed>|null  $body  Request body, null for a GET request.
+     *
+     * @return array<string,mixed>|false Decoded JSON response on success, false on failure.
      */
-    private function doSaturation($ip, $token, $body = null)
+    private function doSaturation(string $ip, string $token, ?array $body = null): array|false
     {
         return $this->doAPI($ip, $token, 'led/out/saturation', $body);
     }
@@ -479,8 +560,14 @@ trait TwinklyHelper
      *
      * The response will be an object:
      *  code    - Application return code.
+     *
+     * @param string                    $ip    IP address of the device.
+     * @param string                    $token Valid authentication token.
+     * @param array<string,mixed>|null  $body  Request body, null for a GET request.
+     *
+     * @return array<string,mixed>|false Decoded JSON response on success, false on failure.
      */
-    private function doTimer($ip, $token, $body = null)
+    private function doTimer(string $ip, string $token, ?array $body = null): array|false
     {
         return $this->doAPI($ip, $token, 'timer', $body);
     }
@@ -488,14 +575,14 @@ trait TwinklyHelper
     /**
      * doAPI - Get/Set device data.
      *
-     * $ip      - IP of the device
-     * $tocken  - valid authenticaed tocken
-     * $path    - API url path
-     * body     - request parameter to post
+     * @param string                    $ip    IP of the device.
+     * @param string|null               $token Valid authenticated token, null if none required.
+     * @param string                    $path  API url path.
+     * @param array<string,mixed>|null  $body  Request parameter to post, null for a GET request.
      *
-     * returns JSON data, otherwise false.
+     * @return array<string,mixed>|false Decoded JSON response on success, false on failure.
      */
-    private function doAPI($ip, $token, $path, $body = null)
+    private function doAPI(string $ip, ?string $token, string $path, ?array $body = null): array|false
     {
         $url = "http://$ip/xled/v1/" . $path;
         $this->SendDebug(__FUNCTION__, $url, 0);
@@ -507,6 +594,7 @@ trait TwinklyHelper
             $err = $this->doRequest($url, $token, $request, $response);
         }
 
+        $json = false;
         if ($err) {
             $json = json_decode($response, true);
         }
@@ -514,13 +602,21 @@ trait TwinklyHelper
         return $err ? $json : $err;
     }
 
-    /*
-     * doRequest - Sends the request to the device
+    /**
+     * doRequest - Sends the request to the device.
      *
      * If $request not null, we will send a POST request, else a GET request.
      * Over the $method parameter can we force a POST or GET request!
+     *
+     * @param string      $url      Target URL of the request.
+     * @param string|null $token    Valid authentication token, null if none required.
+     * @param string|null $request  JSON encoded request body, null for a request without body.
+     * @param string|bool $response Reference parameter receiving the raw response body (by reference).
+     * @param string      $method   HTTP method to use if $request is null (default 'GET').
+     *
+     * @return bool True on success (code 1000 in the response), false on failure.
      */
-    private function doRequest($url, $token, $request, &$response, $method = 'GET')
+    private function doRequest(string $url, ?string $token, ?string $request, &$response, string $method = 'GET'): bool
     {
         $ret = false;
         // prepeare header
@@ -551,12 +647,12 @@ trait TwinklyHelper
             $json = json_decode($response, true);
             if (isset($json['code'])) {
                 if ($json['code'] != 1000) {
-                    $error = sprintf('Request failed: (%d) - URL: %s - Request: %s', $json['code'], $url, $request);
+                    $error = sprintf('Request failed: (%d) - URL: %s - Request: %s', $json['code'], $url, (string) $request);
                     $this->SendDebug(__FUNCTION__, $error, 0);
                     $ret = false;
                 }
             } else {
-                $error = sprintf('Request failed for URL: %s - Response: %s', $url, $response);
+                $error = sprintf('Request failed for URL: %s - Response: %s', $url, (string) $response);
                 $this->SendDebug(__FUNCTION__, $error, 0);
                 $ret = false;
             }

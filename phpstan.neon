@@ -1,0 +1,33 @@
+parameters:
+    level: 6
+    phpVersion: 80200
+
+    # Dein Modulverzeichnis analysieren
+    paths:
+        - ./
+
+    # Stubs mit IPS-Funktionen
+    scanDirectories:
+        - %env.IPS_STUBS_PATH%
+
+    excludePaths:
+        analyse:
+            - %env.IPS_STUBS_PATH%/*
+            
+    ignoreErrors:
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::SetVisualizationType\(\)#'
+        - '#Call to an undefined method [a-zA-Z0-9\\_]+::UpdateVisualizationValue\(\)#'
+        - '#Function AC_AddLoggedValues not found.#'
+        - '#Function AC_DeleteVariableData not found.#'
+        - '#Function AC_GetLoggedValues not found.#'
+        - '#Function AC_GetLoggingStatus not found.#'
+        - '#Function AC_SetLoggingStatus not found.#'
+        - '#Function AC_SetAggregationType not found.#'
+        - '#Function AC_SetCounterIgnoreZeros not found.#'
+        - '#Function AC_ReAggregateVariable not found.#'
+        - '#Function IPS_PresentationExists not found.#'
+        - '#Function VISU_PostNotificationEx not found.#'
+        - '#Function WFC_PushNotification not found.#'
+
+    # Supress ignore Errors
+    reportUnmatchedIgnoredErrors: false

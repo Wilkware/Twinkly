@@ -1,0 +1,46 @@
+name: Continuous Integration
+
+on: [push, pull_request]
+
+jobs:
+  ci:
+    name: "CI Pipeline"
+    runs-on: ubuntu-latest
+    env: # 👈 available to ALL steps
+      IPS_STUBS_PATH: ${{ github.workspace }}/../_ips-stubs
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@master
+
+    - name: Setup PHP
+      uses: shivammathur/setup-php@v2
+      with:
+        php-version: 8.2
+        
+    - name: Setup Symcon Stubs (clone)
+      run: git clone https://github.com/symcon/SymconStubs.git ../_ips-stubs
+
+    - name: Setup Symcon Styles (clone)
+      run: git clone https://github.com/Wilkware/StylePHP.git ../_ips-styles
+
+    # ✅ PHP-CS-Fixer Style Check
+    - name: Download PHP-CS-Fixer
+      run: wget https://cs.symfony.com/download/php-cs-fixer-v3.phar
+
+    - name: Check style
+      run: php php-cs-fixer-v3.phar fix --config=../_ips-styles/.php-cs-fixer.php -v --dry-run --allow-risky=yes --path-mode=intersection .
+
+    # ✅ PHPUnit Unit Tests
+    - name: Download PHPUnit
+      run: wget -O phpunit.phar https://phar.phpunit.de/phpunit-10.phar
+
+    - name: Unit Tests
+      run: php phpunit.phar tests --testdox -c tests/phpunit.xml
+
+    # ✅ PHPStan Static Analysis
+    - name: Download PHPStan
+      run: wget https://github.com/phpstan/phpstan/releases/latest/download/phpstan.phar
+
+    - name: Static Analysis
+      run: php phpstan.phar analyse --configuration=phpstan.neon

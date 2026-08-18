@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit bootstrap="bootstrap.php"
+        colors="true"
+        stopOnDeprecation="true"
+        stopOnFailure="true"
+        stopOnError="true">
+    <testsuites>
+        <testsuite name="Symcon Modul Test Suite">
+            <directory>tests</directory>
+        </testsuite>
+    </testsuites>
+</phpunit>

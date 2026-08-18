@@ -2,25 +2,50 @@
 
 declare(strict_types=1);
 
-// Generell funktions
+/** Generell funktions */
 require_once __DIR__ . '/../libs/_traits.php';
 
-// CLASS TwinklyDiscovery
-class TwinklyDiscovery extends IPSModule
+/** Namespaced traits */
+use Wilkware\Twinkly\DebugHelper;
+
+/**
+ * CLASS TwinklyDiscovery
+ */
+class TwinklyDiscovery extends IPSModuleStrict
 {
-    // Helper Traits
+    // -------------------------------------------------------------------------
+    // Traits
+    // -------------------------------------------------------------------------
+
     use DebugHelper;
 
-    // Discovery constant
-    public const DISCOVERY_IP = '255.255.255.255';
-    public const DISCOVERY_PORT = 5555;
-    public const DISCOVERY_MSG = "\x01discover";
-    public const DISCOVERY_TIMEOUT = 1;
+    // -------------------------------------------------------------------------
+    // Constants
+    // -------------------------------------------------------------------------
+
+    /** @var string Discovery IP */
+    private const DISCOVERY_IP = '255.255.255.255';
+
+    /** @var int Discovery Port */
+    private const DISCOVERY_PORT = 5555;
+
+    /** @var string Discovery Message */
+    private const DISCOVERY_MSG = "\x01discover";
+
+    /** @var int Discovery Timeout */
+    private const DISCOVERY_TIMEOUT = 1;
+
+    // -------------------------------------------------------------------------
+    // Methods
+    // -------------------------------------------------------------------------
 
     /**
-     * Overrides the internal IPS_Create($id) function
+     * In contrast to Construct, this function is called only once when creating the instance and starting IP-Symcon.
+     * Therefore, status variables and module properties which the module requires permanently should be created here.
+     *
+     * @return void
      */
-    public function Create()
+    public function Create(): void
     {
         //Never delete this line!
         parent::Create();
@@ -29,20 +54,13 @@ class TwinklyDiscovery extends IPSModule
     }
 
     /**
-     * Overrides the internal IPS_ApplyChanges($id) function
-     */
-    public function ApplyChanges()
-    {
-        //Never delete this line!
-        parent::ApplyChanges();
-    }
-
-    /**
-     * Internal function of the SDK.
+     * The content can be overwritten in order to transfer a self-created configuration page.
+     * This way, content can be generated dynamically.
+     * In this case, the "form.json" on the file system is completely ignored.
      *
-     * @access public
+     * @return string Content of the configuration page.
      */
-    public function GetConfigurationForm()
+    public function GetConfigurationForm(): string
     {
         $form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
         $devices = $this->DiscoverDevices();
@@ -77,11 +95,22 @@ class TwinklyDiscovery extends IPSModule
     }
 
     /**
+     * Is executed when "Apply" is pressed on the configuration page and immediately after the instance has been created.
+     *
+     * @return void
+     */
+    public function ApplyChanges(): void
+    {
+        //Never delete this line!
+        parent::ApplyChanges();
+    }
+
+    /**
      * Delivers all found devices.
      *
-     * @return array configuration list all devices
+     * @return array<int,mixed> configuration list all devices
      */
-    private function DiscoverDevices()
+    private function DiscoverDevices(): array
     {
         // Format Response
         $format =
@@ -106,7 +135,7 @@ class TwinklyDiscovery extends IPSModule
             $data[] = ['name' => $array['Name'], 'state' => $array['State'], 'host' => $array['IP4'] . '.' . $array['IP3'] . '.' . $array['IP2'] . '.' . $array['IP1']];
         }
         socket_close($sock);
-        $this->SendDebug(__FUNCTION__, $data);
+        $this->LogDebug(__FUNCTION__, $data);
         // remove dublicates
         $data = array_unique($data, SORT_REGULAR);
         return $data;
@@ -115,10 +144,11 @@ class TwinklyDiscovery extends IPSModule
     /**
      * Returns the instance ID for a given device.
      *
-     * @param string device IP adresss
-     * @return array device instance id
+     * @param string $ip device IP adresss
+     *
+     * @return int device instance id
      */
-    private function GetTwinklyInstances($ip)
+    private function GetTwinklyInstances(string $ip): int
     {
         $InstanceIDs = IPS_GetInstanceListByModuleID('{A8ACEF24-02E6-A5A6-8409-64B16A8A3DC0}');
         foreach ($InstanceIDs as $id) {
@@ -126,18 +156,19 @@ class TwinklyDiscovery extends IPSModule
                 return $id;
             }
         }
-        return 0;
+        return 1;
     }
 
     /**
      * Returns the ascending list of category names for a given category id
      *
      * @param int $categoryId Category ID.
-     * @return array List of reverse catergory names.
+     *
+     * @return array<int,string> List of category names from root to leaf
      */
     private function GetPathOfCategory(int $categoryId): array
     {
-        if ($categoryId === 0) {
+        if (!IPS_CategoryExists($categoryId)) {
             return [];
         }
 
