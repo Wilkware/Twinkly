@@ -3,11 +3,11 @@
 /**
  * FormatHelper.php
  *
- * Part of the Trait-Libraray for IP-Symcon Modules.
+ * Part of the Trait-Library for Symcon Modules.
  *
  * @package       traits
  * @author        Heiko Wilknitz <heiko@wilkware.de>
- * @copyright     2025 Heiko Wilknitz
+ * @copyright     2026 Heiko Wilknitz
  * @link          https://wilkware.de
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  */
@@ -61,7 +61,7 @@ trait FormatHelper
                             break;
                         case 4: // date/time
                             if (!empty($data[$entry[0]])) {
-                                $ret .= strftime('%a, %d.%b %Y, %H:%M', strtotime($data[$entry[0]]));
+                                $ret .= date('D, d.M Y, H:i', strtotime($data[$entry[0]]));
                             }
                             break;
                         case 5: // boolean (ON/OFF)
@@ -89,7 +89,7 @@ trait FormatHelper
      */
     private function GetColorFormatted(int $color): string
     {
-        if ($color != '-1') {
+        if ($color != -1) {
             return '#' . sprintf('%06X', $color);
         } else {
             return '';
@@ -136,7 +136,7 @@ trait FormatHelper
     private function GetMediaType(string $ext): string
     {
         $type = '';
-        switch ($ext) {
+        switch (strtolower($ext)) {
             case 'bmp':
                 $type = 'data:image/bmp;base64,';
                 break;

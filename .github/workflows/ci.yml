@@ -16,7 +16,7 @@ jobs:
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
-        php-version: 8.2
+        php-version: 8.3
         
     - name: Setup Symcon Stubs (clone)
       run: git clone https://github.com/symcon/SymconStubs.git ../_ips-stubs

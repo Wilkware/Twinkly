@@ -3,11 +3,11 @@
 /**
  * VariableHelper.php
  *
- * Part of the Trait-Libraray for IP-Symcon Modules.
+ * Part of the Trait-Library for Symcon Modules.
  *
  * @package       traits
  * @author        Heiko Wilknitz <heiko@wilkware.de>
- * @copyright     2025 Heiko Wilknitz
+ * @copyright     2026 Heiko Wilknitz
  * @link          https://wilkware.de
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  */
@@ -129,11 +129,6 @@ trait VariableHelper
         // Allow only allowed characters
         $ident = preg_replace('/[^a-z0-9_]+/i', '', $ident);
 
-        // If the identifier starts with a number, prepend an underscore
-        //if (preg_match('/^[0-9]/', $ident)) {
-        //    $ident = '_' . $ident;
-        //}
-
         // If the identifier is already in use, append a number to make it unique
         if ($exist) {
             $counter = 1;
@@ -172,13 +167,14 @@ trait VariableHelper
             }
         }
 
-        // Case 2: all "normal" string values on the top level translate (e.g. PREFIX, SUFFIX)
-        foreach ($configuration as $k => $v) {
+        // Case 2: translate only human-readable top level values (e.g. PREFIX, SUFFIX);
+        // technical values like PRESENTATION (GUID), ICON or DECIMAL_SEPARATOR stay untouched
+        foreach (['PREFIX', 'SUFFIX'] as $k) {
             if ($k === $index) {
                 continue; // was possibly already handled above as a JSON array
             }
-            if (is_string($v) && $v !== '') {
-                $configuration[$k] = $this->Translate($v);
+            if (isset($configuration[$k]) && is_string($configuration[$k]) && $configuration[$k] !== '') {
+                $configuration[$k] = $this->Translate($configuration[$k]);
             }
         }
 

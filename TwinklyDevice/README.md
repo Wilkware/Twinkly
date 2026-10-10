@@ -1,5 +1,6 @@
 # Twinkly Device
 
+[![Home](https://img.shields.io/badge/Home-wilkware.de-0b1830.svg?style=flat-square)](https://wilkware.de/module/twinkly/device/)
 [![Version](https://img.shields.io/badge/Symcon-PHP--Modul-red.svg?style=flat-square)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Product](https://img.shields.io/badge/Symcon%20Version-6.4-blue.svg?style=flat-square)](https://www.symcon.de/produkt/)
 [![Version](https://img.shields.io/badge/Modul%20Version-3.2.20240222-orange.svg?style=flat-square)](https://github.com/Wilkware/Twinkly)
@@ -14,11 +15,12 @@ Ermöglicht die Kommunikation mit den Smart LED-Leuchten _Twinkly_.
 1. [Funktionsumfang](#user-content-1-funktionsumfang)
 2. [Voraussetzungen](#user-content-2-voraussetzungen)
 3. [Installation](#user-content-3-installation)
-4. [Einrichten der Instanzen in IP-Symcon](#user-content-4-einrichten-der-instanzen-in-ip-symcon)
-5. [Statusvariablen und Profile](#user-content-5-statusvariablen-und-profile)
-6. [Visualisierung](#user-content-6-visualisierung)
-7. [PHP-Befehlsreferenz](#user-content-7-php-befehlsreferenz)
-8. [Versionshistorie](#user-content-8-versionshistorie)
+4. [Einrichtung](#user-content-4-einrichtung)
+5. [Statusvariablen](#user-content-5-statusvariablen)
+6. [Darstellungen](#user-content-6-darstellungen)
+7. [Visualisierung](#user-content-7-visualisierung)
+8. [Befehlsreferenz](#user-content-8-befehlsreferenz)
+9. [Versionshistorie](#user-content-9-versionshistorie)
 
 ### 1. Funktionsumfang
 
@@ -30,17 +32,17 @@ Ermöglicht die Kommunikation mit den Smart LED-Leuchten _Twinkly_.
 
 ### 2. Voraussetzungen
 
-* IP-Symcon ab Version 6.4
+* Symcon ab Version 6.4
 
 ### 3. Installation
 
-* Über den Modul Store das Modul _Twinkly_ installieren.
-* Alternativ Über das Modul-Control folgende URL hinzufügen.  
+* Über den Modul Store die Bibliothek _Twinkly_ installieren.
+* Alternativ über das Modul Control folgende URL hinzufügen.  
 `https://github.com/Wilkware/Twinkly` oder `git://github.com/Wilkware/Twinkly.git`
 
-### 4. Einrichten der Instanzen in IP-Symcon
+### 4. Einrichtung
 
-Unter "Instanz hinzufügen" ist das 'Twinkly Gerät'-Modul (Alias: _Twinkly Lichterkette_ oder _Smarte LED Lichterkette_) unter dem Hersteller 'Ledworks' aufgeführt.
+* Unter 'Instanz hinzufügen' ist das _Twinkly Gerät_-Modul (Alias: _Twinkly Lichterkette_, _Smarte LED Lichterkette_) unter dem Hersteller 'Ledworks' aufgeführt.
 
 __Konfigurationsseite__:
 
@@ -65,52 +67,56 @@ JETZT                      | Trägt die aktuelle Uhrzeit als Start- oder Endezei
 
 Name                       | Beschreibung
 -------------------------- | ---------------------------------
-AKtivieren des erweiterten Modus | Drüber können zusätzliche (_ungetestete_) LED Betriebsmodi freigeschalten werden (Musicreactive, Playlist & Realtime)!
+Aktivieren des erweiterten Modus | Darüber können zusätzliche (_ungetestete_) LED Betriebsmodi freigeschalten werden (Musicreactive, Playlist & Realtime)!
 
 Aktionsbereich:
 
 Aktion            | Beschreibung
 ----------------- | ------------------------------------------------------------
-HELLIGKEIT        | Über die Schaltflächen kann die aktuelle Helligkeit syncronisiert werden (z.B. wenn von App geändert wurde).
-SÄTTIGUNG         | Über die Schaltflächen kann die aktuelle Sättigung  syncronisiert werden (z.B. wenn von App geändert wurde).
-FARBE             | Über die Schaltflächen kann die aktuelle Frabe syncronisiert werden (z.B. wenn von App geändert wurde).
-EFFEKT            | Über die Schaltflächen kann der aktuelle Effekt syncronisiert werden.
-FILM(E)           | Über die Schaltflächen kann der aktuelle Film und alle hinterlegten Filme syncronisiert werden.
+HELLIGKEIT        | Über die Schaltflächen kann die aktuelle Helligkeit synchronisiert werden (z.B. wenn von App geändert wurde).
+SÄTTIGUNG         | Über die Schaltflächen kann die aktuelle Sättigung synchronisiert werden (z.B. wenn von App geändert wurde).
+FARBE             | Über die Schaltflächen kann die aktuelle Farbe synchronisiert werden (z.B. wenn von App geändert wurde).
+EFFEKT            | Über die Schaltflächen kann der aktuelle Effekt synchronisiert werden.
+FILM(E)           | Über die Schaltflächen kann der aktuelle Film und alle hinterlegten Filme synchronisiert werden.
 GERÄTEINFOS       | Über die Schaltflächen können die verschiedensten gerätespezifischen Einstellungen abgerufen werden.
 FIRMWARE          | Über die Schaltflächen kann die Version des Gerätes ausgelesen und angezeigt werden.
 NETZWERKSTATUS    | Über die Schaltflächen können die hinterlegten Netzwerkeinstellungen angezeigt werden.
 Neuer Gerätenamen | Zeigt den aktuellen (nach dem Öffnen des Formulares) Namen an bzw. kann in einen neuen Namen geändert werden.
 ÄNDERN            | Setzt den Gerätenamen (Alias) neu.
 
-### 5. Statusvariablen und Profile
+### 5. Statusvariablen
 
 Die Statusvariablen werden automatisch angelegt. Das Löschen einzelner kann zu Fehlfunktionen führen.
 
-Name              | Typ       | Beschreibung
-------------------| --------- | ----------------
-Schalter          | Integer   | Schalter (An/Aus)
-Modus             | Integer   | LED-Betriebsmodus
-Farbe             | Integer   | Farbwert
-Effekt            | Integer   | Effektauswahl (1..5)
-Film              | Integer   | Filmauswahl (abhänig von in der APP hinterlegten Filmen/Effekten)
-Brightness        | Integer   | Helligkeitswert (0..100%)
-Sättigung         | Integer   | Sättigungswert (0..100%)
+Name                 | Typ     | Beschreibung
+-------------------- | ------- | ------------------------------
+Schalter             | Boolean | Ein- bzw. Ausschalten der Lichterkette
+Modus                | Integer | LED-Betriebsmodus
+Farbe                | Integer | Farbwert
+Effekt               | Integer | Auswahl des vordefinierten Effekts
+Film                 | Integer | Filmauswahl (abhängig von den in der App hinterlegten Filmen/Effekten)
+Helligkeit           | Integer | Helligkeitswert
+Sättigung            | Integer | Sättigungswert
 
-Folgendes Profil wird angelegt:
+### 6. Darstellungen
 
-Name                 | Typ       | Beschreibung
--------------------- | --------- | ----------------
-Twinkly.Switch       | Integer   | LED-Betriebsmodus (0=Aus, 1=An)
-Twinkly.Mode         | Integer   | LED-Betriebsmodus (0=Color, 1=Effekt, 2=Film, 3=Demo)
-Twinkly.ModeEx       | Integer   | Extended LED-Betriebsmodus (0=Color, 1=Effekt, 2=Film, 3=Demo, 4=Music Reactive, 5=Playlist, 6=Echtzeit)
-Twinkly.Effect       | Integer   | Vordefinierte Effekte (1..5)
-Twinkly.Movie        | Integer   | Hinterlegte Filme (-1 für keine; >0 für hinterlegte Filme)
+Die Darstellungen werden direkt an den Statusvariablen hinterlegt, es werden keine Profile angelegt.
 
-### 6. Visualisierung
+Variable             | Darstellung   | Werte
+-------------------- | ------------- | ------------------------------
+Schalter             | Schalter      | An / Aus
+Modus                | Aufzählung    | Farbe, Effekt, Film, Demo (erweiterter Modus zusätzlich: Musicreactive, Playlist, RealTime)
+Farbe                | Farbe         | Farbauswahl mit 6 Farbvorgaben
+Effekt               | Schieberegler | 1 – 5 (Schrittweite 1)
+Film                 | Aufzählung    | Am Gerät hinterlegte Filme (ohne Filme: Keine Filme verfügbar!)
+Helligkeit           | Schieberegler | 0 – 100 % (Schrittweite 1)
+Sättigung            | Schieberegler | 0 – 100 % (Schrittweite 1)
+
+### 7. Visualisierung
 
 Die pro Twinkly Gerät erzeugten Variablen können direkt ins Webfront verlingt werden.
 
-### 7. PHP-Befehlsreferenz
+### 8. Befehlsreferenz
 
 ```php
 void TWICKLY_Color(int $InstanzID);
@@ -227,7 +233,7 @@ Die Funktion liefert als Rückgabewert einen String (Erfolgsmeldung).
 
 __Beispiel__: `TWICKLY_DeviceName(12345, 'Lichterkette');` Ausgabe "Der Name wurde erfolgreich geändert!".
 
-### 8. Versionshistorie
+### 9. Versionshistorie
 
 v3.2.20240222
 
@@ -284,7 +290,7 @@ v1.0.20200501
 
 ## Entwickler
 
-Seit nunmehr über 10 Jahren fasziniert mich das Thema Haussteuerung. In den letzten Jahren betätige ich mich auch intensiv in der IP-Symcon Community und steuere dort verschiedenste Skript und Module bei. Ihr findet mich dort unter dem Namen @pitti ;-)
+Seit nunmehr über 10 Jahren fasziniert mich das Thema Haussteuerung. In den letzten Jahren betätige ich mich auch intensiv in der Symcon Community und steuere dort verschiedenste Skript und Module bei. Ihr findet mich dort unter dem Namen @pitti ;-)
 
 [![GitHub](https://img.shields.io/badge/GitHub-@wilkware-181717.svg?style=for-the-badge&logo=github)](https://wilkware.github.io/)
 

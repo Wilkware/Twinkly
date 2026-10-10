@@ -19,7 +19,7 @@
         },
         {
             "type": "Label",
-            "label": "The module is used to integrate and control Twinkly devices (smart LED light chains) in IP-Symcon."
+            "label": "The module is used to integrate and control Twinkly devices (smart LED light chains) in Symcon."
         },
         {
             "type": "ExpansionPanel",

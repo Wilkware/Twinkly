@@ -1,5 +1,6 @@
 # Twinkly Discovery
 
+[![Home](https://img.shields.io/badge/Home-wilkware.de-0b1830.svg?style=flat-square)](https://wilkware.de/module/twinkly/discovery/)
 [![Version](https://img.shields.io/badge/Symcon-PHP--Modul-red.svg?style=flat-square)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
 [![Product](https://img.shields.io/badge/Symcon%20Version-6.4-blue.svg?style=flat-square)](https://www.symcon.de/produkt/)
 [![Version](https://img.shields.io/badge/Modul%20Version-3.2.20240222-orange.svg?style=flat-square)](https://github.com/Wilkware/Twinkly)
@@ -13,11 +14,12 @@ Ermöglicht die Gerätesuche für alle im Netzwerk befindlichen _Twinkly_ Gerät
 1. [Funktionsumfang](#user-content-1-funktionsumfang)
 2. [Voraussetzungen](#user-content-2-voraussetzungen)
 3. [Installation](#user-content-3-installation)
-4. [Einrichten der Instanzen in IP-Symcon](#user-content-4-einrichten-der-instanzen-in-ip-symcon)
-5. [Statusvariablen und Profile](#user-content-5-statusvariablen-und-profile)
-6. [Visualisierung](#user-content-6-visualisierung)
-7. [PHP-Befehlsreferenz](#user-content-7-php-befehlsreferenz)
-8. [Versionshistorie](#user-content-8-versionshistorie)
+4. [Einrichtung](#user-content-4-einrichtung)
+5. [Statusvariablen](#user-content-5-statusvariablen)
+6. [Darstellungen](#user-content-6-darstellungen)
+7. [Visualisierung](#user-content-7-visualisierung)
+8. [Befehlsreferenz](#user-content-8-befehlsreferenz)
+9. [Versionshistorie](#user-content-9-versionshistorie)
 
 ### 1. Funktionsumfang
 
@@ -25,26 +27,25 @@ Ermöglicht die Gerätesuche für alle im Netzwerk befindlichen _Twinkly_ Gerät
 
 ### 2. Voraussetzungen
 
-* IP-Symcon ab Version 6.4
+* Symcon ab Version 6.4
 
 ### 3. Installation
 
 * Über den Modul Store die Bibliothek _Twinkly_ installieren.
-* Alternativ Über das Modul-Control folgende URL hinzufügen.  
+* Alternativ über das Modul Control folgende URL hinzufügen.  
 `https://github.com/Wilkware/Twinkly` oder `git://github.com/Wilkware/Twinkly.git`
 
-### 4. Einrichten der Instanzen in IP-Symcon
+### 4. Einrichtung
 
-* Die Gerätesuche ist über die Glocke oben rechts in der Konsole aufrufbar. Dort über "SYSTEM AUSWÄHLEN" kann das  
-'_Twinkly Discovery_'-Modul ausgewählt und installiert werden.
-
-* Alternativ unter 'Instanz hinzufügen' kann das _'Twinkly Discovery'_-Modul mithilfe des Schnellfilters gefunden werden.  
+* Unter 'Instanz hinzufügen' ist das _Twinkly Discovery_-Modul unter dem Hersteller 'Ledworks' aufgeführt.  
 Weitere Informationen zum Hinzufügen von Instanzen in der [Dokumentation der Instanzen](https://www.symcon.de/service/dokumentation/konzepte/instanzen/#Instanz_hinzufügen).
+
+* Alternativ ist die Gerätesuche über die Glocke oben rechts in der Konsole aufrufbar. Dort kann über 'SYSTEM AUSWÄHLEN' das _Twinkly Discovery_-Modul ausgewählt und installiert werden.
 
 __Konfigurationsseite__:
 
 Innerhalb der Geräteliste werden alle im Netzwerk verfügbaren Geräte aufgeführt.
-Man kann pro Gerät eine Instanzen anlegen und auch wieder löschen.
+Man kann pro Gerät eine Instanz anlegen und auch wieder löschen.
 Legt man eine entsprechende Zielkategorie fest, werden neu zu erstellende Instanzen unterhalb dieser Kategorie angelegt.
 
 _Einstellungsbereich:_
@@ -59,19 +60,23 @@ Name                    | Beschreibung
 ----------------------- | ---------------------------------
 Geräte                  | Liste zum Verwalten der entsprechenden Geräte-Instanzen
 
-### 5. Statusvariablen und Profile
+### 5. Statusvariablen
 
-Es werden keine zusätzlichen Statusvariablen oder Profile benötigt.
+Es werden keine Statusvariablen angelegt.
 
-### 6. Visualisierung
+### 6. Darstellungen
+
+Es werden keine Darstellungen oder Profile benötigt.
+
+### 7. Visualisierung
 
 Es ist keine weitere Steuerung oder gesonderte Darstellung integriert.
 
-### 7. PHP-Befehlsreferenz
+### 8. Befehlsreferenz
 
 Das Modul bietet keine direkten Funktionsaufrufe.
 
-### 8. Versionshistorie
+### 9. Versionshistorie
 
 v3.2.20240222
 
@@ -107,7 +112,7 @@ v1.0.20200501
 
 ## Entwickler
 
-Seit nunmehr über 10 Jahren fasziniert mich das Thema Haussteuerung. In den letzten Jahren betätige ich mich auch intensiv in der IP-Symcon Community und steuere dort verschiedenste Skript und Module bei. Ihr findet mich dort unter dem Namen @pitti ;-)
+Seit nunmehr über 10 Jahren fasziniert mich das Thema Haussteuerung. In den letzten Jahren betätige ich mich auch intensiv in der Symcon Community und steuere dort verschiedenste Skript und Module bei. Ihr findet mich dort unter dem Namen @pitti ;-)
 
 [![GitHub](https://img.shields.io/badge/GitHub-@wilkware-181717.svg?style=for-the-badge&logo=github)](https://wilkware.github.io/)
 

@@ -3,11 +3,11 @@
 /**
  * DebugHelper.php
  *
- * Part of the Trait-Libraray for IP-Symcon Modules.
+ * Part of the Trait-Library for Symcon Modules.
  *
  * @package       traits
  * @author        Heiko Wilknitz <heiko@wilkware.de>
- * @copyright     2025 Heiko Wilknitz
+ * @copyright     2026 Heiko Wilknitz
  * @link          https://wilkware.de
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  */

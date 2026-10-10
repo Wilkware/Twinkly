@@ -3,7 +3,7 @@
 /**
  * ColorHelper.php
  *
- * Part of the Trait-Libraray for IP-Symcon Modules.
+ * Part of the Trait-Libraray for Symcon Modules.
  *
  * @package       traits
  * @author        Heiko Wilknitz <heiko@wilkware.de>
