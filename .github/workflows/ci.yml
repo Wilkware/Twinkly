@@ -11,13 +11,13 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@master
+      uses: actions/checkout@v4
 
     - name: Setup PHP
       uses: shivammathur/setup-php@v2
       with:
         php-version: 8.3
-        
+
     - name: Setup Symcon Stubs (clone)
       run: git clone https://github.com/symcon/SymconStubs.git ../_ips-stubs
 
@@ -31,6 +31,10 @@ jobs:
     - name: Check style
       run: php php-cs-fixer-v3.phar fix --config=../_ips-styles/.php-cs-fixer.php -v --dry-run --allow-risky=yes --path-mode=intersection .
 
+    # ✅ JSON Style Check
+    - name: Check json
+      run: php ../_ips-styles/.php-json-fixer.php
+
     # ✅ PHPUnit Unit Tests
     - name: Download PHPUnit
       run: wget -O phpunit.phar https://phar.phpunit.de/phpunit-10.phar
@@ -40,7 +44,7 @@ jobs:
 
     # ✅ PHPStan Static Analysis
     - name: Download PHPStan
-      run: wget https://github.com/phpstan/phpstan/releases/latest/download/phpstan.phar
+      run: wget https://github.com/phpstan/phpstan/releases/download/2.2.8/phpstan.phar
 
     - name: Static Analysis
       run: php phpstan.phar analyse --configuration=phpstan.neon
