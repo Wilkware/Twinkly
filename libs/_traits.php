@@ -1,13 +1,13 @@
 <?php
 
 /**
- * traits.php
+ * _traits.php
  *
- * Central entry point to the traits library.
+ * Central entry point to the Trait-Library for Symcon Modules (template).
  *
  * @package       traits
  * @author        Heiko Wilknitz <heiko@wilkware.de>
- * @copyright     2025 Heiko Wilknitz
+ * @copyright     2026 Heiko Wilknitz
  * @link          https://wilkware.de
  * @license       https://creativecommons.org/licenses/by-nc-sa/4.0/ CC BY-NC-SA 4.0
  */
@@ -23,22 +23,22 @@ if (!defined('IPS_BASE')) {
 if (!defined('IPS_KERNELMESSAGE')) {
     // --- KERNEL
     define('IPS_KERNELMESSAGE', IPS_BASE + 100);                // Kernel Message
-    define('KR_CREATE', IPS_KERNELMESSAGE + 1);                 // Kernel is beeing created
-    define('KR_INIT', IPS_KERNELMESSAGE + 2);                   // Kernel Components are beeing initialised, Modules loaded, Settings read
+    define('KR_CREATE', IPS_KERNELMESSAGE + 1);                 // Kernel is being created
+    define('KR_INIT', IPS_KERNELMESSAGE + 2);                   // Kernel Components are being initialised, Modules loaded, Settings read
     define('KR_READY', IPS_KERNELMESSAGE + 3);                  // Kernel is ready and running
     define('KR_UNINIT', IPS_KERNELMESSAGE + 4);                 // Got Shutdown Message, unloading all stuff
-    define('KR_SHUTDOWN', IPS_KERNELMESSAGE + 5);               // Uninit Complete, Destroying Kernel Inteface
+    define('KR_SHUTDOWN', IPS_KERNELMESSAGE + 5);               // Uninit Complete, Destroying Kernel Interface
 }
 if (!defined('IPS_LOGMESSAGE')) {
     // --- KERNEL LOGMESSAGE
     define('IPS_LOGMESSAGE', IPS_BASE + 200);                   // Logmessage Message
-    define('KL_MESSAGE', IPS_LOGMESSAGE + 1);                   // Normal Message                      | FG: Black | BG: White  | STLYE : NONE
+    define('KL_MESSAGE', IPS_LOGMESSAGE + 1);                   // Normal Message                      | FG: Black | BG: White  | STYLE : NONE
     define('KL_SUCCESS', IPS_LOGMESSAGE + 2);                   // Success Message                     | FG: Black | BG: Green  | STYLE : NONE
-    define('KL_NOTIFY', IPS_LOGMESSAGE + 3);                    // Notiy about Changes                 | FG: Black | BG: Blue   | STLYE : NONE
-    define('KL_WARNING', IPS_LOGMESSAGE + 4);                   // Warnings                            | FG: Black | BG: Yellow | STLYE : NONE
-    define('KL_ERROR', IPS_LOGMESSAGE + 5);                     // Error Message                       | FG: Black | BG: Red    | STLYE : BOLD
-    define('KL_DEBUG', IPS_LOGMESSAGE + 6);                     // Debug Informations + Script Results | FG: Grey  | BG: White  | STLYE : NONE
-    define('KL_CUSTOM', IPS_LOGMESSAGE + 7);                    // User Message                        | FG: Black | BG: White  | STLYE : NONE
+    define('KL_NOTIFY', IPS_LOGMESSAGE + 3);                    // Notify about Changes                 | FG: Black | BG: Blue   | STYLE : NONE
+    define('KL_WARNING', IPS_LOGMESSAGE + 4);                   // Warnings                            | FG: Black | BG: Yellow | STYLE : NONE
+    define('KL_ERROR', IPS_LOGMESSAGE + 5);                     // Error Message                       | FG: Black | BG: Red    | STYLE : BOLD
+    define('KL_DEBUG', IPS_LOGMESSAGE + 6);                     // Debug Informations + Script Results | FG: Grey  | BG: White  | STYLE : NONE
+    define('KL_CUSTOM', IPS_LOGMESSAGE + 7);                    // User Message                        | FG: Black | BG: White  | STYLE : NONE
 }
 if (!defined('IPS_MODULEMESSAGE')) {
     // --- MODULE LOADER
@@ -69,8 +69,8 @@ if (!defined('IPS_INSTANCEMESSAGE')) {
     define('IPS_INSTANCEMESSAGE', IPS_BASE + 500);              // Instance Manager Message
     define('IM_CREATE', IPS_INSTANCEMESSAGE + 1);               // Instance created
     define('IM_DELETE', IPS_INSTANCEMESSAGE + 2);               // Instance deleted
-    define('IM_CONNECT', IPS_INSTANCEMESSAGE + 3);              // Instance connectged
-    define('IM_DISCONNECT', IPS_INSTANCEMESSAGE + 4);           // Instance disconncted
+    define('IM_CONNECT', IPS_INSTANCEMESSAGE + 3);              // Instance connected
+    define('IM_DISCONNECT', IPS_INSTANCEMESSAGE + 4);           // Instance disconnected
     define('IM_CHANGESTATUS', IPS_INSTANCEMESSAGE + 5);         // Status was Changed
     define('IM_CHANGESETTINGS', IPS_INSTANCEMESSAGE + 6);       // Settings were Changed
     define('IM_CHANGESEARCH', IPS_INSTANCEMESSAGE + 7);         // Searching was started/stopped
@@ -169,8 +169,8 @@ if (!defined('IS_ACTIVE')) {
     define('IS_SBASE', 100);
     define('IS_CREATING', IS_SBASE + 1);                        // Module is being created
     define('IS_ACTIVE', IS_SBASE + 2);                          // Module created and running
-    define('IS_DELETING', IS_SBASE + 3);                        // Module us being deleted
-    define('IS_INACTIVE', IS_SBASE + 4);                        // Module is not beeing used
+    define('IS_DELETING', IS_SBASE + 3);                        // Module is being deleted
+    define('IS_INACTIVE', IS_SBASE + 4);                        // Module is not being used
     // --- ERROR CODES
     define('IS_EBASE', 200);                                    // Default errorcode
     define('IS_NOTCREATED', IS_EBASE + 1);                      // Instance could not be created
@@ -181,6 +181,7 @@ if (!defined('IS_ACTIVE')) {
  */
 require_once __DIR__ . '/../libs/ColorHelper.php';
 require_once __DIR__ . '/../libs/DebugHelper.php';
+require_once __DIR__ . '/../libs/FormHelper.php';
 require_once __DIR__ . '/../libs/FormatHelper.php';
 require_once __DIR__ . '/../libs/TwinklyHelper.php';
 require_once __DIR__ . '/../libs/VariableHelper.php';

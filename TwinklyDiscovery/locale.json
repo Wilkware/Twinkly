@@ -1,14 +1,16 @@
 {
     "translations": {
         "de": {
-            "\nTwinkly Device Search\n ": "\nTwinkly Gerätesuche\n ",
+            "Twinkly Discovery": "Twinkly Gerätesuche",
+            "Twinkly Device Search": "Twinkly Gerätesuche",
             "Using this configurator, you can select from the list of currently found devices and create an instance for a new device or check an existing instance.": "Mit Hilfe dieser Konfigurators kann man aus der Liste der aktuell gefundenen Geräte auswählen und eine Instanz für ein neues Gerät erstellen oder eine vorhandene Instanz prüfen.",
             "Twinkly - Smart LED lights": "Twinkly - Smarte LED Lichterketten",
-            "Target Category:": "Zielkategorie:",
             "IP Address": "IP Adresse",
             "Device name": "Gerätename",
             "Device state": "Gerätestatus",
-            "Source code, donation and licence ...": "Quellcode, Spende und Lizenz ...",
+            "Not found": "Nicht gefunden",
+            "Device search failed: ": "Gerätesuche fehlgeschlagen: ",
+            "🎗️ Source code, donation and licence ...": "🎗️ Quellcode, Spende und Lizenz ...",
             "The software is free of charge for non-commercial use, I would appreciate a donation if you like the module.": "Die Software ist für die nicht kommerzielle Nutzung kostenlos, über eine Spende bei Gefallen des Moduls würde ich mich sehr freuen."
         }
     }

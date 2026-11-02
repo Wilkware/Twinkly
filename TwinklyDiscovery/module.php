@@ -2,11 +2,12 @@
 
 declare(strict_types=1);
 
-/** Generell funktions */
+/** General functions */
 require_once __DIR__ . '/../libs/_traits.php';
 
 /** Namespaced traits */
 use Wilkware\Twinkly\DebugHelper;
+use Wilkware\Twinkly\FormHelper;
 
 /**
  * CLASS TwinklyDiscovery
@@ -18,6 +19,7 @@ class TwinklyDiscovery extends IPSModuleStrict
     // -------------------------------------------------------------------------
 
     use DebugHelper;
+    use FormHelper;
 
     // -------------------------------------------------------------------------
     // Constants
@@ -35,6 +37,9 @@ class TwinklyDiscovery extends IPSModuleStrict
     /** @var int Discovery Timeout */
     private const DISCOVERY_TIMEOUT = 1;
 
+    /** @var string Module GUID of Twinkly Device */
+    private const DEVICE_GUID = '{A8ACEF24-02E6-A5A6-8409-64B16A8A3DC0}';
+
     // -------------------------------------------------------------------------
     // Methods
     // -------------------------------------------------------------------------
@@ -49,7 +54,7 @@ class TwinklyDiscovery extends IPSModuleStrict
     {
         //Never delete this line!
         parent::Create();
-        // Properties
+        // Properties (TargetCategory is obsolete since Symcon 7, kept for existing configurations)
         $this->RegisterPropertyInteger('TargetCategory', 0);
     }
 
@@ -64,33 +69,43 @@ class TwinklyDiscovery extends IPSModuleStrict
     {
         $form = json_decode(file_get_contents(__DIR__ . '/form.json'), true);
         $devices = $this->DiscoverDevices();
-        // Version check
-        $version = (float) IPS_GetKernelVersion();
-        // Save location
-        $location = $this->GetPathOfCategory($this->ReadPropertyInteger('TargetCategory'));
-        // Enable or disable "TargetCategory" for 6.x
-        if ($version < 7) {
-            $form['elements'][2]['visible'] = true;
-        }
+        $instances = $this->GetTwinklyInstances();
         // Build configuration list values
-        if (!empty($devices)) {
-            foreach ($devices as $device) {
-                $values[] = [
-                    'instanceID'    => $this->GetTwinklyInstances($device['host']),
-                    'host'          => $device['host'],
-                    'name'          => $device['name'],
-                    'state'         => $device['state'],
-                    'create'        => [
-                        [
-                            'moduleID'      => '{A8ACEF24-02E6-A5A6-8409-64B16A8A3DC0}',
-                            'configuration' => ['Host' => $device['host']],
-                            'location'      => ($version < 7) ? $location : [],
-                        ],
-                    ],
-                ];
-            }
-            $form['actions'][0]['values'] = $values;
+        $values = [];
+        foreach ($devices as $device) {
+            $values[] = [
+                'instanceID'    => $instances[$device['host']] ?? 0,
+                'host'          => $device['host'],
+                'name'          => $device['name'],
+                'state'         => $device['state'],
+                'create'        => [
+                    'moduleID'      => self::DEVICE_GUID,
+                    'configuration' => ['Host' => $device['host']],
+                ],
+            ];
+            unset($instances[$device['host']]);
         }
+        // Existing instances whose device was not found (e.g. switched off)
+        foreach ($instances as $host => $id) {
+            $values[] = [
+                'instanceID'    => $id,
+                'host'          => $host,
+                'name'          => IPS_GetName($id),
+                'state'         => $this->Translate('Not found'),
+            ];
+        }
+        $this->ModifyFormElement($form['actions'], 'Configurator', function (array &$element) use ($values): void
+        {
+            $element['values'] = $values;
+        });
+        // Extract version
+        $ins = IPS_GetInstance($this->InstanceID);
+        $mod = IPS_GetModule($ins['ModuleInfo']['ModuleID']);
+        $lib = IPS_GetLibrary($mod['LibraryID']);
+        $this->ModifyFormElement($form['actions'], 'Version', function (array &$element) use ($lib): void
+        {
+            $element['caption'] = sprintf('v%s.%d', $lib['Version'], $lib['Build']);
+        });
         return json_encode($form);
     }
 
@@ -120,9 +135,17 @@ class TwinklyDiscovery extends IPSModuleStrict
 
         // Create UDP Broadcast Socket
         $sock = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
+        if ($sock === false) {
+            $this->LogMessage($this->Translate('Device search failed: ') . socket_strerror(socket_last_error()), KL_ERROR);
+            return [];
+        }
         socket_set_option($sock, SOL_SOCKET, SO_BROADCAST, 1);
         socket_set_option($sock, SOL_SOCKET, SO_RCVTIMEO, ['sec'=>self::DISCOVERY_TIMEOUT, 'usec'=>0]);
-        socket_sendto($sock, self::DISCOVERY_MSG, strlen(self::DISCOVERY_MSG), 0, self::DISCOVERY_IP, self::DISCOVERY_PORT);
+        if (socket_sendto($sock, self::DISCOVERY_MSG, strlen(self::DISCOVERY_MSG), 0, self::DISCOVERY_IP, self::DISCOVERY_PORT) === false) {
+            $this->LogMessage($this->Translate('Device search failed: ') . socket_strerror(socket_last_error($sock)), KL_ERROR);
+            socket_close($sock);
+            return [];
+        }
 
         // Collect all devices
         $data = [];
@@ -142,44 +165,16 @@ class TwinklyDiscovery extends IPSModuleStrict
     }
 
     /**
-     * Returns the instance ID for a given device.
+     * Returns all existing Twinkly device instances.
      *
-     * @param string $ip device IP adresss
-     *
-     * @return int device instance id
+     * @return array<string,int> Instance IDs indexed by device IP address
      */
-    private function GetTwinklyInstances(string $ip): int
+    private function GetTwinklyInstances(): array
     {
-        $InstanceIDs = IPS_GetInstanceListByModuleID('{A8ACEF24-02E6-A5A6-8409-64B16A8A3DC0}');
-        foreach ($InstanceIDs as $id) {
-            if (IPS_GetProperty($id, 'Host') == $ip) {
-                return $id;
-            }
+        $instances = [];
+        foreach (IPS_GetInstanceListByModuleID(self::DEVICE_GUID) as $id) {
+            $instances[(string) IPS_GetProperty($id, 'Host')] = $id;
         }
-        return 1;
-    }
-
-    /**
-     * Returns the ascending list of category names for a given category id
-     *
-     * @param int $categoryId Category ID.
-     *
-     * @return array<int,string> List of category names from root to leaf
-     */
-    private function GetPathOfCategory(int $categoryId): array
-    {
-        if (!IPS_CategoryExists($categoryId)) {
-            return [];
-        }
-
-        $path[] = IPS_GetName($categoryId);
-        $parentId = IPS_GetObject($categoryId)['ParentID'];
-
-        while ($parentId > 0) {
-            $path[] = IPS_GetName($parentId);
-            $parentId = IPS_GetObject($parentId)['ParentID'];
-        }
-
-        return array_reverse($path);
+        return $instances;
     }
 }

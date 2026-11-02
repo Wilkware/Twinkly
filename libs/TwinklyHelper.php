@@ -70,6 +70,13 @@ namespace Wilkware\Twinkly;
 trait TwinklyHelper
 {
     /**
+     * RenewToken - Login again and return a fresh token (implemented by the module).
+     *
+     * @return string|null New token if successful, otherwise null.
+     */
+    abstract private function RenewToken(): ?string;
+
+    /**
      * doLogin - Request access token.
      *
      * HTTP request
@@ -324,7 +331,7 @@ trait TwinklyHelper
      * doMovie - Gets/Sets the id of the movie shown when in movie mode.
      *
      * HTTP request
-     * GET /xled/v1/led/movies/current
+     * GET /xled/v1/movies/current
      *
      * The response will be an object.
      *  code            - (integer), application return code.
@@ -333,7 +340,7 @@ trait TwinklyHelper
      *  name            - (string), name of movie.
      *
      * HTTP request
-     * POST /xled/v1/led/movies/current
+     * POST /xled/v1/movies/current
      *
      * Parameters as JSON object.
      *  id              - (int), id of movie, in range 0 .. 15.
@@ -501,7 +508,7 @@ trait TwinklyHelper
     }
 
     /**
-     * doSaturation - Get/Set tthe current saturation level.
+     * doSaturation - Get/Set the current saturation level.
      *
      * HTTP request
      * GET /xled/v1/led/out/saturation
@@ -542,7 +549,7 @@ trait TwinklyHelper
      * doTimer - Get/Set time when lights should be turned on and time to turn them off.
      *
      * HTTP request
-     * GET /xled/v1/led/timer
+     * GET /xled/v1/timer
      *
      * The response will be an object:
      *  time_now - (integer) current time in seconds after midnight.
@@ -551,7 +558,7 @@ trait TwinklyHelper
      *  code     - Application return code.
      *
      * HTTP request
-     * POST /xled/v1/led/timer
+     * POST /xled/v1/timer
      *
      * Parameters as JSON object:
      *  time_now - (integer) current time in seconds after midnight.
@@ -575,6 +582,9 @@ trait TwinklyHelper
     /**
      * doAPI - Get/Set device data.
      *
+     * If the device rejects the token (HTTP 401, e.g. after a reboot), a new token is requested
+     * via RenewToken() and the request is repeated once.
+     *
      * @param string                    $ip    IP of the device.
      * @param string|null               $token Valid authenticated token, null if none required.
      * @param string                    $path  API url path.
@@ -585,13 +595,17 @@ trait TwinklyHelper
     private function doAPI(string $ip, ?string $token, string $path, ?array $body = null): array|false
     {
         $url = "http://$ip/xled/v1/" . $path;
-        $this->SendDebug(__FUNCTION__, $url, 0);
+        $this->LogDebug(__FUNCTION__, $url);
         $response = json_encode([]);
-        if ($body == null) {
-            $err = $this->doRequest($url, $token, null, $response);
-        } else {
-            $request = json_encode($body);
-            $err = $this->doRequest($url, $token, $request, $response);
+        $request = ($body == null) ? null : json_encode($body);
+        $status = 0;
+        $err = $this->doRequest($url, $token, $request, $response, 'GET', $status);
+        if (!$err && $status === 401 && $token !== null) {
+            $this->LogDebug(__FUNCTION__, 'Token rejected, login again.');
+            $token = $this->RenewToken();
+            if ($token !== null) {
+                $err = $this->doRequest($url, $token, $request, $response);
+            }
         }
 
         $json = false;
@@ -613,22 +627,23 @@ trait TwinklyHelper
      * @param string|null $request  JSON encoded request body, null for a request without body.
      * @param string|bool $response Reference parameter receiving the raw response body (by reference).
      * @param string      $method   HTTP method to use if $request is null (default 'GET').
+     * @param int         $status   Reference parameter receiving the HTTP status code (by reference).
      *
      * @return bool True on success (code 1000 in the response), false on failure.
      */
-    private function doRequest(string $url, ?string $token, ?string $request, &$response, string $method = 'GET'): bool
+    private function doRequest(string $url, ?string $token, ?string $request, &$response, string $method = 'GET', int &$status = 0): bool
     {
         $ret = false;
-        // prepeare header
+        // prepare header
         $headers = [
             'Content-Type: application/json',
             'Content-Length: ' . (($request == null) ? 0 : strlen($request)),
         ];
-        // prepeare token
+        // prepare token
         if ($token != null) {
             $headers[] = 'X-Auth-Token: ' . $token;
         }
-        // prepeare curl call
+        // prepare curl call
         $curl = curl_init();
         curl_setopt($curl, CURLOPT_URL, $url);
         if ($request != null) {
@@ -639,8 +654,10 @@ trait TwinklyHelper
         }
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($curl, CURLOPT_CONNECTTIMEOUT, 2);
+        curl_setopt($curl, CURLOPT_TIMEOUT, 5);
         $response = curl_exec($curl);
-        curl_close($curl);
+        $status = (int) curl_getinfo($curl, CURLINFO_HTTP_CODE);
         // evaluate response
         if ($response != null) {
             $ret = true;
@@ -648,12 +665,12 @@ trait TwinklyHelper
             if (isset($json['code'])) {
                 if ($json['code'] != 1000) {
                     $error = sprintf('Request failed: (%d) - URL: %s - Request: %s', $json['code'], $url, (string) $request);
-                    $this->SendDebug(__FUNCTION__, $error, 0);
+                    $this->LogDebug(__FUNCTION__, $error);
                     $ret = false;
                 }
             } else {
                 $error = sprintf('Request failed for URL: %s - Response: %s', $url, (string) $response);
-                $this->SendDebug(__FUNCTION__, $error, 0);
+                $this->LogDebug(__FUNCTION__, $error);
                 $ret = false;
             }
         }

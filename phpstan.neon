@@ -17,21 +17,6 @@ parameters:
             
     # Supress call to an undefined method OR function not found
     ignoreErrors:
-        - identifier: trait.unused
-        - '#Call to an undefined method [a-zA-Z0-9\\_]+::SetVisualizationType\(\)#'
-        - '#Call to an undefined method [a-zA-Z0-9\\_]+::UpdateVisualizationValue\(\)#'
-        - '#Function AC_AddLoggedValues not found.#'
-        - '#Function AC_DeleteVariableData not found.#'
-        - '#Function AC_GetLoggedValues not found.#'
-        - '#Function AC_GetLoggingStatus not found.#'
-        - '#Function AC_SetLoggingStatus not found.#'
-        - '#Function AC_SetAggregationType not found.#'
-        - '#Function AC_SetCounterIgnoreZeros not found.#'
-        - '#Function AC_ReAggregateVariable not found.#'
-        - '#Function IPS_PresentationExists not found.#'
-        - '#Function VISU_PostNotificationEx not found.#'
-        - '#Function WFC_PushNotification not found.#'
-
 
     # Supress ignore errors
     reportUnmatchedIgnoredErrors: false

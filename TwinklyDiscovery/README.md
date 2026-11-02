@@ -1,11 +1,11 @@
-# Twinkly Discovery
+# 🔎 Twinkly Discovery
 
 [![Home](https://img.shields.io/badge/Home-wilkware.de-0b1830.svg?style=flat-square)](https://wilkware.de/module/twinkly/discovery/)
 [![Version](https://img.shields.io/badge/Symcon-PHP--Modul-red.svg?style=flat-square)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Product](https://img.shields.io/badge/Symcon%20Version-6.4-blue.svg?style=flat-square)](https://www.symcon.de/produkt/)
-[![Version](https://img.shields.io/badge/Modul%20Version-3.2.20240222-orange.svg?style=flat-square)](https://github.com/Wilkware/Twinkly)
+[![Product](https://img.shields.io/badge/Symcon%20Version-8.1-blue.svg?style=flat-square)](https://www.symcon.de/produkt/)
+[![Version](https://img.shields.io/badge/Modul%20Version-4.0.20261102-orange.svg?style=flat-square)](https://github.com/Wilkware/Twinkly)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg?style=flat-square)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
-[![Actions](https://img.shields.io/github/actions/workflow/status/wilkware/Twinkly/style.yml?branch=main&label=CheckStyle&style=flat-square)](https://github.com/Wilkware/Twinkly/actions)
+[![Actions](https://img.shields.io/github/actions/workflow/status/wilkware/Twinkly/ci.yml?branch=main&label=CI&style=flat-square)](https://github.com/Wilkware/Twinkly/actions)
 
 Ermöglicht die Gerätesuche für alle im Netzwerk befindlichen _Twinkly_ Geräte.
 
@@ -27,7 +27,7 @@ Ermöglicht die Gerätesuche für alle im Netzwerk befindlichen _Twinkly_ Gerät
 
 ### 2. Voraussetzungen
 
-* Symcon ab Version 6.4
+* Symcon ab Version 8.1
 
 ### 3. Installation
 
@@ -46,13 +46,11 @@ __Konfigurationsseite__:
 
 Innerhalb der Geräteliste werden alle im Netzwerk verfügbaren Geräte aufgeführt.
 Man kann pro Gerät eine Instanz anlegen und auch wieder löschen.
-Legt man eine entsprechende Zielkategorie fest, werden neu zu erstellende Instanzen unterhalb dieser Kategorie angelegt.
+Bereits angelegte Instanzen, deren Gerät gerade nicht gefunden wird (z.B. ausgeschaltet), werden mit dem Status „Nicht gefunden“ ebenfalls angezeigt.
 
 _Einstellungsbereich:_
 
-Name                          | Beschreibung
------------------------------ | ---------------------------------
-Erstelle neue Instanzen unter | Kategorie unter welcher neue Instanzen erzeugt werden (keine Auswahl im Root)
+Keine Einstellungen.
 
 _Aktionsbereich:_
 
@@ -77,6 +75,14 @@ Es ist keine weitere Steuerung oder gesonderte Darstellung integriert.
 Das Modul bietet keine direkten Funktionsaufrufe.
 
 ### 9. Versionshistorie
+
+v4.0.20261102
+
+* _NEU_: Kompatibilität auf Symcon 8.1 hochgesetzt
+* _NEU_: Angelegte, aber aktuell nicht gefundene Geräte werden mit angezeigt
+* _NEU_: Konfigurationsformular auf Standardlayout umgestellt (inkl. Versionsanzeige)
+* _FIX_: Auswahl der Zielkategorie (nur Symcon 6) entfernt
+* _FIX_: Fehlerbehandlung der Gerätesuche
 
 v3.2.20240222
 

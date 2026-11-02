@@ -2,18 +2,19 @@
 
 declare(strict_types=1);
 
-/** Generell funktions */
+/** General functions */
 require_once __DIR__ . '/../libs/_traits.php';
 
 /** Namespaced traits */
 use Wilkware\Twinkly\ColorHelper;
 use Wilkware\Twinkly\DebugHelper;
 use Wilkware\Twinkly\FormatHelper;
+use Wilkware\Twinkly\FormHelper;
 use Wilkware\Twinkly\TwinklyHelper;
 use Wilkware\Twinkly\VariableHelper;
 
 /**
- * CLASS PresenceDetector
+ * CLASS TwinklyDevice
  */
 class TwinklyDevice extends IPSModuleStrict
 {
@@ -24,12 +25,22 @@ class TwinklyDevice extends IPSModuleStrict
     use ColorHelper;
     use DebugHelper;
     use FormatHelper;
+    use FormHelper;
     use TwinklyHelper;
     use VariableHelper;
 
     // -------------------------------------------------------------------------
     // Constants
     // -------------------------------------------------------------------------
+
+    /** @var int Token lifetime in seconds (device issues tokens valid for 14400 seconds) */
+    private const TOKEN_LIFETIME = 14000;
+
+    /** @var int Check interval in seconds while the synchronisation is paused */
+    private const PAUSE_INTERVAL = 3600;
+
+    /** @var int Status: synchronisation paused (IS_STANDBY) */
+    private const STATUS_PAUSED = 106;
 
     /** @var array<int,mixed> Twinkly modes */
     private const TWINKLY_MODES = [
@@ -40,11 +51,6 @@ class TwinklyDevice extends IPSModuleStrict
         [4, 'musicreactive'],
         [5, 'playlist'],
         [6, 'rt'],
-    ];
-
-    /** @var array<int,mixed> Twinkly movie */
-    private const TWINKLY_MOVIE = [
-        [-1, 'No movies available!'],
     ];
 
     // -------------------------------------------------------------------------
@@ -61,14 +67,14 @@ class TwinklyDevice extends IPSModuleStrict
         ['product_code', 'Product Code', 3, null],
         ['fw_family', 'Firmware Family', 3, null],
         ['device_name', 'Device Name', 3, null],
-        ['uptime', 'Uptime', 2, ' ms', null],
-        ['mac', 'MAC:', 3, null],
+        ['uptime', 'Uptime', 2, null],
+        ['mac', 'MAC', 3, null],
         ['uuid', 'UUID', 3, null],
         ['max_supported_led', 'Max supported LED', 2, null],
         ['number_of_led', 'Number of LED', 2, null],
         ['led_profile', 'LED Profile', 3, null],
-        ['measured_frame_rate', 'Frame Rate', 2, null],
-        ['frame_rate', 'Measured Frame Rate', 2, null],
+        ['frame_rate', 'Frame Rate', 2, null],
+        ['measured_frame_rate', 'Measured Frame Rate', 2, null],
         ['movie_capacity', 'Movie Capacity', 2, null],
         ['copyright', 'Copyright', 3, null],
     ];
@@ -77,104 +83,92 @@ class TwinklyDevice extends IPSModuleStrict
     // Presentations
     // -------------------------------------------------------------------------
 
-    /** @var array<string,mixed> Switch Presentation (Switch) */
+    /**
+     * @var array<string,mixed> Switch Presentation (Switch)
+     */
     private const TWINKLY_PRESENTATION_SWITCH = [
-        'PRESENTATION'   => VARIABLE_PRESENTATION_SWITCH,
-        'USE_ICON_FALSE' => true,
-        'USAGE_TYPE'     => 0,
-        'ICON_TRUE'      => 'lightbulb',
-        'ICON_FALSE'     => 'lightbulb-on',
-        'GLOW_INTENSITY' => 50,
         'GLOW_COLOR'     => 16771899,
+        'GLOW_INTENSITY' => 50,
+        'ICON_FALSE'     => 'lightbulb',
+        'ICON_TRUE'      => 'lightbulb-on',
+        'PRESENTATION'   => VARIABLE_PRESENTATION_SWITCH,
+        'USAGE_TYPE'     => 0,
+        'USE_ICON_FALSE' => true,
     ];
 
     /**
      * @var array<string,mixed> Mode Presentation (Enumeration)
      */
     private const TWINKLY_PRESENTATION_MODE = [
-        'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
+        'ICON'         => 'sliders',
         'OPTIONS'      => '[{"Caption":"Color","Color":16776960,"IconActive":false,"IconValue":"","Value":0},{"Caption":"Effect","Color":65280,"IconActive":false,"IconValue":"","Value":1},{"Caption":"Movie","Color":16711680,"IconActive":false,"IconValue":"","Value":2},{"Caption":"Demo","Color":65535,"IconActive":false,"IconValue":"","Value":3}]',
-        'LAYOUT'       => 0,
-        'ICON'         => 'Remote',
-        'DISPLAY'      => 0,
+        'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
     ];
 
     /**
      * @var array<string,mixed> Mode Extended Presentation (Enumeration)
      */
     private const TWINKLY_PRESENTATION_MODE_EX = [
+        'ICON'         => 'sliders',
+        'OPTIONS'      => '[{"Caption":"Color","Color":16776960,"IconActive":false,"IconValue":"","Value":0},{"Caption":"Effect","Color":65280,"IconActive":false,"IconValue":"","Value":1},{"Caption":"Movie","Color":16711680,"IconActive":false,"IconValue":"","Value":2},{"Caption":"Demo","Color":65535,"IconActive":false,"IconValue":"","Value":3},{"Caption":"Music Reactive","Color":16711935,"IconActive":false,"IconValue":"","Value":4},{"Caption":"Playlist","Color":255,"IconActive":false,"IconValue":"","Value":5},{"Caption":"Realtime","Color":16743680,"IconActive":false,"IconValue":"","Value":6}]',
         'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
-        'OPTIONS'      => '[{"Caption":"Color","Color":16776960,"IconActive":false,"IconValue":"","Value":0},{"Caption":"Effect","Color":65280,"IconActive":false,"IconValue":"","Value":1},{"Caption":"Movie","Color":16711680,"IconActive":false,"IconValue":"","Value":2},{"Caption":"Demo","Color":65535,"IconActive":false,"IconValue":"","Value":3},{"Caption":"Musicreactive","Color":16711935,"IconActive":false,"IconValue":"","Value":4},{"Caption":"Playlist","Color":255,"IconActive":false,"IconValue":"","Value":5},{"Caption":"RealTime","Color":16743680,"IconActive":false,"IconValue":"","Value":6}]',
-        'LAYOUT'       => 0,
-        'ICON'         => 'Remote',
-        'DISPLAY'      => 0,
+    ];
+
+    /**
+     * @var array<string,mixed> Color Presentation (Color)
+     */
+    private const TWINKLY_PRESENTATION_COLOR = [
+        'COLOR_CURVE'   => 0,
+        'COLOR_SPACE'   => 1,
+        'ENCODING'      => 0,
+        'PRESENTATION'  => VARIABLE_PRESENTATION_COLOR,
+        'PRESET_VALUES' => '[{"Color":16007990},{"Color":16761095},{"Color":10233776},{"Color":48340},{"Color":2201331},{"Color":15277667}]',
+        'SELECTION'     => 0,
+    ];
+
+    /**
+     * @var array<string,mixed> Effect Presentation (Enumeration), options are built from the number of device effects
+     */
+    private const TWINKLY_PRESENTATION_EFFECT = [
+        'ICON'         => 'stars',
+        'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
     ];
 
     /**
      * @var array<string,mixed> Movie Presentation (Enumeration)
      */
     private const TWINKLY_PRESENTATION_MOVIE = [
+        'ICON'         => 'film',
+        'OPTIONS'      => '[{"Caption":"No movies","Color":16711680,"IconActive":false,"IconValue":"","Value":""}]',
         'PRESENTATION' => VARIABLE_PRESENTATION_ENUMERATION,
-        'OPTIONS'      => '[{"Caption":"No movies available!","Color":16711680,"IconActive":false,"IconValue":"","Value":0}]',
-        'LAYOUT'       => 0,
-        'ICON'         => 'Favorite',
-        'DISPLAY'      => 0,
     ];
 
     /**
-     * @var array<string,mixed> Intensity Presentation (Slider)
+     * @var array<string,mixed> Brightness Presentation (Slider)
      */
-    private const TWINKLY_PRESENTATION_SLIDER = [
-        'PRESENTATION'        => VARIABLE_PRESENTATION_SLIDER,
-        'USAGE_TYPE'          => 2,
-        'THOUSANDS_SEPARATOR' => '',
-        'DECIMAL_SEPARATOR'   => 'Client',
-        'PERCENTAGE'          => true,
-        'DIGITS'              => 0,
-        'INTERVALS'           => '[]',
-        'ICON'                => 'signal',
-        'INTERVALS_ACTIVE'    => false,
-        'MAX'                 => 100,
-        'GRADIENT_TYPE'       => 0,
-        'MIN'                 => 0,
-        'CUSTOM_GRADIENT'     => '[]',
-        'PREFIX'              => '',
-        'STEP_SIZE'           => 1.0,
-        'SUFFIX'              => ' %',
+    private const TWINKLY_PRESENTATION_BRIGHTNESS = [
+        'ICON'         => 'sun',
+        'MAX'          => 100,
+        'MIN'          => 0,
+        'PERCENTAGE'   => true,
+        'PRESENTATION' => VARIABLE_PRESENTATION_SLIDER,
+        'STEP_SIZE'    => 1.0,
+        'SUFFIX'       => ' %',
+        'USAGE_TYPE'   => 2,
     ];
 
     /**
-     * @var array<string,mixed> Effects Presentation (Slider)
+     * @var array<string,mixed> Saturation Presentation (Slider)
      */
-    private const TWINKLY_PRESENTATION_EFFECTS = [
-        'PRESENTATION'        => VARIABLE_PRESENTATION_SLIDER,
-        'USAGE_TYPE'          => 5,
-        'THOUSANDS_SEPARATOR' => '',
-        'DECIMAL_SEPARATOR'   => 'Client',
-        'PERCENTAGE'          => false,
-        'DIGITS'              => 0,
-        'INTERVALS'           => '[]',
-        'ICON'                => 'stars',
-        'INTERVALS_ACTIVE'    => false,
-        'MAX'                 => 5,
-        'GRADIENT_TYPE'       => 0,
-        'MIN'                 => 1,
-        'CUSTOM_GRADIENT'     => '[]',
-        'PREFIX'              => '',
-        'STEP_SIZE'           => 1.0,
-        'SUFFIX'              => '',
-    ];
-
-    /**
-     * @var array<string,mixed> Presentation (type)
-     */
-    private const TWINKLY_PRESENTATION_COLOR = [
-        'PRESENTATION'  => VARIABLE_PRESENTATION_COLOR,
-        'SELECTION'     => 0,
-        'PRESET_VALUES' => '[{"Color":16007990},{"Color":16761095},{"Color":10233776},{"Color":48340},{"Color":2201331},{"Color":15277667}]',
-        'ENCODING'      => 0,
-        'COLOR_SPACE'   => 1,
-        'COLOR_CURVE'   => 0,
+    private const TWINKLY_PRESENTATION_SATURATION = [
+        'ICON'         => 'droplet',
+        'MAX'          => 100,
+        'MIN'          => 0,
+        'PERCENTAGE'   => true,
+        'PRESENTATION' => VARIABLE_PRESENTATION_SLIDER,
+        'STEP_SIZE'    => 1.0,
+        'SUFFIX'       => ' %',
+        'USAGE_TYPE'   => 5,
     ];
 
     // -------------------------------------------------------------------------
@@ -193,7 +187,9 @@ class TwinklyDevice extends IPSModuleStrict
         parent::Create();
 
         // Properties
-        $this->RegisterPropertyString('Host', '127.0.0.1');
+        $this->RegisterPropertyString('Host', '');
+        $this->RegisterPropertyInteger('UpdateInterval', 0);
+        $this->RegisterPropertyInteger('PauseAfterDays', 3);
         $this->RegisterPropertyBoolean('AdvancedMode', false);
         $this->RegisterPropertyBoolean('TimerCheck', false);
         $this->RegisterPropertyString('TimerOn', '{"hour": 15,"minute": 0,"second": 0}');
@@ -203,34 +199,26 @@ class TwinklyDevice extends IPSModuleStrict
         $this->RegisterAttributeString('Token', '');
         $this->RegisterAttributeInteger('Validate', 0);
 
-        // Variablen Profile einrichten
-        if (IPS_VariableProfileExists('Twinkly.Mode')) {
-            IPS_DeleteVariableProfile('Twinkly.Mode'); // v2 => v3 migration check
-        }
+        // Attributes for internal state
+        $this->RegisterAttributeString('Movies', '[]');
+        $this->RegisterAttributeString('TimerConfig', '');
+        $this->RegisterAttributeInteger('UnreachableSince', 0);
+        $this->RegisterAttributeInteger('Effects', 5);
 
-        // Statusvariablen (Movie)
-        $exists = IPS_VariableExists(@$this->GetIDForIdent('Movie'));
+        // Timer for state synchronisation
+        $this->RegisterTimer('UpdateTimer', 0, 'IPS_RequestAction($_IPS[\'TARGET\'], \'Update\', \'\');');
 
         // Presentations
         $mode = $this->TranslatePresentation(self::TWINKLY_PRESENTATION_MODE, 'OPTIONS', 'Caption');
-        $movie = $this->TranslatePresentation(self::TWINKLY_PRESENTATION_MOVIE, 'OPTIONS', 'Caption');
-        if ($exists) {
-            $movie = '';
-        }
 
         // Variablen erzeugen
         $this->RegisterVariableBoolean('Switch', $this->Translate('Switch'), self::TWINKLY_PRESENTATION_SWITCH, 0);
         $this->RegisterVariableInteger('Mode', $this->Translate('Mode'), $mode, 1);
         $this->RegisterVariableInteger('Color', $this->Translate('Color'), self::TWINKLY_PRESENTATION_COLOR, 2);
-        $this->RegisterVariableInteger('Effect', $this->Translate('Effect'), self::TWINKLY_PRESENTATION_EFFECTS, 3);
-        $this->RegisterVariableInteger('Movie', $this->Translate('Movie'), $movie, 4);
-        $this->RegisterVariableInteger('Brightness', $this->Translate('Brightness'), self::TWINKLY_PRESENTATION_SLIDER, 5);
-        $this->RegisterVariableInteger('Saturation', $this->Translate('Saturation'), self::TWINKLY_PRESENTATION_SLIDER, 6);
-
-        // Initialwert setzen
-        if ($exists === false) {
-            $this->SetValueInteger('Movie', -1);
-        }
+        $this->RegisterVariableInteger('Effect', $this->Translate('Effect'), $this->GetEffectPresentation(), 3);
+        $this->RegisterVariableString('Movie', $this->Translate('Movie'), $this->GetMoviePresentation(), 4);
+        $this->RegisterVariableInteger('Brightness', $this->Translate('Brightness'), self::TWINKLY_PRESENTATION_BRIGHTNESS, 5);
+        $this->RegisterVariableInteger('Saturation', $this->Translate('Saturation'), self::TWINKLY_PRESENTATION_SATURATION, 6);
 
         // Actions
         $this->EnableAction('Switch');
@@ -272,19 +260,37 @@ class TwinklyDevice extends IPSModuleStrict
         $this->LogDebug(__FUNCTION__, $timer);
         // Timer
         if (!empty($timer)) {
-            $form['elements'][3]['items'][0]['items'][2]['value'] = $timer['on'];
-            $form['elements'][3]['items'][0]['items'][4]['value'] = $timer['off'];
+            foreach (['TimerOn' => $timer['on'], 'TimerOff' => $timer['off']] as $name => $value) {
+                $this->ModifyFormElement($form['elements'], $name, function (array &$element) use ($value): void
+                {
+                    $element['value'] = $value;
+                });
+            }
         } else {
-            $form['elements'][3]['items'][0]['items'][0]['value'] = false;
-            $form['elements'][3]['items'][0]['items'][1]['enabled'] = false;
-            $form['elements'][3]['items'][0]['items'][2]['enabled'] = false;
-            $form['elements'][3]['items'][0]['items'][3]['enabled'] = false;
-            $form['elements'][3]['items'][0]['items'][4]['enabled'] = false;
+            $this->ModifyFormElement($form['elements'], 'TimerCheck', function (array &$element): void
+            {
+                $element['value'] = false;
+            });
+            foreach (['TimerNowOn', 'TimerOn', 'TimerNowOff', 'TimerOff'] as $name) {
+                $this->ModifyFormElement($form['elements'], $name, function (array &$element): void
+                {
+                    $element['enabled'] = false;
+                });
+            }
         }
         // Device Name (alias)
-        $form['actions'][5]['items'][0]['value'] = $alias;
-        // Debug output
-        //$this->LogDebug(__FUNCTION__, $form);
+        $this->ModifyFormElement($form['actions'], 'DeviceName', function (array &$element) use ($alias): void
+        {
+            $element['value'] = $alias;
+        });
+        // Extract version
+        $ins = IPS_GetInstance($this->InstanceID);
+        $mod = IPS_GetModule($ins['ModuleInfo']['ModuleID']);
+        $lib = IPS_GetLibrary($mod['LibraryID']);
+        $this->ModifyFormElement($form['actions'], 'Version', function (array &$element) use ($lib): void
+        {
+            $element['caption'] = sprintf('v%s.%d', $lib['Version'], $lib['Build']);
+        });
         return json_encode($form);
     }
 
@@ -298,25 +304,50 @@ class TwinklyDevice extends IPSModuleStrict
         //Never delete this line!
         parent::ApplyChanges();
 
+        // Remove legacy profiles (migration to presentations)
+        foreach (['Twinkly.Mode', 'Twinkly.ModeEx', 'Twinkly.Movie'] as $profile) {
+            if (IPS_VariableProfileExists($profile)) {
+                IPS_DeleteVariableProfile($profile);
+            }
+        }
+
         // IP Check
         $host = $this->ReadPropertyString('Host');
-        if (filter_var($host, FILTER_VALIDATE_IP) !== false) {
+        $valid = filter_var($host, FILTER_VALIDATE_IP) !== false;
+        if ($host === '') {
+            $this->SetStatus(104);
+        } elseif ($valid) {
             $this->SetStatus(102);
         } else {
             $this->SetStatus(201);
         }
 
-        // Timer
-        $this->SetTimer();
+        // Host may have changed, force a new login
+        $this->WriteAttributeInteger('Validate', 0);
 
-        // Aditionally Switch
+        // State synchronisation (apply also ends a paused synchronisation)
+        $this->WriteAttributeInteger('UnreachableSince', 0);
+        $this->SetTimerInterval('UpdateTimer', $valid ? $this->GetUpdateInterval() : 0);
+
+        // Mode presentation (extended mode)
         $advanced = $this->ReadPropertyBoolean('AdvancedMode');
         if ($advanced) {
             $mode = $this->TranslatePresentation(self::TWINKLY_PRESENTATION_MODE_EX, 'OPTIONS', 'Caption');
         } else {
             $mode = $this->TranslatePresentation(self::TWINKLY_PRESENTATION_MODE, 'OPTIONS', 'Caption');
         }
-        $this->RegisterVariableInteger('Mode', $this->Translate('Mode'), 'Twinkly.ModeEx', 1);
+        $this->RegisterVariableInteger('Mode', $this->Translate('Mode'), $mode, 1);
+
+        // Effects (presentation from last known number of effects)
+        $this->RegisterVariableInteger('Effect', $this->Translate('Effect'), $this->GetEffectPresentation(), 3);
+
+        // Movies (presentation from last known movie list)
+        $this->RegisterVariableString('Movie', $this->Translate('Movie'), $this->GetMoviePresentation(), 4);
+
+        // Timer (only with running kernel, device is only contacted on changed settings)
+        if ($valid && IPS_GetKernelRunlevel() === KR_READY) {
+            $this->SetTimer();
+        }
 
         // Debug message
         $this->LogDebug(__FUNCTION__, 'IP=' . $host);
@@ -340,33 +371,49 @@ class TwinklyDevice extends IPSModuleStrict
             case 'TimingNow':
                 $this->OnTimingNow($value);
                 break;
+            case 'Update':
+                $this->Update();
+                break;
             case 'Switch':
-                $this->SetSwitch($value);
-                $this->SetValueBoolean($ident, $value);
+                if ($this->SetSwitch($value)) {
+                    $this->SetValueBoolean($ident, $value);
+                    $this->OnReachable();
+                }
                 break;
             case 'Mode':
-                $this->SetMode($value);
-                $this->SetValueInteger($ident, $value);
+                if ($this->SetMode($value)) {
+                    $this->SetValueInteger($ident, $value);
+                }
                 break;
             case 'Color':
-                $this->SetColor($value);
-                $this->SetValueInteger($ident, $value);
+                if ($this->SetColor($value)) {
+                    $this->SetValueInteger($ident, $value);
+                    $this->OnReachable();
+                }
                 break;
             case 'Effect':
-                $this->SetEffect($value);
-                $this->SetValueInteger($ident, $value);
+                if ($this->SetEffect($value)) {
+                    $this->SetValueInteger($ident, $value);
+                    $this->OnReachable();
+                }
                 break;
             case 'Movie':
-                $this->SetMovie($value);
-                $this->SetValueInteger($ident, $value);
+                if ($this->SetMovie((string) $value)) {
+                    $this->SetValueString($ident, (string) $value);
+                    $this->OnReachable();
+                }
                 break;
             case 'Brightness':
-                $this->SetBrightness($value);
-                $this->SetValueInteger($ident, $value);
+                if ($this->SetBrightness($value)) {
+                    $this->SetValueInteger($ident, $value);
+                    $this->OnReachable();
+                }
                 break;
             case 'Saturation':
-                $this->SetSaturation($value);
-                $this->SetValueInteger($ident, $value);
+                if ($this->SetSaturation($value)) {
+                    $this->SetValueInteger($ident, $value);
+                    $this->OnReachable();
+                }
                 break;
             default:
                 throw new Exception('Invalid Ident');
@@ -377,7 +424,7 @@ class TwinklyDevice extends IPSModuleStrict
      * This function will be available automatically after the module is imported with the module control.
      * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
      *
-     * TWICKLY_Brightness($id);
+     * TWINKLY_Brightness($id);
      *
      * @return string Brightness value or error message
      */
@@ -406,11 +453,11 @@ class TwinklyDevice extends IPSModuleStrict
      * This function will be available automatically after the module is imported with the module control.
      * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
      *
-     * TWICKLY_Saturation($id);
+     * TWINKLY_Saturation($id);
      *
      * @return string Saturation value or error message
      */
-    public function Saturation()
+    public function Saturation(): string
     {
         if ($this->CheckLogin() === false) {
             return $this->Translate('Login error!');
@@ -436,7 +483,7 @@ class TwinklyDevice extends IPSModuleStrict
      * This function will be available automatically after the module is imported with the module control.
      * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
      *
-     * TWICKLY_Color($id);
+     * TWINKLY_Color($id);
      *
      * @return string Color value or error message
      */
@@ -459,7 +506,7 @@ class TwinklyDevice extends IPSModuleStrict
             $value = $this->RGB2Int($rgb);
             $this->SetValueInteger('Color', $value);
             // Display value
-            return $this->Translate('Color: ') . sprintf('0x%02x%02x%02x', $rgb[0], $rgb[1], $rgb[2]) . ' (' . $value . ')';
+            return $this->Translate('Color: ') . sprintf('#%02X%02X%02X', $rgb[0], $rgb[1], $rgb[2]) . ' (' . $value . ')';
         }
         return $this->Translate('Error occurred!');
     }
@@ -468,7 +515,7 @@ class TwinklyDevice extends IPSModuleStrict
      * This function will be available automatically after the module is imported with the module control.
      * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
      *
-     * TWICKLY_Effect($id);
+     * TWINKLY_Effect($id);
      *
      * @return string Effect value or error message
      */
@@ -482,14 +529,20 @@ class TwinklyDevice extends IPSModuleStrict
         // Host & Token
         $host = $this->ReadPropertyString('Host');
         $token = $this->ReadAttributeString('Token');
+        // Number of effects
+        $json = $this->doEffects($host, $token);
+        $this->LogDebug(__FUNCTION__, $json);
+        if ($json !== false && isset($json['effects_number'])) {
+            $this->UpdateEffects((int) $json['effects_number']);
+        }
         // Request
         $json = $this->doEffect($host, $token);
         $this->LogDebug(__FUNCTION__, $json);
-        // Sync brightness
+        // Sync effect
         if ($json !== false) {
             $this->SetValueInteger('Effect', $json['preset_id'] + 1);
             // Display value
-            return $this->Translate('Effect: ') . ($json['preset_id'] + 1) . ' (' . $json['unique_id'] . ')';
+            return $this->Translate('Current effect: ') . ($json['preset_id'] + 1);
         }
         return $this->Translate('Error occurred!');
     }
@@ -498,7 +551,7 @@ class TwinklyDevice extends IPSModuleStrict
      * This function will be available automatically after the module is imported with the module control.
      * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
      *
-     * TWICKLY_Movie($id);
+     * TWINKLY_Movie($id);
      *
      * @return string Movie value or error message
      */
@@ -515,56 +568,37 @@ class TwinklyDevice extends IPSModuleStrict
         // Movie list
         $json = $this->doMovies($host, $token);
         $this->LogDebug(__FUNCTION__, $json);
-        if ($json !== false) {
-            $movies = [];
-            if (count($json['movies']) > 0) {
-                foreach ($json['movies'] as $movie) {
-                    $movies[] = [$movie['id'], $movie['name']];
-                }
-            } else {
-                $movies = self::TWINKLY_MOVIE;
-            }
-            // Delete VariableProfile
-            if (IPS_VariableProfileExists('Twinkly.Movie')) {
-                IPS_DeleteVariableProfile('Twinkly.Movie'); // migration to presentation
-            }
-
-            $presentation = self::TWINKLY_PRESENTATION_MOVIE;
-            $options = array_map(function ($movie)
-            {
-                return [
-                    'Caption'     => $this->Translate($movie[1]),
-                    'Color'       => -1,
-                    'IconActive'  => false,
-                    'IconValue'   => '',
-                    'Value'       => $movie[0],
-                ];
-            }, $movies);
-            $encode = json_encode($options);
-            $presentation['OPTIONS'] = $encode;
-
-            $mid = @$this->GetIDForIdent('Movie');
-            if (IPS_VariableExists($mid)) {
-                IPS_SetVariableCustomPresentation($mid, $presentation);
-            }
-
-            // Sync movie
-            $this->SetValueInteger('Movie', $json['id']);
-            // Display value
-            return $this->Translate('Movie: ') . ($json['id']) . ' (' . $json['name'] . ')';
-
-        } else {
-            $this->SetValueInteger('Movie', -1);
-            return $this->Translate('No films uploaded!');
-            //return $this->Translate('Error occurred!');
+        if ($json === false) {
+            return $this->Translate('Error occurred!');
         }
+        $movies = [];
+        foreach ($json['movies'] ?? [] as $movie) {
+            $movies[] = ['id' => (int) $movie['id'], 'name' => (string) $movie['name'], 'uid' => (string) $movie['unique_id']];
+        }
+        $this->UpdateMovies($movies);
+        if (empty($movies)) {
+            $this->SetValueString('Movie', '');
+            return $this->Translate('No films uploaded!');
+        }
+        // Current movie
+        $json = $this->doMovie($host, $token);
+        $this->LogDebug(__FUNCTION__, $json);
+        if ($json === false) {
+            return $this->Translate('Error occurred!');
+        }
+        // Sync movie
+        $uid = (string) $json['unique_id'];
+        $this->SetValueString('Movie', $uid);
+        // Display value
+        $captions = $this->GetMovieCaptions($movies);
+        return $this->Translate('Current movie: ') . ($captions[$uid] ?? $json['name']) . "\n" . $this->Translate('Available movies: ') . count($movies);
     }
 
     /**
      * This function will be available automatically after the module is imported with the module control.
      * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
      *
-     * TWICKLY_Gestalt();
+     * TWINKLY_Gestalt();
      *
      * @return string Device information value or error message
      */
@@ -581,6 +615,9 @@ class TwinklyDevice extends IPSModuleStrict
         // Request
         $json = $this->doGestalt($host, $token);
         $this->LogDebug(__FUNCTION__, $json);
+        if ($json === false) {
+            return $this->Translate('Error occurred!');
+        }
 
         return $this->PrettyPrint(self::TWINKLY_MAP_GESTALT, json_encode($json));
     }
@@ -589,7 +626,7 @@ class TwinklyDevice extends IPSModuleStrict
      * This function will be available automatically after the module is imported with the module control.
      * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
      *
-     * TWICKLY_Version();
+     * TWINKLY_Version();
      *
      * @return string Firmware version value or error message
      */
@@ -604,6 +641,9 @@ class TwinklyDevice extends IPSModuleStrict
         $host = $this->ReadPropertyString('Host');
         // Request
         $json = $this->doVersion($host);
+        if ($json === false) {
+            return $this->Translate('Error occurred!');
+        }
 
         return $this->Translate('Firmware: ') . $json['version'];
     }
@@ -612,7 +652,7 @@ class TwinklyDevice extends IPSModuleStrict
      * This function will be available automatically after the module is imported with the module control.
      * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
      *
-     * TWICKLY_Network();
+     * TWINKLY_Network();
      *
      * @return string Network information value or error message
      */
@@ -629,6 +669,9 @@ class TwinklyDevice extends IPSModuleStrict
         // Request
         $json = $this->doNetwork($host, $token);
         $this->LogDebug(__FUNCTION__, $json);
+        if ($json === false) {
+            return $this->Translate('Error occurred!');
+        }
 
         $enc = [0 => 'NONE', 2 => 'WPA1', 3 => 'WPA2', 4 => 'WPA1+WPA2'];
         return sprintf(
@@ -642,7 +685,7 @@ class TwinklyDevice extends IPSModuleStrict
             $json['ap']['ssid'],
             $json['ap']['ip'],
             $json['ap']['channel'],
-            $enc[$json['ap']['enc']],
+            $enc[$json['ap']['enc']] ?? (string) $json['ap']['enc'],
             $json['ap']['ssid_hidden'] ? 'true' : 'false',
             $json['ap']['max_connections']
         );
@@ -652,7 +695,7 @@ class TwinklyDevice extends IPSModuleStrict
      * This function will be available automatically after the module is imported with the module control.
      * Using the custom prefix this function will be callable from PHP and JSON-RPC through:.
      *
-     * TWICKLY_DeviceName();
+     * TWINKLY_DeviceName();
      *
      * @return string Device name or error message
      */
@@ -718,13 +761,13 @@ class TwinklyDevice extends IPSModuleStrict
      *
      * @param bool $value State value.
      *
-     * @return void
+     * @return bool True if the device accepted the command, otherwise false.
      */
-    private function SetSwitch(bool $value): void
+    private function SetSwitch(bool $value): bool
     {
         if ($this->CheckLogin() === false) {
             $this->LogDebug(__FUNCTION__, 'Login error!');
-            return;
+            return false;
         }
         // Host
         $host = $this->ReadPropertyString('Host');
@@ -739,7 +782,7 @@ class TwinklyDevice extends IPSModuleStrict
         // Body
         $body = ['mode' => $mode];
         // Request
-        $this->doMode($host, $token, $body);
+        return $this->doMode($host, $token, $body) !== false;
     }
 
     /**
@@ -747,16 +790,16 @@ class TwinklyDevice extends IPSModuleStrict
      *
      * @param int $value Mode value.
      *
-     * @return void
+     * @return bool True if the device accepted the command, otherwise false.
      */
-    private function SetMode(int $value): void
+    private function SetMode(int $value): bool
     {
-        if ($this->GetValue('Switch') == false) { // 0 == 'Off' (false)
-            return;
+        if ($this->GetValue('Switch') == false) { // device is off, mode is only stored and applied on switching on
+            return true;
         }
         if ($this->CheckLogin() === false) {
             $this->LogDebug(__FUNCTION__, 'Login error!');
-            return;
+            return false;
         }
         // Host
         $host = $this->ReadPropertyString('Host');
@@ -768,7 +811,7 @@ class TwinklyDevice extends IPSModuleStrict
         // Body
         $body = ['mode' => $mode];
         // Request
-        $this->doMode($host, $token, $body);
+        return $this->doMode($host, $token, $body) !== false;
     }
 
     /**
@@ -776,13 +819,13 @@ class TwinklyDevice extends IPSModuleStrict
      *
      * @param int $value Color value.
      *
-     * @return void
+     * @return bool True if the device accepted the command, otherwise false.
      */
-    private function SetColor(int $value): void
+    private function SetColor(int $value): bool
     {
         if ($this->CheckLogin() === false) {
             $this->LogDebug(__FUNCTION__, 'Login error!');
-            return;
+            return false;
         }
         // Debug
         $this->LogDebug(__FUNCTION__, 'Set color to: ' . $value);
@@ -798,7 +841,7 @@ class TwinklyDevice extends IPSModuleStrict
             'blue'   => $rgb[2],
         ];
         // Request
-        $this->doColor($host, $token, $body);
+        return $this->doColor($host, $token, $body) !== false;
     }
 
     /**
@@ -806,13 +849,13 @@ class TwinklyDevice extends IPSModuleStrict
      *
      * @param int $value Effect id.
      *
-     * @return void
+     * @return bool True if the device accepted the command, otherwise false.
      */
-    private function SetEffect(int $value): void
+    private function SetEffect(int $value): bool
     {
         if ($this->CheckLogin() === false) {
             $this->LogDebug(__FUNCTION__, 'Login error!');
-            return;
+            return false;
         }
         // Debug
         $this->LogDebug(__FUNCTION__, 'Set effectId to: ' . $value);
@@ -829,39 +872,162 @@ class TwinklyDevice extends IPSModuleStrict
             'effect_id'  => $value,
         ];
         // Request
-        $this->doEffect($host, $token, $body);
+        return $this->doEffect($host, $token, $body) !== false;
     }
 
     /**
-     * Sets the movie id.
+     * Sets the movie by its unique id.
      *
-     * @param int $value Movie id.
+     * The device renumbers its movie ids when movies are deleted or reordered,
+     * therefore the stable unique id is mapped to the current id before sending.
      *
-     * @return void
+     * @param string $value Unique id of the movie.
+     *
+     * @return bool True if the movie was set, otherwise false.
      */
-    private function SetMovie(int $value): void
+    private function SetMovie(string $value): bool
     {
-        if ($value < 0) {
+        if ($value === '') {
             $this->LogDebug(__FUNCTION__, 'No movie to set!');
-            return;
+            return false;
         }
 
         if ($this->CheckLogin() === false) {
             $this->LogDebug(__FUNCTION__, 'Login error!');
-            return;
+            return false;
         }
-        // Debug
-        $this->LogDebug(__FUNCTION__, 'Set movieId to: ' . $value);
         // Host
         $host = $this->ReadPropertyString('Host');
         // Token
         $token = $this->ReadAttributeString('Token');
+        // Movie list
+        $json = $this->doMovies($host, $token);
+        if ($json === false) {
+            $this->LogDebug(__FUNCTION__, 'Movie list not available!');
+            return false;
+        }
+        $id = null;
+        foreach ($json['movies'] ?? [] as $movie) {
+            if ((string) $movie['unique_id'] === $value) {
+                $id = (int) $movie['id'];
+                break;
+            }
+        }
+        if ($id === null) {
+            $this->LogDebug(__FUNCTION__, 'Movie not found on device: ' . $value);
+            return false;
+        }
+        // Debug
+        $this->LogDebug(__FUNCTION__, 'Set movie ' . $value . ' with id: ' . $id);
         // Movie ID
         $body = [
-            'id'  => $value,
+            'id'  => $id,
         ];
         // Request
-        $this->doMovie($host, $token, $body);
+        return $this->doMovie($host, $token, $body) !== false;
+    }
+
+    /**
+     * Stores the number of effects and updates the presentation of the effect variable if it has changed.
+     *
+     * @param int $count Number of effects on the device.
+     *
+     * @return void
+     */
+    private function UpdateEffects(int $count): void
+    {
+        if ($count < 1 || $count === $this->ReadAttributeInteger('Effects')) {
+            return;
+        }
+        $this->WriteAttributeInteger('Effects', $count);
+        $this->RegisterVariableInteger('Effect', $this->Translate('Effect'), $this->GetEffectPresentation(), 3);
+    }
+
+    /**
+     * Builds the effect presentation from the stored number of effects (values are 1 based).
+     *
+     * @return array<string,mixed> Enumeration presentation.
+     */
+    private function GetEffectPresentation(): array
+    {
+        $caption = $this->Translate('Effect');
+        $options = [];
+        for ($i = 1; $i <= $this->ReadAttributeInteger('Effects'); $i++) {
+            $options[] = [
+                'Caption'     => $caption . ' ' . $i,
+                'Color'       => -1,
+                'IconActive'  => false,
+                'IconValue'   => '',
+                'Value'       => $i,
+            ];
+        }
+        $presentation = self::TWINKLY_PRESENTATION_EFFECT;
+        $presentation['OPTIONS'] = json_encode($options, JSON_UNESCAPED_UNICODE);
+        return $presentation;
+    }
+
+    /**
+     * Stores the movie list and updates the presentation of the movie variable if it has changed.
+     *
+     * @param array<int,array<string,mixed>> $movies List of movies (id, name, uid).
+     *
+     * @return void
+     */
+    private function UpdateMovies(array $movies): void
+    {
+        $encoded = json_encode($movies);
+        if ($encoded === $this->ReadAttributeString('Movies')) {
+            return;
+        }
+        $this->WriteAttributeString('Movies', $encoded);
+        $this->RegisterVariableString('Movie', $this->Translate('Movie'), $this->GetMoviePresentation(), 4);
+    }
+
+    /**
+     * Builds the movie presentation from the stored movie list.
+     *
+     * @return array<string,mixed> Enumeration presentation.
+     */
+    private function GetMoviePresentation(): array
+    {
+        $movies = json_decode($this->ReadAttributeString('Movies'), true);
+        if (empty($movies)) {
+            return $this->TranslatePresentation(self::TWINKLY_PRESENTATION_MOVIE, 'OPTIONS', 'Caption');
+        }
+        $options = [];
+        foreach ($this->GetMovieCaptions($movies) as $uid => $caption) {
+            $options[] = [
+                'Caption'     => $caption,
+                'Color'       => -1,
+                'IconActive'  => false,
+                'IconValue'   => '',
+                'Value'       => (string) $uid,
+            ];
+        }
+        $presentation = self::TWINKLY_PRESENTATION_MOVIE;
+        $presentation['OPTIONS'] = json_encode($options, JSON_UNESCAPED_UNICODE);
+        return $presentation;
+    }
+
+    /**
+     * Builds the captions of all movies, duplicate names get the device id appended.
+     *
+     * @param array<int,array<string,mixed>> $movies List of movies (id, name, uid).
+     *
+     * @return array<string,string> Captions indexed by unique id.
+     */
+    private function GetMovieCaptions(array $movies): array
+    {
+        $counts = array_count_values(array_column($movies, 'name'));
+        $captions = [];
+        foreach ($movies as $movie) {
+            $caption = $movie['name'];
+            if ($counts[$movie['name']] > 1) {
+                $caption = sprintf('%s (%d)', $movie['name'], $movie['id'] ?? 0);
+            }
+            $captions[(string) $movie['uid']] = $caption;
+        }
+        return $captions;
     }
 
     /**
@@ -869,13 +1035,13 @@ class TwinklyDevice extends IPSModuleStrict
      *
      * @param int $value Brightness value.
      *
-     * @return void
+     * @return bool True if the device accepted the command, otherwise false.
      */
-    private function SetBrightness(int $value): void
+    private function SetBrightness(int $value): bool
     {
         if ($this->CheckLogin() === false) {
             $this->LogDebug(__FUNCTION__, 'Login error!');
-            return;
+            return false;
         }
         // Debug
         $this->LogDebug(__FUNCTION__, 'Set brightness to: ' . $value);
@@ -889,7 +1055,7 @@ class TwinklyDevice extends IPSModuleStrict
             'value'  => $value,
         ];
         // Request
-        $this->doBrightness($host, $token, $body);
+        return $this->doBrightness($host, $token, $body) !== false;
     }
 
     /**
@@ -897,13 +1063,13 @@ class TwinklyDevice extends IPSModuleStrict
      *
      * @param int $value Saturation value.
      *
-     * @return void
+     * @return bool True if the device accepted the command, otherwise false.
      */
-    private function SetSaturation(int $value): void
+    private function SetSaturation(int $value): bool
     {
         if ($this->CheckLogin() === false) {
             $this->LogDebug(__FUNCTION__, 'Login error!');
-            return;
+            return false;
         }
         // Debug
         $this->LogDebug(__FUNCTION__, 'Set saturation to: ' . $value);
@@ -917,7 +1083,7 @@ class TwinklyDevice extends IPSModuleStrict
             'value'  => $value,
         ];
         // Request
-        $this->doSaturation($host, $token, $body);
+        return $this->doSaturation($host, $token, $body) !== false;
     }
 
     /**
@@ -927,10 +1093,23 @@ class TwinklyDevice extends IPSModuleStrict
      */
     private function CheckLogin(): bool
     {
-        // $last =  $this->ReadAttributeInteger('Validate');
-        $now = time();
-        // Timestamp
-        $this->WriteAttributeInteger('Validate', $now);
+        $token = $this->ReadAttributeString('Token');
+        $last = $this->ReadAttributeInteger('Validate');
+        if ($token !== '' && (time() - $last) < self::TOKEN_LIFETIME) {
+            return true;
+        }
+        return $this->RenewToken() !== null;
+    }
+
+    /**
+     * Login to the device and store the new token (also called by TwinklyHelper if the device rejects a token).
+     *
+     * @return string|null New token if successful, otherwise null.
+     */
+    private function RenewToken(): ?string
+    {
+        // Invalidate the current token first
+        $this->WriteAttributeInteger('Validate', 0);
         // Host
         $host = $this->ReadPropertyString('Host');
         // Debug
@@ -940,7 +1119,7 @@ class TwinklyDevice extends IPSModuleStrict
         // Check
         if ($challange === false) {
             $this->LogDebug(__FUNCTION__, 'Login failed!');
-            return false;
+            return null;
         }
         // Validate
         $token = $challange['authentication_token'];
@@ -948,11 +1127,114 @@ class TwinklyDevice extends IPSModuleStrict
         // Check
         if ($this->doVerify($host, $token, $response) === false) {
             $this->LogDebug(__FUNCTION__, 'Verify failed!');
-            return false;
+            return null;
         }
         // Token
         $this->WriteAttributeString('Token', $token);
-        return true;
+        $this->WriteAttributeInteger('Validate', time());
+        return $token;
+    }
+
+    /**
+     * Synchronises all state variables with the device and reports the reachability as instance status.
+     *
+     * @return void
+     */
+    private function Update(): void
+    {
+        if ($this->CheckLogin() === false) {
+            $this->OnUnreachable();
+            return;
+        }
+        // Host
+        $host = $this->ReadPropertyString('Host');
+        // Token
+        $token = $this->ReadAttributeString('Token');
+        // Mode (also tells whether the device is on or off)
+        $json = $this->doMode($host, $token);
+        if ($json === false) {
+            $this->OnUnreachable();
+            return;
+        }
+        $this->OnReachable();
+        $mode = (string) $json['mode'];
+        $this->SetValueBoolean('Switch', $mode !== 'off');
+        foreach (self::TWINKLY_MODES as [$index, $name]) {
+            if ($name === $mode) {
+                $this->SetValueInteger('Mode', $index);
+                break;
+            }
+        }
+        // All other values
+        $this->Brightness();
+        $this->Saturation();
+        $this->Color();
+        $this->Effect();
+        $this->Movie();
+    }
+
+    /**
+     * Device did not answer: report the error and pause the synchronisation after the configured days.
+     *
+     * Paused means checking only hourly, so the device is detected automatically when it is plugged in again.
+     *
+     * @return void
+     */
+    private function OnUnreachable(): void
+    {
+        $since = $this->ReadAttributeInteger('UnreachableSince');
+        if ($since === 0) {
+            $since = time();
+            $this->WriteAttributeInteger('UnreachableSince', $since);
+        }
+        $days = $this->ReadPropertyInteger('PauseAfterDays');
+        if ($days > 0 && (time() - $since) >= $days * 86400) {
+            if ($this->GetStatus() !== self::STATUS_PAUSED) {
+                $this->LogDebug(__FUNCTION__, 'Device not reachable since ' . date('Y-m-d H:i', $since) . ', synchronisation paused.');
+                $this->SetTimerInterval('UpdateTimer', max(self::PAUSE_INTERVAL * 1000, $this->GetUpdateInterval()));
+                $this->SetStatus(self::STATUS_PAUSED);
+            }
+            return;
+        }
+        $this->SetDeviceStatus(202);
+    }
+
+    /**
+     * Device answered: end a paused synchronisation and report the instance as active.
+     *
+     * @return void
+     */
+    private function OnReachable(): void
+    {
+        if ($this->ReadAttributeInteger('UnreachableSince') !== 0) {
+            $this->WriteAttributeInteger('UnreachableSince', 0);
+            $this->SetTimerInterval('UpdateTimer', $this->GetUpdateInterval());
+        }
+        $this->SetDeviceStatus(102);
+    }
+
+    /**
+     * Returns the configured update interval.
+     *
+     * @return int Interval in milliseconds, 0 if disabled.
+     */
+    private function GetUpdateInterval(): int
+    {
+        return max(0, $this->ReadPropertyInteger('UpdateInterval')) * 1000;
+    }
+
+    /**
+     * Sets the instance status, but only if it has changed.
+     *
+     * @param int $status New status code.
+     *
+     * @return void
+     */
+    private function SetDeviceStatus(int $status): void
+    {
+        if ($this->GetStatus() !== $status) {
+            $this->SetStatus($status);
+        }
     }
 
     /**
@@ -1013,18 +1295,28 @@ class TwinklyDevice extends IPSModuleStrict
     }
 
     /**
-     * Sets timer information.
+     * Sets timer information, but only if the timer settings have changed since the last transfer.
      *
      * @return void
      */
     private function SetTimer(): void
     {
+        $timer = $this->ReadPropertyBoolean('TimerCheck');
+        $config = json_encode([$timer, $this->ReadPropertyString('TimerOn'), $this->ReadPropertyString('TimerOff')]);
+        $last = $this->ReadAttributeString('TimerConfig');
+        if ($config === $last) {
+            return;
+        }
+        // First run after update with disabled timer: keep a timer set via app untouched
+        if ($last === '' && !$timer) {
+            $this->WriteAttributeString('TimerConfig', $config);
+            return;
+        }
         if ($this->CheckLogin() === false) {
             $this->LogDebug(__FUNCTION__, 'Login error!');
             return;
         }
         // Timer
-        $timer = $this->ReadPropertyBoolean('TimerCheck');
         $on = -1;
         $off = -1;
         if ($timer) {
@@ -1048,6 +1340,8 @@ class TwinklyDevice extends IPSModuleStrict
             'time_off'  => $off,
         ];
         // Request
-        $this->doTimer($host, $token, $body);
+        if ($this->doTimer($host, $token, $body) !== false) {
+            $this->WriteAttributeString('TimerConfig', $config);
+        }
     }
 }

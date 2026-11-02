@@ -1,11 +1,11 @@
-# Twinkly Device
+# 🎄 Twinkly Device
 
 [![Home](https://img.shields.io/badge/Home-wilkware.de-0b1830.svg?style=flat-square)](https://wilkware.de/module/twinkly/device/)
 [![Version](https://img.shields.io/badge/Symcon-PHP--Modul-red.svg?style=flat-square)](https://www.symcon.de/service/dokumentation/entwicklerbereich/sdk-tools/sdk-php/)
-[![Product](https://img.shields.io/badge/Symcon%20Version-6.4-blue.svg?style=flat-square)](https://www.symcon.de/produkt/)
-[![Version](https://img.shields.io/badge/Modul%20Version-3.2.20240222-orange.svg?style=flat-square)](https://github.com/Wilkware/Twinkly)
+[![Product](https://img.shields.io/badge/Symcon%20Version-8.1-blue.svg?style=flat-square)](https://www.symcon.de/produkt/)
+[![Version](https://img.shields.io/badge/Modul%20Version-4.0.20261102-orange.svg?style=flat-square)](https://github.com/Wilkware/Twinkly)
 [![License](https://img.shields.io/badge/License-CC%20BY--NC--SA%204.0-green.svg?style=flat-square)](https://creativecommons.org/licenses/by-nc-sa/4.0/)
-[![Actions](https://img.shields.io/github/actions/workflow/status/wilkware/Twinkly/style.yml?branch=main&label=CheckStyle&style=flat-square)](https://github.com/Wilkware/Twinkly/actions)
+[![Actions](https://img.shields.io/github/actions/workflow/status/wilkware/Twinkly/ci.yml?branch=main&label=CI&style=flat-square)](https://github.com/Wilkware/Twinkly/actions)
 
 
 Ermöglicht die Kommunikation mit den Smart LED-Leuchten _Twinkly_.
@@ -32,7 +32,7 @@ Ermöglicht die Kommunikation mit den Smart LED-Leuchten _Twinkly_.
 
 ### 2. Voraussetzungen
 
-* Symcon ab Version 6.4
+* Symcon ab Version 8.1
 
 ### 3. Installation
 
@@ -48,13 +48,15 @@ __Konfigurationsseite__:
 
 Einstellungsbereich:
 
-> Gerät ...
+> 💡 Gerät ...
 
 Name                       | Beschreibung
 -------------------------- | ---------------------------------
 IP-Adresse                 | Netzwerkadresse der Lichterkette
+Aktualisierungsintervall   | Intervall in Sekunden, in dem die Statusvariablen mit dem Gerät abgeglichen werden (0 = aus, Standard). Empfehlung: während der Saison z.B. 60 Sekunden einstellen. Ist das Gerät nicht erreichbar, zeigt die Instanz den Status „Gerät nicht erreichbar!“.
+Abgleich pausieren nach    | Ist das Gerät so viele Tage nicht erreichbar (z.B. außerhalb der Saison), wird nur noch stündlich geprüft und die Instanz zeigt „Abgleich pausiert“ (Standby). Sobald das Gerät wieder antwortet, ein Befehl erfolgreich war oder die Konfiguration übernommen wird, gilt wieder das normale Intervall (0 = nie pausieren, Standard 3).
 
-> Zeitschaltung ...
+> ⏰ Zeitschaltung ...
 
 Name                       | Beschreibung
 -------------------------- | ---------------------------------
@@ -63,13 +65,15 @@ Einschalten                | Tägliche Einschaltzeit.
 Ausschalten                | Tägliche Ausschaltzeit.
 JETZT                      | Trägt die aktuelle Uhrzeit als Start- oder Endezeit ein
 
-> Erweiterte Einstellungen ...
+> ⚙️ Erweiterte Einstellungen ...
 
 Name                       | Beschreibung
 -------------------------- | ---------------------------------
-Aktivieren des erweiterten Modus | Darüber können zusätzliche (_ungetestete_) LED Betriebsmodi freigeschalten werden (Musicreactive, Playlist & Realtime)!
+Aktivieren des erweiterten Modus | Darüber können zusätzliche (_ungetestete_) LED Betriebsmodi freigeschalten werden (Musik Reaktiv, Wiedergabeliste & Echtzeit)!
 
 Aktionsbereich:
+
+> 🛠️ Gerätefunktionen ...
 
 Aktion            | Beschreibung
 ----------------- | ------------------------------------------------------------
@@ -87,16 +91,17 @@ Neuer Gerätenamen | Zeigt den aktuellen (nach dem Öffnen des Formulares) Namen
 ### 5. Statusvariablen
 
 Die Statusvariablen werden automatisch angelegt. Das Löschen einzelner kann zu Fehlfunktionen führen.
+Werte werden nur übernommen, wenn das Gerät den Befehl bestätigt hat; Änderungen über die App oder den Geräte-Timer werden im Aktualisierungsintervall übernommen.
 
-Name                 | Typ     | Beschreibung
--------------------- | ------- | ------------------------------
-Schalter             | Boolean | Ein- bzw. Ausschalten der Lichterkette
-Modus                | Integer | LED-Betriebsmodus
-Farbe                | Integer | Farbwert
-Effekt               | Integer | Auswahl des vordefinierten Effekts
-Film                 | Integer | Filmauswahl (abhängig von den in der App hinterlegten Filmen/Effekten)
-Helligkeit           | Integer | Helligkeitswert
-Sättigung            | Integer | Sättigungswert
+Ident      | Name       | Typ     | Beschreibung
+---------- | ---------- | ------- | ------------------------------
+Switch     | Schalter   | Boolean | Ein- bzw. Ausschalten der Lichterkette
+Mode       | Modus      | Integer | LED-Betriebsmodus
+Color      | Farbe      | Integer | Farbwert
+Effect     | Effekt     | Integer | Auswahl des vordefinierten Effekts
+Movie      | Film       | String  | Filmauswahl über die eindeutige Film-ID (abhängig von den in der App hinterlegten Filmen/Effekten)
+Brightness | Helligkeit | Integer | Helligkeitswert
+Saturation | Sättigung  | Integer | Sättigungswert
 
 ### 6. Darstellungen
 
@@ -105,109 +110,110 @@ Die Darstellungen werden direkt an den Statusvariablen hinterlegt, es werden kei
 Variable             | Darstellung   | Werte
 -------------------- | ------------- | ------------------------------
 Schalter             | Schalter      | An / Aus
-Modus                | Aufzählung    | Farbe, Effekt, Film, Demo (erweiterter Modus zusätzlich: Musicreactive, Playlist, RealTime)
+Modus                | Aufzählung    | Farbe, Effekt, Film, Demo (erweiterter Modus zusätzlich: Musik Reaktiv, Wiedergabeliste, Echtzeit)
 Farbe                | Farbe         | Farbauswahl mit 6 Farbvorgaben
-Effekt               | Schieberegler | 1 – 5 (Schrittweite 1)
-Film                 | Aufzählung    | Am Gerät hinterlegte Filme (ohne Filme: Keine Filme verfügbar!)
+Effekt               | Aufzählung    | Effekt 1 – n (Anzahl wird vom Gerät gelesen, Standard 5)
+Film                 | Aufzählung    | Am Gerät hinterlegte Filme (gleichnamige Filme mit angehängter Geräte-ID, z.B. "Rainbow (1)"; ohne Filme: Keine Filme)
 Helligkeit           | Schieberegler | 0 – 100 % (Schrittweite 1)
 Sättigung            | Schieberegler | 0 – 100 % (Schrittweite 1)
 
 ### 7. Visualisierung
 
-Die pro Twinkly Gerät erzeugten Variablen können direkt ins Webfront verlingt werden.
+Die Instanz kann direkt in der Kachel-Visualisierung verwendet werden, die Statusvariablen werden über ihre Darstellungen bedient. Alternativ können die Variablen einzeln verlinkt werden.
 
 ### 8. Befehlsreferenz
 
 ```php
-void TWICKLY_Color(int $InstanzID);
+string TWINKLY_Color(int $InstanzID);
 ```
 
 Liest den aktuell am Gerät eingestelten Farbwert aus und synchronisert ihn mit der dazugehörigen Statusvariable.  
-Die Funktion liefert als Rückgabewert einen String (Farbe: 0xRRGGBB (\<Integer-wert\>)).
+Die Funktion liefert als Rückgabewert einen String (Farbe: #RRGGBB (\<Integer-Wert\>)).
 
-__Beispiel__: `TWICKLY_Color(12345);` Ausgabe "Helligkeit: 100%".
+__Beispiel__: `TWINKLY_Color(12345);` Ausgabe "Farbe: #FFA500 (16753920)".
 
 ```php
-void TWICKLY_Effect(int $InstanzID);
+string TWINKLY_Effect(int $InstanzID);
 ```
 
 Liest den aktuell am Gerät hinterlegten Effekt aus und synchronisert ihn mit der dazugehörigen Statusvariable.  
-Die Funktion liefert als Rückgabewert einen String (Effekt: x (\<uuid\>)).
+Die Funktion liefert als Rückgabewert einen String (Aktueller Effekt: x).
 
-__Beispiel__: `TWICKLY_Effect(12345);` Ausgabe "Effekt: 1 (00000000-0000-0000-0000-000000000001)".
+__Beispiel__: `TWINKLY_Effect(12345);` Ausgabe "Aktueller Effekt: 1".
 
 ```php
-void TWICKLY_Movie(int $InstanzID);
+string TWINKLY_Movie(int $InstanzID);
 ```
 
 Liest den aktuell am Gerät hinterlegten Film und und alle hinterlegten Filme aus und synchronisert ihn mit der dazugehörigen Statusvariable.  
-Die Funktion liefert als Rückgabewert einen String (Film: x (\<name\>)).
+Die Funktion liefert als Rückgabewert einen String mit dem aktuellen Film und der Anzahl der verfügbaren Filme.
 
-__Beispiel__: `TWICKLY_Movie(12345);` Ausgabe "Film: 1 (Rainbow)".
+__Beispiel__: `TWINKLY_Movie(12345);` Ausgabe "Aktueller Film: Rainbow" und "Verfügbare Filme: 1".
 
 ```php
-void TWICKLY_Brightness(int $InstanzID);
+string TWINKLY_Brightness(int $InstanzID);
 ```
 
 Liest den aktuell am Gerät hinterlegten Helligkeitswert aus und synchronisert ihn mit der dazugehörigen Statusvariable.  
 Die Funktion liefert als Rückgabewert einen String (Helligkeit: xy%).
 
-__Beispiel__: `TWICKLY_Brightness(12345);` Ausgabe "Helligkeit: 100%".
+__Beispiel__: `TWINKLY_Brightness(12345);` Ausgabe "Helligkeit: 100%".
 
 ```php
-void TWICKLY_Saturation(int $InstanzID);
+string TWINKLY_Saturation(int $InstanzID);
 ```
 
 Liest de aktuell am Gerät hinterlegten Sättigungswert aus und synchronisert ihn mit der dazugehörigen Statusvariable.  
 Die Funktion liefert als Rückgabewert einen String (Sättigung: xy%).
 
-__Beispiel__: `TWICKLY_Saturation(12345);` Ausgabe "Helligkeit: 100%".
+__Beispiel__: `TWINKLY_Saturation(12345);` Ausgabe "Sättigung: 100%".
 
 ```php
-void TWICKLY_Gestalt(int $InstanzID);
+string TWINKLY_Gestalt(int $InstanzID);
 ```
 
 Liest alle Geräteinformationen aus.  
 Die Funktion liefert als Rückgabewert einen (sprintf) formatierten String.
 
-__Beispiel__: `TWICKLY_Gestalt(12345);`
+__Beispiel__: `TWINKLY_Gestalt(12345);`
 
-> Product name: Twinkly  
-> Hardware Version: 100  
-> Bytes per LED: 3  
-> Hardware ID: ab01cd  
-> Flash Size: 64  
-> LED Type: 14  
-> Product Code: TWS250STP-B  
-> Firmware Family: F  
-> Device Name: Weihnachtsbaum  
-> Uptime: 239317051  
+> Produktname: Twinkly  
+> Hardware-Version: 100  
+> Bytes pro LED: 3  
+> Hardware-ID: ab01cd  
+> Flash-Größe: 64  
+> LED-Typ: 14  
+> Produktcode: TWS250STP-B  
+> Firmware-Familie: F  
+> Gerätename: Weihnachtsbaum  
+> Laufzeit: 239317051  
 > MAC: 12:34:56:ba:dc:fe  
 > UUID: 12345678-bacd-1234-abcd-1234567890ab  
-> Max supported LED: 1020  
-> Number of LED: 250  
-> LED Profile: RGB  
-> Frame Rate: 23,810000  
-> Movie Capacity: 992  
+> Max. unterstützte LEDs: 1020  
+> Anzahl LEDs: 250  
+> LED-Profil: RGB  
+> Bildrate: 24  
+> Gemessene Bildrate: 23,810000  
+> Filmkapazität: 992  
 > Copyright: LEDWORKS 2018  
 
 ```php
-void TWICKLY_Version(int $InstanzID);
+string TWINKLY_Version(int $InstanzID);
 ```
 
 Liest die installierte Firmwareversion des Gerätes aus.  
 Die Funktion liefert als Rückgabewert einen String (Firmware: x.yy.zz).
 
-__Beispiel__: `TWICKLY_Version(12345);` Ausgabe "Firmware: 2.4.16".
+__Beispiel__: `TWINKLY_Version(12345);` Ausgabe "Firmware: 2.4.16".
 
 ```php
-void TWICKLY_Network(int $InstanzID);
+string TWINKLY_Network(int $InstanzID);
 ```
 
 Liest die eingestellten Netzwerkinformationen aus.
 Die Funktion liefert als Rückgabewert einen (sprintf) formatierten String.
 
-__Beispiel__: `TWICKLY_Network(12345);`
+__Beispiel__: `TWINKLY_Network(12345);`
 
 > Network mode: 1 (Station)  
 > Station:  
@@ -225,15 +231,30 @@ __Beispiel__: `TWICKLY_Network(12345);`
 > Max connections: 4  
 
 ```php
-void TWICKLY_DeviceName(int $InstanzID, string $NewName);
+string TWINKLY_DeviceName(int $InstanzID, string $NewName);
 ```
 
 Setzt den Gerätenamen (Alias) neu.  
 Die Funktion liefert als Rückgabewert einen String (Erfolgsmeldung).
 
-__Beispiel__: `TWICKLY_DeviceName(12345, 'Lichterkette');` Ausgabe "Der Name wurde erfolgreich geändert!".
+__Beispiel__: `TWINKLY_DeviceName(12345, 'Lichterkette');` Ausgabe "Der Name wurde erfolgreich geändert!".
 
 ### 9. Versionshistorie
+
+v4.0.20261102
+
+* _NEU_: Kompatibilität auf Symcon 8.1 hochgesetzt
+* _NEU_: Automatischer Statusabgleich mit dem Gerät (Aktualisierungsintervall), inkl. Pausierung bei längerer Nichterreichbarkeit
+* _NEU_: Film als Aufzählung über die eindeutige Film-ID (__Achtung:__ die Variable Film wird neu angelegt, Verknüpfungen müssen erneuert werden)
+* _NEU_: Effekt als Aufzählung, Anzahl der Effekte wird vom Gerät gelesen
+* _NEU_: Neue Instanzstatus (keine IP-Adresse, Gerät nicht erreichbar, Abgleich pausiert)
+* _NEU_: Darstellungen überarbeitet (neue Icons)
+* _NEU_: Konfigurationsformular auf Standardlayout umgestellt (inkl. Versionsanzeige)
+* _FIX_: Erweiterter Modus wurde nicht übernommen
+* _FIX_: Werte werden erst nach Bestätigung durch das Gerät übernommen
+* _FIX_: Zeitschaltung wird nur noch bei geänderten Einstellungen übertragen
+* _FIX_: Zeitbegrenzung der Gerätezugriffe und Wiederverwendung des Login-Tokens
+* _FIX_: Übersetzungen und Dokumentation überarbeitet
 
 v3.2.20240222
 
